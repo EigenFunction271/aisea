@@ -283,13 +283,10 @@ const HERO_CONTENT = {
 export default function Home() {
   return (
     <div className="w-full min-h-screen">
-      {/* Spacer to allow scrolling past hero - placed first so it doesn't overlay */}
-      <div className="relative z-0 h-screen pointer-events-none" />
-      
       {/* Hero Section */}
-      <section className="fixed inset-0 w-screen h-screen bg-black z-50 pointer-events-none">
+      <section className="fixed inset-0 w-screen h-screen bg-black z-10 pointer-events-none">
         <ShaderBackground />
-        <div className="absolute inset-0 flex flex-col items-center justify-center text-center space-y-4 px-4 pointer-events-auto z-50">
+        <div className="absolute inset-0 flex flex-col items-center justify-center text-center space-y-4 px-4 pointer-events-auto z-10">
           <BlurFade delay={0} duration={0.8} yOffset={20}>
             <TextShimmer
               as="h1"
@@ -383,13 +380,16 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Spacer to allow scrolling past hero */}
+      <div className="relative z-0 h-screen pointer-events-none" />
+
       {/* What is AI.SEA Section */}
-      <section className="relative z-10">
+      <section className="relative z-20">
         <WhatIsAISEA />
       </section>
 
       {/* What AI.SEA Does Section */}
-      <section className="relative z-10">
+      <section className="relative z-20">
         <WhatAISeaDoes />
       </section>
 
@@ -397,7 +397,7 @@ export default function Home() {
       <LogoScrollingBar scrollSpeed={1.0} direction="right" showTitle={true} />
       
       {/* See All Past Events Button */}
-      <div className="relative z-10 flex justify-center py-8">
+      <div className="relative z-20 flex justify-center py-8">
         <Button
           asChild
           variant="outline"
