@@ -90,8 +90,8 @@ void main() {
 
   float f = pattern(uv);
 
-  // Darken the overall brightness
-  col = mix(vec3(0.4), vec3(0.9), f);
+  // Set background to black
+  col = vec3(0.0);
 
   gl_FragColor = vec4(col, 1.0);
 }
