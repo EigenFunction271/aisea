@@ -1,13 +1,14 @@
 "use client";
 
+import React from "react";
 import { motion, Variants, HTMLMotionProps } from "motion/react";
 import { useInView } from "motion/react";
 import { useRef } from "react";
 
 interface TimelineContentProps extends Omit<HTMLMotionProps<"div">, "as"> {
-  as?: keyof JSX.IntrinsicElements;
+  as?: React.ElementType;
   animationNum: number;
-  timelineRef: React.RefObject<HTMLElement>;
+  timelineRef: React.RefObject<HTMLElement | null>;
   customVariants?: Variants;
   children: React.ReactNode;
   className?: string;
@@ -42,7 +43,7 @@ export function TimelineContent({
 
   const variants = customVariants || defaultVariants;
 
-  const MotionComponent = motion(Component as keyof JSX.IntrinsicElements);
+  const MotionComponent = motion.create(Component as React.ElementType);
 
   return (
     <MotionComponent
@@ -52,7 +53,7 @@ export function TimelineContent({
       variants={variants}
       custom={animationNum}
       className={className}
-      {...props}
+      {...(props as any)}
     >
       {children}
     </MotionComponent>

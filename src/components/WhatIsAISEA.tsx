@@ -43,7 +43,7 @@ export function WhatIsAISEA() {
             <TimelineContent
               as="h2"
               animationNum={0}
-              timelineRef={heroRef}
+              timelineRef={heroRef as React.RefObject<HTMLElement | null>}
               customVariants={revealVariants}
               className="sm:text-4xl text-2xl md:text-5xl !leading-[110%] font-semibold text-white mb-8"
             >
@@ -53,7 +53,7 @@ export function WhatIsAISEA() {
             <TimelineContent
               as="p"
               animationNum={1}
-              timelineRef={heroRef}
+              timelineRef={heroRef as React.RefObject<HTMLElement | null>}
               customVariants={textVariants}
               className="text-white/90 text-lg md:text-xl leading-relaxed mb-6"
             >
@@ -63,7 +63,7 @@ export function WhatIsAISEA() {
             <TimelineContent
               as="p"
               animationNum={2}
-              timelineRef={heroRef}
+              timelineRef={heroRef as React.RefObject<HTMLElement | null>}
               customVariants={textVariants}
               className="text-white/90 text-lg md:text-xl leading-relaxed mb-6"
             >
@@ -73,7 +73,7 @@ export function WhatIsAISEA() {
             <TimelineContent
               as="p"
               animationNum={3}
-              timelineRef={heroRef}
+              timelineRef={heroRef as React.RefObject<HTMLElement | null>}
               customVariants={textVariants}
               className="text-white/90 text-lg md:text-xl leading-relaxed mb-6"
             >
@@ -83,7 +83,7 @@ export function WhatIsAISEA() {
             <TimelineContent
               as="p"
               animationNum={4}
-              timelineRef={heroRef}
+              timelineRef={heroRef as React.RefObject<HTMLElement | null>}
               customVariants={textVariants}
               className="text-white/90 text-lg md:text-xl leading-relaxed"
             >
