@@ -245,12 +245,12 @@ function ShaderBackground() {
   );
   
   return (
-    <div ref={canvasRef} className="bg-black absolute inset-0 -z-10 w-full h-full" aria-hidden>
+    <div ref={canvasRef} className="bg-black absolute inset-0 -z-10 w-full h-full pointer-events-none" aria-hidden>
       <Canvas
         camera={camera}
         gl={{ antialias: true, alpha: false }}
         dpr={[1, 2]}
-        style={{ width: '100%', height: '100%' }}
+        style={{ width: '100%', height: '100%', pointerEvents: 'none' }}
       >
         <ShaderPlane />
       </Canvas>
@@ -283,10 +283,13 @@ const HERO_CONTENT = {
 export default function Home() {
   return (
     <div className="w-full min-h-screen">
+      {/* Spacer to allow scrolling past hero - placed first so it doesn't overlay */}
+      <div className="relative z-0 h-screen pointer-events-none" />
+      
       {/* Hero Section */}
-      <section className="fixed inset-0 w-screen h-screen bg-black z-0 pointer-events-none">
+      <section className="fixed inset-0 w-screen h-screen bg-black z-50 pointer-events-none">
         <ShaderBackground />
-        <div className="absolute inset-0 flex flex-col items-center justify-center text-center space-y-4 px-4 pointer-events-auto">
+        <div className="absolute inset-0 flex flex-col items-center justify-center text-center space-y-4 px-4 pointer-events-auto z-50">
           <BlurFade delay={0} duration={0.8} yOffset={20}>
             <TextShimmer
               as="h1"
@@ -310,12 +313,15 @@ export default function Home() {
             <Button
               asChild
               size="lg"
-              className="font-[family-name:var(--font-geist-mono)] mt-2 bg-white text-black hover:bg-white/90 font-medium rounded-full text-sm md:text-base"
+              className="font-[family-name:var(--font-geist-mono)] mt-2 bg-white text-black hover:bg-white/90 font-medium rounded-full text-sm md:text-base relative z-20"
             >
               <a
                 href={LUMA_REGISTER_URL}
                 target="_blank"
                 rel="noopener noreferrer"
+                onClick={(e) => {
+                  console.log('Register Now clicked', e);
+                }}
               >
                 Register Now
               </a>
@@ -323,13 +329,16 @@ export default function Home() {
           </BlurFade>
 
           <BlurFade delay={0.6}>
-            <div className="flex items-center justify-center gap-4 mt-6">
+            <div className="flex items-center justify-center gap-4 mt-6 relative z-20">
               <a
                 href={DISCORD_URL}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center justify-center text-white/70 hover:text-white transition-colors duration-200"
+                className="inline-flex items-center justify-center text-white/70 hover:text-white transition-colors duration-200 relative z-20"
                 aria-label="Join Discord"
+                onClick={(e) => {
+                  console.log('Discord clicked', e);
+                }}
               >
                 <MessageCircle className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8" />
               </a>
@@ -337,8 +346,11 @@ export default function Home() {
                 href={INSTAGRAM_URL}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center justify-center text-white/70 hover:text-white transition-colors duration-200"
+                className="inline-flex items-center justify-center text-white/70 hover:text-white transition-colors duration-200 relative z-20"
                 aria-label="Follow on Instagram"
+                onClick={(e) => {
+                  console.log('Instagram clicked', e);
+                }}
               >
                 <Instagram className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8" />
               </a>
@@ -346,8 +358,11 @@ export default function Home() {
                 href={LINKEDIN_URL}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center justify-center text-white/70 hover:text-white transition-colors duration-200"
+                className="inline-flex items-center justify-center text-white/70 hover:text-white transition-colors duration-200 relative z-20"
                 aria-label="Follow on LinkedIn"
+                onClick={(e) => {
+                  console.log('LinkedIn clicked', e);
+                }}
               >
                 <Linkedin className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8" />
               </a>
@@ -355,8 +370,11 @@ export default function Home() {
                 href={CALENDAR_URL}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center justify-center text-white/70 hover:text-white transition-colors duration-200"
+                className="inline-flex items-center justify-center text-white/70 hover:text-white transition-colors duration-200 relative z-20"
                 aria-label="View Calendar"
+                onClick={(e) => {
+                  console.log('Calendar clicked', e);
+                }}
               >
                 <Calendar className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8" />
               </a>
@@ -364,9 +382,6 @@ export default function Home() {
           </BlurFade>
         </div>
       </section>
-
-      {/* Spacer to allow scrolling past hero */}
-      <div className="relative z-10 h-screen" />
 
       {/* What is AI.SEA Section */}
       <section className="relative z-10">
