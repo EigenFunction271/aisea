@@ -398,11 +398,6 @@ export default function Home() {
         <WhatAISeaDoes />
       </section>
 
-      {/* How it Works Section */}
-      <section className="relative z-20">
-        <HowItWorks />
-      </section>
-
       {/* Logo Scrolling Bar */}
       <LogoScrollingBar scrollSpeed={1.0} direction="right" showTitle={true} />
       
@@ -422,6 +417,11 @@ export default function Home() {
           </a>
         </Button>
       </div>
+
+      {/* How it Works Section */}
+      <section className="relative z-20">
+        <HowItWorks />
+      </section>
     </div>
   );
 }
