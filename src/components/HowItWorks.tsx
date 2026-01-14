@@ -51,7 +51,7 @@ export function HowItWorks() {
   ];
 
   return (
-    <section className="py-32 px-4 bg-black min-h-screen">
+    <section className="py-32 px-4 bg-black min-h-[120vh]">
       <div className="max-w-6xl mx-auto" ref={heroRef}>
         <TimelineContent
           as="h2"
