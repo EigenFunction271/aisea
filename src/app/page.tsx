@@ -13,7 +13,9 @@ import { TextShimmer } from "@/components/ui/text-shimmer";
 import { MessageCircle, Instagram, Linkedin, Calendar } from "lucide-react";
 import { WhatIsAISEA } from "@/components/WhatIsAISEA";
 import { WhatAISeaDoes } from "@/components/WhatAISeaDoes";
+import { HowItWorks } from "@/components/HowItWorks";
 import { LogoScrollingBar } from "@/components/LogoScrollingBar";
+import { Navbar1 } from "@/components/ui/navbar";
 
 // ===================== SHADER =====================
 const vertexShader = `
@@ -283,6 +285,9 @@ const HERO_CONTENT = {
 export default function Home() {
   return (
     <div className="w-full min-h-screen">
+      {/* Navbar */}
+      <Navbar1 />
+      
       {/* Hero Section */}
       <section className="fixed inset-0 w-screen h-screen bg-black z-10 pointer-events-none">
         <ShaderBackground />
@@ -391,6 +396,11 @@ export default function Home() {
       {/* What AI.SEA Does Section */}
       <section className="relative z-20">
         <WhatAISeaDoes />
+      </section>
+
+      {/* How it Works Section */}
+      <section className="relative z-20">
+        <HowItWorks />
       </section>
 
       {/* Logo Scrolling Bar */}
