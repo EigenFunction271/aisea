@@ -404,10 +404,12 @@ export default function Home() {
       </section>
 
       {/* Logo Scrolling Bar */}
-      <LogoScrollingBar scrollSpeed={1.0} direction="right" showTitle={true} />
+      <div className="relative z-20 bg-black">
+        <LogoScrollingBar scrollSpeed={1.0} direction="right" showTitle={true} />
+      </div>
       
       {/* See All Past Events Button */}
-      <div className="relative z-20 flex justify-center py-8">
+      <div className="relative z-20 flex justify-center py-8 bg-black">
         <Button
           asChild
           variant="outline"
@@ -432,35 +434,19 @@ export default function Home() {
           <p className="text-lg md:text-xl text-white/80 mb-8 font-[family-name:var(--font-geist-mono)]">
             Join the AI.SEA network and bring the builder movement to your city.
           </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Button
-              asChild
-              size="lg"
-              className="font-[family-name:var(--font-geist-mono)] bg-white text-black hover:bg-white/90 font-medium rounded-full"
+          <Button
+            asChild
+            size="lg"
+            className="font-[family-name:var(--font-geist-mono)] bg-white text-black hover:bg-white/90 font-medium rounded-full"
+          >
+            <a
+              href="https://airtable.com/appBgmnpu1bJljnxX/pagZqdhFlJmDRLpHT/form"
+              target="_blank"
+              rel="noopener noreferrer"
             >
-              <a
-                href="https://luma.com/ai-sea-week"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Get Started
-              </a>
-            </Button>
-            <Button
-              asChild
-              size="lg"
-              variant="outline"
-              className="font-[family-name:var(--font-geist-mono)] bg-transparent border-white/20 text-white hover:bg-white/10 hover:border-white/40 font-medium rounded-full"
-            >
-              <a
-                href="https://airtable.com/appBgmnpu1bJljnxX/pagZqdhFlJmDRLpHT/form"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Apply here
-              </a>
-            </Button>
-          </div>
+              Apply here
+            </a>
+          </Button>
         </div>
       </section>
     </div>

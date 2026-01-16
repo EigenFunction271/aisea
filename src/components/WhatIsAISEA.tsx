@@ -1,6 +1,7 @@
 "use client";
 import { TimelineContent } from "@/components/ui/timeline-animation";
 import { useRef } from "react";
+import Image from "next/image";
 
 export function WhatIsAISEA() {
   const heroRef = useRef<HTMLDivElement>(null);
@@ -88,6 +89,24 @@ export function WhatIsAISEA() {
               className="text-white/90 text-lg md:text-xl leading-relaxed"
             >
               AI.SEA exists because we need shared infrastructure, tighter feedback loops, and a way for capable builders to find each other and move faster, together.
+            </TimelineContent>
+          </div>
+
+          {/* Image */}
+          <div className="flex-1 hidden lg:block">
+            <TimelineContent
+              as="div"
+              animationNum={5}
+              timelineRef={heroRef as React.RefObject<HTMLElement | null>}
+              customVariants={textVariants}
+              className="relative w-full h-full min-h-[400px]"
+            >
+              <Image
+                src="/assets/images_general/collage.png"
+                alt="AI.SEA Collage"
+                fill
+                className="object-contain rounded-lg"
+              />
             </TimelineContent>
           </div>
         </div>
