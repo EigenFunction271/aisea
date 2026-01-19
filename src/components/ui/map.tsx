@@ -3,7 +3,6 @@
 import { useRef, useState, useMemo, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import DottedMap from "dotted-map";
-import Image from "next/image";
 import { useTheme } from "next-themes";
 
 interface MapProps {
@@ -32,11 +31,9 @@ interface LabelPosition {
 }
 
 // DottedMap coordinate system
-// Inspected SVG shows viewBox="0 0 210 100" (not 200x100!)
-// However, the rendered image is 1056x495 (aspect 2.133:1)
-// To match the image aspect ratio, we adjust WORLD_WIDTH: 100 * (1056/495) = 213.33
-// This ensures vertical alignment between the image and SVG overlay
-const WORLD_WIDTH = 213.33; // Adjusted to match image aspect ratio (1056/495)
+// Inspected SVG shows viewBox="0 0 210 100"
+// This is the actual coordinate system used by DottedMap - MUST match exactly
+const WORLD_WIDTH = 210; // Actual SVG width from DottedMap viewBox (must match!)
 const WORLD_HEIGHT = 100; // Actual SVG height from DottedMap viewBox
 
 export function WorldMap({ 
@@ -127,18 +124,14 @@ export function WorldMap({
     const clampedLat = Math.max(-90, Math.min(90, lat));
     const clampedLng = Math.max(-180, Math.min(180, lng));
     
-    // Equirectangular projection (Plate Carrée)
+    // Equirectangular projection (Plate Carrée) matching DottedMap's coordinate system
+    // DottedMap uses standard equirectangular projection with viewBox="0 0 210 100"
     // Map longitude [-180, 180] to x [0, WORLD_WIDTH]
     const x = (clampedLng + 180) * (WORLD_WIDTH / 360);
     // Map latitude [-90, 90] to y [0, WORLD_HEIGHT]
     // In SVG, y=0 is at top, so we invert: lat 90° (North) = y 0, lat -90° (South) = y WORLD_HEIGHT
     // Standard formula: y = (90 - lat) * (WORLD_HEIGHT / 180)
-    // If dots appear too high (north), increase y to move them down
     let y = (90 - clampedLat) * (WORLD_HEIGHT / 180);
-    // Add vertical offset to correct positioning - dots appearing too high need to move down
-    // Adjust based on aspect ratio mismatch between image and SVG coordinate system
-    const VERTICAL_OFFSET = 2.5; // Move dots down by this amount
-    y += VERTICAL_OFFSET;
     
     return { x, y };
   };
@@ -263,30 +256,17 @@ export function WorldMap({
   const pauseTime = 1.5; // Reduced from 2
   const fullCycleDuration = totalAnimationTime + pauseTime;
 
-  // Full world image display
-  const imageCropStyle = useMemo(() => {
-    return {
-      objectPosition: 'center center',
-      objectFit: 'cover' as const,
-      transform: 'scale(1)',
-      transformOrigin: 'center center',
-    };
-  }, []);
-
   return (
     <div className="w-full aspect-[2/1] md:aspect-[2.5/1] lg:aspect-[2/1] dark:bg-black bg-white rounded-lg relative font-sans overflow-hidden">
-      <div className="absolute inset-0 overflow-hidden">
-        <Image
-          src={`data:image/svg+xml;utf8,${encodeURIComponent(svgMap)}`}
-          className="h-full w-full pointer-events-none select-none"
-          alt="world map"
-          height="495"
-          width="1056"
-          draggable={false}
-          priority
-          style={imageCropStyle}
-        />
-      </div>
+      {/* Render DottedMap SVG directly to ensure coordinate system matches exactly */}
+      <div 
+        className="absolute inset-0 pointer-events-none select-none overflow-hidden"
+        dangerouslySetInnerHTML={{ __html: svgMap }}
+        style={{
+          width: '100%',
+          height: '100%',
+        }}
+      />
       <svg
         ref={svgRef}
         viewBox={`${worldViewBox.x} ${worldViewBox.y} ${worldViewBox.width} ${worldViewBox.height}`}

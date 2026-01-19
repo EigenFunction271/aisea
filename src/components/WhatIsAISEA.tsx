@@ -101,7 +101,7 @@ export function WhatIsAISEA() {
               animationNum={5}
               timelineRef={heroRef as React.RefObject<HTMLElement | null>}
               customVariants={textVariants}
-              className="relative w-full h-full min-h-[400px]"
+              className="relative w-full h-full min-h-[700px] lg:min-h-[800px]"
             >
               <Image
                 src="/assets/images_general/collage.png"
