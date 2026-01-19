@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useEffect, useState } from "react";
+import { useTranslations } from 'next-intl';
 
 const logos = [
   { name: "11labs", src: "/assets/logos/11labs.png" },
@@ -26,6 +27,7 @@ export function LogoScrollingBar({
   direction = "left",
   showTitle = true 
 }: LogoScrollingBarProps = {}) {
+  const t = useTranslations('whoWeWorkedWith');
   const scrollRef = useRef<HTMLDivElement>(null);
   const [translateX, setTranslateX] = useState(0);
 
@@ -89,7 +91,7 @@ export function LogoScrollingBar({
       <div className="mx-auto max-w-7xl px-6 md:px-10 lg:px-16">
         {showTitle && (
           <h2 className="mb-8 text-center font-[family-name:var(--font-perfectly-nineties)] text-3xl md:text-4xl lg:text-5xl font-bold text-white">
-            Who we've worked with
+            {t('title')}
           </h2>
         )}
         

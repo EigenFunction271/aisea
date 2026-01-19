@@ -1,0 +1,250 @@
+{
+  "nav": {
+    "home": "Trang chủ",
+    "events": "Sự kiện",
+    "manifesto": "Tuyên ngôn",
+    "workWithUs": "Làm việc với chúng tôi"
+  },
+  "hero": {
+    "title": "AISEA",
+    "description": "Tham gia phong trào xây dựng AI lớn nhất Đông Nam Á.",
+    "registerNow": "Đăng ký ngay"
+  },
+  "whatIsAISEA": {
+    "title": "AI.SEA là gì",
+    "paragraph1": "AI.SEA là mạng lưới dành cho những người thực sự triển khai AI ở Đông Nam Á.",
+    "paragraph2": "Đây là liên minh của các cộng đồng địa phương, nhà vận hành và kỹ sư tập trung vào một điều: xây dựng và triển khai các hệ thống AI thực tế trong các ràng buộc thực tế.",
+    "paragraph3": "Chúng tôi tập hợp các nhà xây dựng từ khắp Đông Nam Á để cùng xây dựng, thử nghiệm ý tưởng một cách công khai và học hỏi thông qua thực hành. Điều này bao gồm hackathon, các phiên đồng xây dựng, sprint và hợp tác với các công cụ và đội ngũ nghiêm túc.",
+    "paragraph4": "AI.SEA tồn tại vì chúng ta cần cơ sở hạ tầng chung, vòng phản hồi chặt chẽ hơn và cách để các nhà xây dựng có năng lực tìm thấy nhau và cùng tiến nhanh hơn."
+  },
+  "whatAISeaDoes": {
+    "title": "AI.SEA làm gì",
+    "slide1": {
+      "title": "Cơ sở hạ tầng chung",
+      "description": "Chúng tôi tập hợp tài nguyên để các cộng đồng không phải bắt đầu từ số không:",
+      "features": [
+        "Tín dụng công cụ & quyền truy cập đối tác",
+        "Mẫu sự kiện & playbook",
+        "Truyền thông, thương hiệu và phạm vi tiếp cận chung",
+        "Quyền truy cập diễn giả & cố vấn xuyên cộng đồng"
+      ]
+    },
+    "slide2": {
+      "title": "Hợp tác xuyên biên giới",
+      "description": "AI không dừng lại ở biên giới — các nhà xây dựng cũng vậy.",
+      "features": [
+        "Hackathon & sprint khu vực",
+        "Sự kiện đồng tổ chức xuyên quốc gia",
+        "Kết nối nhà xây dựng xuyên cộng đồng"
+      ]
+    },
+    "slide3": {
+      "title": "Câu chuyện & tầm nhìn",
+      "description": "Chúng tôi giúp các nhà xây dựng địa phương được nhìn thấy trên toàn cầu:",
+      "features": [
+        "Triển lãm khu vực",
+        "Khuếch đại truyền thông & đối tác",
+        "Câu chuyện chung về nhà xây dựng Đông Nam Á phát triển theo thời gian"
+      ]
+    }
+  },
+  "howItWorks": {
+    "title": "Cách hoạt động",
+    "intro": "AI.SEA được tạo thành từ các nhóm nhà xây dựng địa phương trên khắp Đông Nam Á. Các phiên được điều hành tại địa phương bởi những người xây dựng, không phải quản lý sự kiện. Trong khi các cộng đồng địa phương điều hành các phiên, AI.SEA kết nối họ ở cấp khu vực.",
+    "card1": {
+      "title": "Định dạng chung",
+      "description": "Hackathon, các phiên đồng xây dựng, sprint và thử thách tuân theo các định dạng chung. Điều này giữ cho tiêu chuẩn rõ ràng và cho phép các nhà xây dựng di chuyển giữa các thành phố và cộng đồng mà không gặp trở ngại."
+    },
+    "card2": {
+      "title": "Xây dựng công khai",
+      "description": "Dự án và tiến độ được chia sẻ trên các cộng đồng. Ý tưởng có thể được thử nghiệm mà không bị phán xét, phản hồi có thể được thu thập và đối tác có thể được tìm thấy trên nhiều quốc gia."
+    },
+    "card3": {
+      "title": "Công cụ & Đối tác Nghiêm túc",
+      "description": "Các nhà xây dựng có quyền truy cập vào công cụ thực tế, tín dụng và hỗ trợ từ các đội ngũ thực sự triển khai AI."
+    }
+  },
+  "whoWeWorkedWith": {
+    "title": "Những người chúng tôi đã làm việc cùng"
+  },
+  "seeAllPastEvents": "Xem tất cả sự kiện trước đây",
+  "startChapter": {
+    "title": "Bắt đầu một chương tại thành phố của bạn ngay hôm nay",
+    "description": "Tham gia mạng lưới AI.SEA và mang phong trào xây dựng đến thành phố của bạn.",
+    "applyHere": "Đăng ký tại đây"
+  },
+  "events": {
+    "title": "Sự kiện",
+    "description": "Khám phá tất cả các sự kiện AI.SEA, quá khứ và sắp tới.",
+    "aiseaWeek": {
+      "title": "AI.SEA Week 2025",
+      "dates": "24 Tháng 11 2025 - 30 Tháng 11 2025",
+      "description": "Tham gia phong trào xây dựng AI lớn nhất Đông Nam Á.",
+      "registerNow": "Đăng ký ngay"
+    },
+    "pastEvents": {
+      "title": "Sự kiện trước đây",
+      "description": "Xem tất cả các sự kiện và hoạt động trước đây của chúng tôi",
+      "seeAll": "Xem tất cả sự kiện trước đây"
+    }
+  },
+  "manifesto": {
+    "title": "Tuyên ngôn AISEA",
+    "subtitle": "Về việc xây dựng thể chế, không chỉ là cộng đồng",
+    "intro": {
+      "paragraph1": "Đông Nam Á không thiếu tài năng. Nó không thiếu tham vọng.",
+      "paragraph2": "Điều nó thiếu là tính bền vững.",
+      "paragraph3": "Trên khắp khu vực, các cộng đồng AI được xây dựng với sự chăm sóc và nỗ lực. Mọi người tổ chức các cuộc gặp gỡ, chạy hackathon, cố vấn cho các nhà xây dựng và cố gắng giữ mọi thứ lại với nhau. Trong một thời gian, nó hoạt động.",
+      "paragraph4": "Cho đến khi nó không còn.",
+      "paragraph5": "Sau đó một người lãnh đạo kiệt sức, chuyển đi, hoặc lùi lại. Cộng đồng suy yếu. Các mối quan hệ phai nhạt. Công việc trước đây bị mất. Người tiếp theo lại bắt đầu từ số không.",
+      "paragraph6": "Đây không phải là vấn đề về con người. Đây là vấn đề về cấu trúc.",
+      "paragraph7": "AISEA tồn tại để giải quyết thất bại đó."
+    },
+    "sections": {
+      "independence": {
+        "title": "Độc lập là chưa đủ",
+        "paragraph1": "Hầu hết các cộng đồng hoạt động độc lập. Sự độc lập này quan trọng. Nó cho phép các cộng đồng phản ánh nhu cầu, văn hóa và năng lượng địa phương. Nhưng độc lập cũng có giới hạn.",
+        "paragraph2": "Một mình, các cộng đồng có ít đòn bẩy với các nhà tài trợ, nền tảng hoặc đối tác. Hỗ trợ là ngắn hạn. Cam kết là nông cạn. Giá trị chảy ra nhanh hơn so với chảy vào.",
+        "paragraph3": "Theo thời gian, các nhà xây dựng cộng đồng đưa vào nhiều hơn những gì họ nhận được. Không phải vì người khác có ý định gây hại, mà vì hệ thống làm cho việc lấy đi dễ dàng và khó khăn để trả lại.",
+        "paragraph4": "AISEA tồn tại để làm cho độc lập bền vững."
+      },
+      "whatAISEA": {
+        "title": "AISEA đang cố gắng xây dựng gì",
+        "paragraph1": "AISEA tồn tại để các cộng đồng AI ở Đông Nam Á không phải hoạt động một mình.",
+        "paragraph2": "Nó không thay thế các cộng đồng địa phương. Nó không chỉ đạo văn hóa hoặc lập trình.",
+        "paragraph3": "Thay vào đó, AISEA làm công việc mà các cộng đồng không thể dễ dàng làm một mình:",
+        "list": [
+          "sức mạnh thương lượng tập thể",
+          "tính liên tục vượt ra ngoài cá nhân",
+          "mối quan hệ dài hạn với đối tác và nhà tài trợ",
+          "tiêu chuẩn và phối hợp chung",
+          "bảo vệ chống lại động lực khai thác"
+        ],
+        "paragraph4": "Các cộng đồng vẫn ở địa phương, nhưng cơ sở hạ tầng được chia sẻ."
+      },
+      "authority": {
+        "title": "Về quyền lực và phối hợp",
+        "paragraph1": "Phối hợp thực sự cần quyền lực. Không có nó, các liên minh vẫn không chính thức và mong manh.",
+        "paragraph2": "AISEA hoạt động với cấu trúc trung tâm và các đội quốc gia được ủy quyền. Điều này cho phép đàm phán, tài trợ và quan hệ đối tác xảy ra một lần, thay vì được lặp lại bởi mọi cộng đồng."
+      },
+      "autonomy": {
+        "title": "Về quyền tự chủ và lựa chọn",
+        "paragraph1": "AISEA không cấm các cộng đồng hoạt động độc lập.",
+        "paragraph2": "Các cộng đồng có thể và sẽ tiếp tục:",
+        "list": [
+          "tìm kiếm nhà tài trợ riêng của họ",
+          "hình thành quan hệ đối tác địa phương",
+          "chạy các chương trình phù hợp với bối cảnh của họ"
+        ],
+        "paragraph3": "AISEA được xây dựng trên sự đánh đổi. Các cộng đồng chọn có tham gia hay không vì:",
+        "reasons": [
+          "thương lượng chung tạo ra kết quả tốt hơn",
+          "cơ sở hạ tầng chung giảm gánh nặng cá nhân",
+          "tính liên tục chung bảo vệ công việc dài hạn"
+        ],
+        "paragraph4": "Nếu AISEA không cung cấp giá trị thực sự, nó không xứng đáng với sự tham gia."
+      },
+      "valueFlow": {
+        "title": "Về dòng giá trị",
+        "paragraph1": "Nhiều hệ sinh thái thất bại vì giá trị chảy theo một hướng.",
+        "paragraph2": "Các cộng đồng thường được yêu cầu tổ chức diễn giả, quảng bá nền tảng hoặc chạy sự kiện để đổi lấy sự tiếp xúc hoặc lời hứa tương lai mơ hồ. Công việc được thực hiện bởi các nhà vận hành cộng đồng. Lợi ích dài hạn đi nơi khác.",
+        "paragraph3": "AISEA tồn tại để thay đổi điều này. Tiếp cận các cộng đồng nên dẫn đến lợi nhuận thực sự:",
+        "list": [
+          "tài trợ hỗ trợ các nhà vận hành, không chỉ các sự kiện một lần",
+          "quan hệ đối tác kéo dài vượt quá một lần kích hoạt",
+          "tài nguyên giảm công việc lặp lại"
+        ],
+        "paragraph4": "Nếu giá trị tiếp tục chảy ra mà không được tái đầu tư, hệ thống không hoạt động. AISEA tồn tại để đảm bảo các cộng đồng hưởng lợi từ giá trị mà họ giúp tạo ra."
+      },
+      "crossBorder": {
+        "title": "Về Hợp tác Xuyên biên giới",
+        "paragraph1": "Hợp tác xuyên biên giới ở Đông Nam Á khó khăn hơn mức cần thiết.",
+        "paragraph2": "Tài năng được phân bố trên khắp khu vực, nhưng quyền truy cập thì không. Hầu hết sự hợp tác ngày nay chỉ giới hạn ở các cuộc nói chuyện, sự kiện một lần hoặc giới thiệu cá nhân nhanh chóng phai nhạt.",
+        "paragraph3": "Đây không phải là thiếu quan tâm. Đây là thiếu cấu trúc. AISEA tồn tại để làm cho công việc xuyên biên giới trở thành tiêu chuẩn.",
+        "paragraph4": "Bằng cách chia sẻ tiêu chuẩn, bối cảnh và phối hợp, AISEA cho phép các cộng đồng và nhà xây dựng làm việc xuyên quốc gia mà không phải bắt đầu từ đầu mỗi lần.",
+        "paragraph5": "Điều này bao gồm các chương trình chung, đánh giá chung, đội ngũ xuyên biên giới và triển lãm khu vực. Mục tiêu đơn giản: công việc được thực hiện ở một nơi nên đi xa hơn so với hiện tại."
+      },
+      "continuity": {
+        "title": "Về tính liên tục và kế thừa",
+        "paragraph1": "Các cộng đồng nên tồn tại lâu hơn người sáng lập của họ.",
+        "paragraph2": "AISEA tồn tại để làm cho điều này có khả năng hơn bằng cách khuyến khích:",
+        "list": [
+          "lãnh đạo chung thay vì điểm lỗi đơn lẻ",
+          "tài liệu và trí nhớ thể chế",
+          "chuyển đổi mượt mà hơn khi các nhà vận hành lùi lại"
+        ],
+        "paragraph3": "Tính liên tục là yêu cầu đối với bất kỳ hệ sinh thái nào hy vọng phát triển theo thời gian."
+      },
+      "accountability": {
+        "title": "Về trách nhiệm giải trình",
+        "paragraph1": "AISEA tồn tại để hành động thay mặt các cộng đồng, không phải trên họ. Vai trò của nó là phối hợp, đàm phán và duy trì các hệ thống chung. Nó không có nghĩa là hoạt động mà không có kiểm tra.",
+        "paragraph2": "Các đội AISEA cấp quốc gia được tin tưởng với trách nhiệm thực sự. Họ được kỳ vọng hành động vì lợi ích của các cộng đồng mà họ đại diện, không phải vì lợi ích cá nhân hoặc sự chú ý. Công việc của họ là mang hỗ trợ vào và đảm bảo giá trị chảy lại.",
+        "paragraph3": "Trách nhiệm giải trình chạy theo cả hai hướng. Các cộng đồng tham gia được kỳ vọng đóng góp và tuân theo các chuẩn mực chung. Đổi lại, AISEA được kỳ vọng sử dụng vị trí của mình một cách cẩn thận, công khai và vì lợi ích của hệ sinh thái rộng lớn hơn.",
+        "paragraph4": "Nếu một cái gì đó ngừng hoạt động, nó nên được giải quyết. Vai trò có thể được xem xét. Các nhà vận hành có thể thay đổi. Quyết định có thể bị đặt câu hỏi. Quyền lực không thể bị thách thức sẽ không tồn tại.",
+        "paragraph5": "Hệ thống quan trọng hơn bất kỳ cá nhân nào."
+      },
+      "contribution": {
+        "title": "Về đóng góp cộng đồng",
+        "paragraph1": "AISEA không phải là mạng lưới thụ động.",
+        "paragraph2": "Các cộng đồng tham gia được kỳ vọng đóng góp cho hệ thống chung. Hình thức đóng góp đó có thể khác nhau, nhưng phải thực tế.",
+        "paragraph3": "Một số cộng đồng đóng góp thời gian và nỗ lực bằng cách giúp chạy chương trình, xem xét công việc hoặc hỗ trợ các nỗ lực xuyên biên giới. Những người khác đóng góp bằng cách đưa ra các nhà xây dựng nghiêm túc và chia sẻ những gì họ học được. Trong một số trường hợp, các cộng đồng đóng góp tài nguyên giúp duy trì chính hệ thống.",
+        "paragraph4": "Không có hình thức bắt buộc duy nhất. Nhưng có một kỳ vọng chung: tham gia liên quan đến việc cho đi, không chỉ nhận.",
+        "paragraph5": "AISEA không đo lường các cộng đồng theo quy mô hoặc phạm vi. Một cộng đồng nhỏ xuất hiện nhất quán có giá trị hơn một cộng đồng lớn không xuất hiện."
+      },
+      "commitment": {
+        "title": "Cam kết dài hạn",
+        "paragraph1": "AISEA được thiết kế để đảm bảo rằng:",
+        "list": [
+          "các cộng đồng không sụp đổ khi cá nhân rời đi",
+          "các nhà vận hành được hỗ trợ thay vì kiệt sức",
+          "các nhà xây dựng hưởng lợi mà không bị khai thác",
+          "hệ sinh thái phát triển thay vì đặt lại, và",
+          "khu vực hợp nhất như một tổng thể"
+        ],
+        "paragraph2": "Nếu AISEA thành công, nó sẽ không cảm thấy cách mạng. Nó sẽ cảm thấy ổn định.",
+        "paragraph3": "Và sự ổn định, trong một khu vực liên tục phải bắt đầu lại, đã là một hình thức tiến bộ có ý nghĩa."
+      }
+    }
+  },
+  "workWithUs": {
+    "title": "Làm việc với AI.SEA",
+    "intro": "AI.SEA làm việc với các tổ chức muốn thu hút các nhà xây dựng AI thực sự ở Đông Nam Á, không chỉ chạy chiến dịch hoặc thu thập logo. Chúng tôi tập trung vào hợp tác thực tế với kết quả rõ ràng.",
+    "toolPlatform": {
+      "title": "Nếu bạn là công cụ hoặc nền tảng.",
+      "description": "Chúng tôi thiết kế và chạy các chương trình hướng đến nhà xây dựng như các track hackathon, sprint, các phiên đồng xây dựng và pilot. Điều này mang lại cho bạn sử dụng thực tế, phản hồi kỹ thuật và người dùng sớm, không chỉ ấn tượng.",
+      "benefits": [
+        "Sử dụng thực tế và phản hồi kỹ thuật",
+        "Người dùng sớm ở Đông Nam Á",
+        "Tương tác thực tế với các nhà xây dựng"
+      ]
+    },
+    "companyOperator": {
+      "title": "Nếu bạn là công ty hoặc nhà vận hành.",
+      "description": "Chúng tôi giúp bạn khám phá, thử nghiệm và triển khai AI trong môi trường thực tế. Điều này có thể có dạng sprint xây dựng có phạm vi, thử thách dựa trên vấn đề hoặc hợp tác nhúng với các nhà xây dựng có kinh nghiệm trên khắp khu vực.",
+      "forms": [
+        "Sprint xây dựng có phạm vi",
+        "Thử thách dựa trên vấn đề",
+        "Hợp tác nhúng với các nhà xây dựng có kinh nghiệm"
+      ]
+    },
+    "fundEcosystem": {
+      "title": "Nếu bạn là quỹ hoặc đối tác hệ sinh thái.",
+      "description": "Chúng tôi nổi bật các nhà xây dựng, đội ngũ và dự án có tín hiệu cao thông qua các hoạt động của chúng tôi. Điều này bao gồm luồng giao dịch, khả năng hiển thị người sáng lập và quyền truy cập sớm vào các thử nghiệm trước khi chúng trở nên rõ ràng.",
+      "includes": [
+        "Luồng giao dịch và khả năng hiển thị người sáng lập",
+        "Quyền truy cập sớm vào các thử nghiệm",
+        "Các nhà xây dựng và đội ngũ có tín hiệu cao"
+      ]
+    },
+    "howWeWork": {
+      "title": "Cách chúng tôi làm việc.",
+      "description": "Các cam kết được thiết kế để thực tế và có thời hạn. Chúng tôi bắt đầu với một mục tiêu rõ ràng, thiết kế một định dạng phù hợp và thực hiện với các cộng đồng địa phương trên khắp Đông Nam Á. Hầu hết công việc được chạy như một sprint hoặc chương trình, không phải là cam kết mở."
+    },
+    "getInTouch": {
+      "title": "Liên hệ với chúng tôi.",
+      "description": "Nếu bạn muốn chạy một track, thử nghiệm sản phẩm, tài trợ cho một chương trình hoặc khám phá quan hệ đối tác dài hạn, hãy liên hệ và chúng tôi sẽ phạm vi một cái gì đó cụ thể.",
+      "buttonText": "Liên hệ chúng tôi",
+      "contactUrl": "https://airtable.com/appBgmnpu1bJljnxX/pagPGkKttUQAM4nGV/form"
+    }
+  }
+}

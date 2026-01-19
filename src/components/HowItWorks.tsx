@@ -1,8 +1,10 @@
 "use client";
 import { TimelineContent } from "@/components/ui/timeline-animation";
 import { useRef } from "react";
+import { useTranslations } from 'next-intl';
 
 export function HowItWorks() {
+  const t = useTranslations('howItWorks');
   const heroRef = useRef<HTMLDivElement>(null);
   const revealVariants = {
     visible: (i: number) => ({
@@ -37,16 +39,16 @@ export function HowItWorks() {
 
   const cards = [
     {
-      title: "Shared Formats",
-      description: "Hackathons, co-build sessions, sprints, and challenges follow common formats. This keeps the bar clear and lets builders move between cities and communities without friction.",
+      title: t('card1.title'),
+      description: t('card1.description'),
     },
     {
-      title: "Build in public",
-      description: "Projects and progress is shared across communities. Ideas can be tested without judgement, feedback can be obtained, and partners can be found across multiple countries.",
+      title: t('card2.title'),
+      description: t('card2.description'),
     },
     {
-      title: "Serious Tools & Partners",
-      description: "Builders get access to real tooling, credits, and support from teams actually shipping AI.",
+      title: t('card3.title'),
+      description: t('card3.description'),
     },
   ];
 
@@ -60,7 +62,7 @@ export function HowItWorks() {
           customVariants={revealVariants}
           className="sm:text-4xl text-2xl md:text-5xl !leading-[110%] font-semibold text-white mb-8"
         >
-          How it works
+          {t('title')}
         </TimelineContent>
 
         <TimelineContent
@@ -70,7 +72,7 @@ export function HowItWorks() {
           customVariants={textVariants}
           className="text-white/90 text-lg md:text-xl leading-relaxed mb-12 max-w-3xl"
         >
-          AI.SEA is made up of local builder groups across Southeast Asia. Sessions are run on the ground by people who build, not event managers. While local communities run sessions, AI.SEA connects them regionally.
+          {t('intro')}
         </TimelineContent>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">

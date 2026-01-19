@@ -1,0 +1,250 @@
+{
+  "nav": {
+    "home": "Beranda",
+    "events": "Acara",
+    "manifesto": "Manifesto",
+    "workWithUs": "Bekerja dengan kami"
+  },
+  "hero": {
+    "title": "AISEA",
+    "description": "Jadilah bagian dari gerakan pembangun AI terbesar di Asia Tenggara.",
+    "registerNow": "Daftar Sekarang"
+  },
+  "whatIsAISEA": {
+    "title": "Apa itu AI.SEA",
+    "paragraph1": "AI.SEA adalah jaringan pembangun untuk orang-orang yang benar-benar mengirimkan AI di Asia Tenggara.",
+    "paragraph2": "Ini adalah koalisi komunitas lokal, operator, dan insinyur yang fokus pada satu hal: membangun dan menyebarkan sistem AI yang nyata di bawah kendala yang nyata.",
+    "paragraph3": "Kami menyatukan pembangun dari seluruh SEA untuk membangun bersama, menguji ide secara terbuka, dan belajar dengan melakukan. Itu termasuk hackathon, sesi co-build, sprint, dan kolaborasi dengan alat dan tim yang serius.",
+    "paragraph4": "AI.SEA ada karena kita membutuhkan infrastruktur bersama, loop umpan balik yang lebih ketat, dan cara bagi pembangun yang mampu untuk menemukan satu sama lain dan bergerak lebih cepat, bersama-sama."
+  },
+  "whatAISeaDoes": {
+    "title": "Apa yang dilakukan AI.SEA",
+    "slide1": {
+      "title": "Infrastruktur bersama",
+      "description": "Kami mengumpulkan sumber daya agar komunitas tidak harus mulai dari nol:",
+      "features": [
+        "Kredit alat & akses mitra",
+        "Template acara & playbook",
+        "Komersial, branding, dan jangkauan bersama",
+        "Akses pembicara & mentor lintas komunitas"
+      ]
+    },
+    "slide2": {
+      "title": "Kolaborasi lintas batas",
+      "description": "AI tidak berhenti di perbatasan — begitu juga pembangun.",
+      "features": [
+        "Hackathon & sprint regional",
+        "Acara yang dihosting bersama di berbagai negara",
+        "Pencocokan pembangun lintas komunitas"
+      ]
+    },
+    "slide3": {
+      "title": "Narasi & visibilitas",
+      "description": "Kami membantu pembangun lokal terlihat secara global:",
+      "features": [
+        "Pameran regional",
+        "Amplifikasi media & mitra",
+        "Cerita pembangun SEA bersama yang berkembang seiring waktu"
+      ]
+    }
+  },
+  "howItWorks": {
+    "title": "Cara kerjanya",
+    "intro": "AI.SEA terdiri dari kelompok pembangun lokal di seluruh Asia Tenggara. Sesi dijalankan di lapangan oleh orang-orang yang membangun, bukan manajer acara. Sementara komunitas lokal menjalankan sesi, AI.SEA menghubungkan mereka secara regional.",
+    "card1": {
+      "title": "Format Bersama",
+      "description": "Hackathon, sesi co-build, sprint, dan tantangan mengikuti format umum. Ini membuat standar jelas dan memungkinkan pembangun berpindah antar kota dan komunitas tanpa gesekan."
+    },
+    "card2": {
+      "title": "Membangun secara publik",
+      "description": "Proyek dan kemajuan dibagikan di seluruh komunitas. Ide dapat diuji tanpa penilaian, umpan balik dapat diperoleh, dan mitra dapat ditemukan di berbagai negara."
+    },
+    "card3": {
+      "title": "Alat & Mitra Serius",
+      "description": "Pembangun mendapatkan akses ke peralatan nyata, kredit, dan dukungan dari tim yang benar-benar mengirimkan AI."
+    }
+  },
+  "whoWeWorkedWith": {
+    "title": "Siapa yang telah bekerja dengan kami"
+  },
+  "seeAllPastEvents": "Lihat semua acara sebelumnya",
+  "startChapter": {
+    "title": "Mulai bab di kota Anda hari ini",
+    "description": "Bergabunglah dengan jaringan AI.SEA dan bawa gerakan pembangun ke kota Anda.",
+    "applyHere": "Daftar di sini"
+  },
+  "events": {
+    "title": "Acara",
+    "description": "Jelajahi semua acara AI.SEA, masa lalu dan yang akan datang.",
+    "aiseaWeek": {
+      "title": "AI.SEA Week 2025",
+      "dates": "24 Nov 2025 - 30 Nov 2025",
+      "description": "Jadilah bagian dari gerakan pembangun terbesar di Asia Tenggara.",
+      "registerNow": "Daftar Sekarang"
+    },
+    "pastEvents": {
+      "title": "Acara Masa Lalu",
+      "description": "Lihat semua acara dan aktivitas kami sebelumnya",
+      "seeAll": "Lihat Semua Acara Masa Lalu"
+    }
+  },
+  "manifesto": {
+    "title": "Manifesto AISEA",
+    "subtitle": "Tentang membangun institusi, bukan hanya komunitas",
+    "intro": {
+      "paragraph1": "Asia Tenggara tidak kekurangan talenta. Tidak kekurangan ambisi.",
+      "paragraph2": "Yang kurang adalah daya tahan.",
+      "paragraph3": "Di seluruh kawasan, komunitas AI dibangun dengan perhatian dan upaya. Orang-orang mengorganisir pertemuan, menjalankan hackathon, membimbing pembangun, dan mencoba menjaga semuanya tetap bersama. Untuk sementara, itu berhasil.",
+      "paragraph4": "Sampai tidak lagi.",
+      "paragraph5": "Kemudian seorang pemimpin kelelahan, pindah, atau mundur. Komunitas melemah. Hubungan memudar. Pekerjaan masa lalu hilang. Orang berikutnya mulai lagi dari nol.",
+      "paragraph6": "Ini bukan masalah orang. Ini adalah masalah struktur.",
+      "paragraph7": "AISEA ada untuk mengatasi kegagalan itu."
+    },
+    "sections": {
+      "independence": {
+        "title": "Kemandirian tidak cukup",
+        "paragraph1": "Kebanyakan komunitas beroperasi secara independen. Kemandirian ini penting. Ini memungkinkan komunitas untuk mencerminkan kebutuhan, budaya, dan energi lokal. Tetapi kemandirian juga memiliki batasan.",
+        "paragraph2": "Sendirian, komunitas memiliki sedikit daya tawar dengan sponsor, platform, atau mitra. Dukungan bersifat jangka pendek. Komitmen dangkal. Nilai mengalir keluar lebih cepat daripada mengalir kembali.",
+        "paragraph3": "Seiring waktu, pembangun komunitas memasukkan lebih banyak daripada yang mereka dapatkan. Bukan karena orang lain bermaksud merugikan, tetapi karena sistem membuatnya mudah untuk mengambil dan sulit untuk memberi kembali.",
+        "paragraph4": "AISEA ada untuk membuat kemandirian berkelanjutan."
+      },
+      "whatAISEA": {
+        "title": "Apa yang AISEA coba bangun",
+        "paragraph1": "AISEA ada agar komunitas AI di Asia Tenggara tidak harus beroperasi sendirian.",
+        "paragraph2": "Ini tidak menggantikan komunitas lokal. Ini tidak menentukan budaya atau pemrograman.",
+        "paragraph3": "Sebaliknya, AISEA melakukan pekerjaan yang tidak dapat dengan mudah dilakukan komunitas sendiri:",
+        "list": [
+          "kekuatan tawar-menawar kolektif",
+          "kelangsungan di luar individu",
+          "hubungan jangka panjang dengan mitra dan pendana",
+          "standar dan koordinasi bersama",
+          "perlindungan terhadap dinamika ekstraktif"
+        ],
+        "paragraph4": "Komunitas tetap lokal, tetapi infrastruktur dibagikan."
+      },
+      "authority": {
+        "title": "Tentang otoritas dan koordinasi",
+        "paragraph1": "Koordinasi nyata membutuhkan otoritas. Tanpanya, aliansi tetap informal dan rapuh.",
+        "paragraph2": "AISEA beroperasi dengan struktur pusat dan tim negara yang didelegasikan. Ini memungkinkan negosiasi, pendanaan, dan kemitraan terjadi sekali, daripada diulang oleh setiap komunitas."
+      },
+      "autonomy": {
+        "title": "Tentang otonomi dan pilihan",
+        "paragraph1": "AISEA tidak melarang komunitas untuk beroperasi secara independen.",
+        "paragraph2": "Komunitas dapat dan akan terus:",
+        "list": [
+          "mencari sponsor mereka sendiri",
+          "membentuk kemitraan lokal",
+          "menjalankan program yang masuk akal untuk konteks mereka"
+        ],
+        "paragraph3": "AISEA dibangun berdasarkan trade-off. Komunitas memilih apakah akan berpartisipasi karena:",
+        "reasons": [
+          "negosiasi bersama menghasilkan hasil yang lebih baik",
+          "infrastruktur bersama mengurangi beban individu",
+          "kelangsungan bersama melindungi pekerjaan jangka panjang"
+        ],
+        "paragraph4": "Jika AISEA tidak menawarkan nilai nyata, itu tidak pantas untuk partisipasi."
+      },
+      "valueFlow": {
+        "title": "Tentang aliran nilai",
+        "paragraph1": "Banyak ekosistem gagal karena nilai mengalir ke satu arah.",
+        "paragraph2": "Komunitas sering diminta untuk menjadi tuan rumah pembicara, mempromosikan platform, atau menjalankan acara sebagai imbalan atas eksposur atau janji masa depan yang samar. Pekerjaan dilakukan oleh operator komunitas. Manfaat jangka panjang pergi ke tempat lain.",
+        "paragraph3": "AISEA ada untuk mengubah ini. Akses ke komunitas harus mengarah pada pengembalian nyata:",
+        "list": [
+          "pendanaan yang mendukung operator, bukan hanya acara satu kali",
+          "kemitraan yang bertahan melampaui aktivasi tunggal",
+          "sumber daya yang mengurangi pekerjaan berulang"
+        ],
+        "paragraph4": "Jika nilai terus mengalir keluar tanpa diinvestasikan kembali, sistem tidak bekerja. AISEA ada untuk memastikan komunitas mendapat manfaat dari nilai yang mereka bantu ciptakan."
+      },
+      "crossBorder": {
+        "title": "Tentang Kolaborasi Lintas Batas",
+        "paragraph1": "Kolaborasi lintas batas di Asia Tenggara lebih sulit daripada seharusnya.",
+        "paragraph2": "Talenta tersebar di seluruh kawasan, tetapi akses tidak. Sebagian besar kolaborasi saat ini terbatas pada pembicaraan, acara satu kali, atau pengenalan pribadi yang cepat memudar.",
+        "paragraph3": "Ini bukan kurangnya minat. Ini adalah kurangnya struktur. AISEA ada untuk membuat pekerjaan lintas batas menjadi norma.",
+        "paragraph4": "Dengan berbagi standar, konteks, dan koordinasi, AISEA memungkinkan komunitas dan pembangun untuk bekerja lintas negara tanpa harus mulai dari awal setiap kali.",
+        "paragraph5": "Ini termasuk program bersama, tinjauan bersama, tim lintas batas, dan pameran regional. Tujuannya sederhana: pekerjaan yang dilakukan di satu tempat harus bepergian lebih jauh daripada yang saat ini dilakukan."
+      },
+      "continuity": {
+        "title": "Tentang kelangsungan dan suksesi",
+        "paragraph1": "Komunitas harus bertahan lebih lama dari pendirinya.",
+        "paragraph2": "AISEA ada untuk membuat ini lebih mungkin dengan mendorong:",
+        "list": [
+          "kepemimpinan bersama daripada titik kegagalan tunggal",
+          "dokumentasi dan memori institusional",
+          "transisi yang lebih lancar ketika operator mundur"
+        ],
+        "paragraph3": "Kelangsungan adalah persyaratan untuk ekosistem mana pun yang berharap untuk berkembang dari waktu ke waktu."
+      },
+      "accountability": {
+        "title": "Tentang akuntabilitas",
+        "paragraph1": "AISEA ada untuk bertindak atas nama komunitas, bukan di atas mereka. Perannya adalah untuk mengoordinasikan, menegosiasikan, dan mempertahankan sistem bersama. Ini tidak dimaksudkan untuk beroperasi tanpa pemeriksaan.",
+        "paragraph2": "Tim AISEA tingkat negara dipercayakan dengan tanggung jawab nyata. Mereka diharapkan untuk bertindak demi kepentingan komunitas yang mereka wakili, bukan untuk keuntungan pribadi atau perhatian. Tugas mereka adalah membawa dukungan masuk dan memastikan nilai mengalir kembali.",
+        "paragraph3": "Akuntabilitas berjalan dua arah. Komunitas yang berpartisipasi diharapkan untuk berkontribusi dan mengikuti norma bersama. Sebagai imbalannya, AISEA diharapkan untuk menggunakan posisinya dengan hati-hati, terbuka, dan untuk kepentingan ekosistem yang lebih luas.",
+        "paragraph4": "Jika sesuatu berhenti bekerja, itu harus ditangani. Peran dapat ditinjau. Operator dapat berubah. Keputusan dapat dipertanyakan. Otoritas yang tidak dapat ditantang tidak bertahan.",
+        "paragraph5": "Sistem lebih penting daripada individu mana pun."
+      },
+      "contribution": {
+        "title": "Tentang kontribusi komunitas",
+        "paragraph1": "AISEA bukan jaringan pasif.",
+        "paragraph2": "Komunitas yang berpartisipasi diharapkan untuk berkontribusi pada sistem bersama. Seperti apa kontribusi itu mungkin berbeda, tetapi harus nyata.",
+        "paragraph3": "Beberapa komunitas berkontribusi waktu dan upaya dengan membantu menjalankan program, meninjau pekerjaan, atau mendukung upaya lintas batas. Yang lain berkontribusi dengan mengajukan pembangun serius dan berbagi apa yang mereka pelajari. Dalam beberapa kasus, komunitas berkontribusi sumber daya yang membantu mempertahankan sistem itu sendiri.",
+        "paragraph4": "Tidak ada bentuk tunggal yang diperlukan. Tetapi ada harapan bersama: partisipasi melibatkan memberi, bukan hanya menerima.",
+        "paragraph5": "AISEA tidak mengukur komunitas berdasarkan ukuran atau jangkauan. Komunitas kecil yang konsisten muncul lebih berharga daripada komunitas besar yang tidak."
+      },
+      "commitment": {
+        "title": "Komitmen jangka panjang",
+        "paragraph1": "AISEA dirancang untuk memastikan bahwa:",
+        "list": [
+          "komunitas tidak runtuh ketika individu pergi",
+          "operator didukung daripada kelelahan",
+          "pembangun mendapat manfaat tanpa dieksploitasi",
+          "ekosistem berkembang daripada reset, dan",
+          "kawasan bersatu sebagai keseluruhan"
+        ],
+        "paragraph2": "Jika AISEA berhasil, itu tidak akan terasa revolusioner. Itu akan terasa stabil.",
+        "paragraph3": "Dan stabilitas, di kawasan yang terus-menerus harus memulai dari awal, sudah merupakan bentuk kemajuan yang berarti."
+      }
+    }
+  },
+  "workWithUs": {
+    "title": "Bekerja dengan AI.SEA",
+    "intro": "AI.SEA bekerja dengan organisasi yang ingin melibatkan pembangun AI yang sebenarnya di Asia Tenggara, bukan hanya menjalankan kampanye atau mengumpulkan logo. Kami fokus pada kolaborasi langsung dengan hasil yang jelas.",
+    "toolPlatform": {
+      "title": "Jika Anda adalah alat atau platform.",
+      "description": "Kami merancang dan menjalankan program yang ditujukan untuk pembangun seperti jalur hackathon, sprint, sesi co-build, dan pilot. Ini memberi Anda penggunaan nyata, umpan balik teknis, dan pengadopsi awal, bukan hanya kesan.",
+      "benefits": [
+        "Penggunaan nyata dan umpan balik teknis",
+        "Pengadopsi awal di Asia Tenggara",
+        "Keterlibatan langsung dengan pembangun"
+      ]
+    },
+    "companyOperator": {
+      "title": "Jika Anda adalah perusahaan atau operator.",
+      "description": "Kami membantu Anda menjelajahi, menguji, dan menyebarkan AI dalam lingkungan yang realistis. Ini dapat berupa sprint build yang terbatas, tantangan yang digerakkan oleh masalah, atau kolaborasi tertanam dengan pembangun berpengalaman di seluruh kawasan.",
+      "forms": [
+        "Sprint build yang terbatas",
+        "Tantangan yang digerakkan oleh masalah",
+        "Kolaborasi tertanam dengan pembangun berpengalaman"
+      ]
+    },
+    "fundEcosystem": {
+      "title": "Jika Anda adalah dana atau mitra ekosistem.",
+      "description": "Kami menampilkan pembangun, tim, dan proyek berisiko tinggi melalui aktivitas kami. Ini termasuk alur kesepakatan, visibilitas pendiri, dan akses awal ke eksperimen sebelum menjadi jelas.",
+      "includes": [
+        "Alur kesepakatan dan visibilitas pendiri",
+        "Akses awal ke eksperimen",
+        "Pembangun dan tim berisiko tinggi"
+      ]
+    },
+    "howWeWork": {
+      "title": "Cara kami bekerja.",
+      "description": "Keterlibatan dirancang untuk praktis dan terikat waktu. Kami mulai dengan tujuan yang jelas, merancang format yang sesuai, dan mengeksekusi dengan komunitas lokal di seluruh SEA. Sebagian besar pekerjaan dijalankan sebagai sprint atau program, bukan keterlibatan terbuka."
+    },
+    "getInTouch": {
+      "title": "Hubungi kami.",
+      "description": "Jika Anda ingin menjalankan jalur, menguji produk, mensponsori program, atau menjelajahi kemitraan jangka panjang, hubungi kami dan kami akan merencanakan sesuatu yang konkret.",
+      "buttonText": "Hubungi kami",
+      "contactUrl": "https://airtable.com/appBgmnpu1bJljnxX/pagPGkKttUQAM4nGV/form"
+    }
+  }
+}

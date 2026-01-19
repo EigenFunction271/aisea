@@ -2,8 +2,10 @@
 import { TimelineContent } from "@/components/ui/timeline-animation";
 import { useRef } from "react";
 import Image from "next/image";
+import { useTranslations } from 'next-intl';
 
 export function WhatIsAISEA() {
+  const t = useTranslations('whatIsAISEA');
   const heroRef = useRef<HTMLDivElement>(null);
   const revealVariants = {
     visible: (i: number) => ({
@@ -48,7 +50,7 @@ export function WhatIsAISEA() {
               customVariants={revealVariants}
               className="sm:text-4xl text-2xl md:text-5xl !leading-[110%] font-semibold text-white mb-8"
             >
-              What is AI.SEA
+              {t('title')}
             </TimelineContent>
 
             <TimelineContent
@@ -58,7 +60,7 @@ export function WhatIsAISEA() {
               customVariants={textVariants}
               className="text-white/90 text-lg md:text-xl leading-relaxed mb-6"
             >
-              AI.SEA is a builder network for people actually shipping AI in Southeast Asia.
+              {t('paragraph1')}
             </TimelineContent>
 
             <TimelineContent
@@ -68,7 +70,7 @@ export function WhatIsAISEA() {
               customVariants={textVariants}
               className="text-white/90 text-lg md:text-xl leading-relaxed mb-6"
             >
-              It's a coalition of local communities, operators, and engineers focused on one thing: building and deploying real AI systems under real constraints.
+              {t('paragraph2')}
             </TimelineContent>
 
             <TimelineContent
@@ -78,7 +80,7 @@ export function WhatIsAISEA() {
               customVariants={textVariants}
               className="text-white/90 text-lg md:text-xl leading-relaxed mb-6"
             >
-              We bring together builders from across SEA to co-build, test ideas in the open, and learn by doing. That includes hackathons, co-build sessions, sprints, and collaborations with serious tools and teams.
+              {t('paragraph3')}
             </TimelineContent>
 
             <TimelineContent
@@ -88,7 +90,7 @@ export function WhatIsAISEA() {
               customVariants={textVariants}
               className="text-white/90 text-lg md:text-xl leading-relaxed"
             >
-              AI.SEA exists because we need shared infrastructure, tighter feedback loops, and a way for capable builders to find each other and move faster, together.
+              {t('paragraph4')}
             </TimelineContent>
           </div>
 

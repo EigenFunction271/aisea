@@ -1,0 +1,250 @@
+{
+  "nav": {
+    "home": "Home",
+    "events": "Events",
+    "manifesto": "Manifesto",
+    "workWithUs": "Work with us"
+  },
+  "hero": {
+    "title": "AISEA",
+    "description": "Be part of Southeast Asia's largest grassroots builder movement.",
+    "registerNow": "Register Now"
+  },
+  "whatIsAISEA": {
+    "title": "What is AI.SEA",
+    "paragraph1": "AI.SEA is a builder network for people actually shipping AI in Southeast Asia.",
+    "paragraph2": "It's a coalition of local communities, operators, and engineers focused on one thing: building and deploying real AI systems under real constraints.",
+    "paragraph3": "We bring together builders from across SEA to co-build, test ideas in the open, and learn by doing. That includes hackathons, co-build sessions, sprints, and collaborations with serious tools and teams.",
+    "paragraph4": "AI.SEA exists because we need shared infrastructure, tighter feedback loops, and a way for capable builders to find each other and move faster, together."
+  },
+  "whatAISeaDoes": {
+    "title": "What AI.SEA does",
+    "slide1": {
+      "title": "Shared infrastructure",
+      "description": "We pool resources so communities don't have to start from zero:",
+      "features": [
+        "Tool credits & partner access",
+        "Event templates & playbooks",
+        "Shared comms, branding, and reach",
+        "Cross-community speaker & mentor access"
+      ]
+    },
+    "slide2": {
+      "title": "Cross-border collaboration",
+      "description": "AI doesn't stop at borders — neither should builders.",
+      "features": [
+        "Regional hackathons & sprints",
+        "Co-hosted events across countries",
+        "Builder matching across communities"
+      ]
+    },
+    "slide3": {
+      "title": "Narrative & visibility",
+      "description": "We help local builders be seen globally:",
+      "features": [
+        "Regional showcases",
+        "Media & partner amplification",
+        "A shared SEA builder story that compounds over time"
+      ]
+    }
+  },
+  "howItWorks": {
+    "title": "How it works",
+    "intro": "AI.SEA is made up of local builder groups across Southeast Asia. Sessions are run on the ground by people who build, not event managers. While local communities run sessions, AI.SEA connects them regionally.",
+    "card1": {
+      "title": "Shared Formats",
+      "description": "Hackathons, co-build sessions, sprints, and challenges follow common formats. This keeps the bar clear and lets builders move between cities and communities without friction."
+    },
+    "card2": {
+      "title": "Build in public",
+      "description": "Projects and progress is shared across communities. Ideas can be tested without judgement, feedback can be obtained, and partners can be found across multiple countries."
+    },
+    "card3": {
+      "title": "Serious Tools & Partners",
+      "description": "Builders get access to real tooling, credits, and support from teams actually shipping AI."
+    }
+  },
+  "whoWeWorkedWith": {
+    "title": "Who we've worked with"
+  },
+  "seeAllPastEvents": "See all past events",
+  "startChapter": {
+    "title": "Start a chapter in your city today",
+    "description": "Join the AI.SEA network and bring the builder movement to your city.",
+    "applyHere": "Apply here"
+  },
+  "events": {
+    "title": "Events",
+    "description": "Explore all AI.SEA events, past and upcoming.",
+    "aiseaWeek": {
+      "title": "AI.SEA Week 2025",
+      "dates": "24 Nov 2025 - 30 Nov 2025",
+      "description": "Be part of Southeast Asia's largest grassroots builder movement.",
+      "registerNow": "Register Now"
+    },
+    "pastEvents": {
+      "title": "Past Events",
+      "description": "View all our previous events and activities",
+      "seeAll": "See All Past Events"
+    }
+  },
+  "manifesto": {
+    "title": "The AISEA Manifesto",
+    "subtitle": "On building institutions, not just communities",
+    "intro": {
+      "paragraph1": "Southeast Asia does not lack talent. It does not lack ambition.",
+      "paragraph2": "What it lacks is durability.",
+      "paragraph3": "Across the region, AI communities are built with care and effort. People organize meetups, run hackathons, mentor builders, and try to hold things together. For a while, it works.",
+      "paragraph4": "Until it doesn't.",
+      "paragraph5": "Then a lead burns out, moves on, or steps back. The community weakens. Relationships fade. Past work is lost. The next person starts again from zero.",
+      "paragraph6": "This is not a people problem. It is a structure problem.",
+      "paragraph7": "AISEA exists to address that failure."
+    },
+    "sections": {
+      "independence": {
+        "title": "Independence is not enough",
+        "paragraph1": "Most communities operate independently. This independence matters. It allows communities to reflect local needs, culture, and energy. But independence also has limits.",
+        "paragraph2": "On their own, communities have little leverage with sponsors, platforms, or partners. Support is short-term. Commitments are shallow. Value flows out faster than it flows back in.",
+        "paragraph3": "Over time, community builders put in more than they get out. Not because others intend harm, but because the system makes it easy to take and hard to give back.",
+        "paragraph4": "AISEA exists to make independence sustainable."
+      },
+      "whatAISEA": {
+        "title": "What AISEA is trying to build",
+        "paragraph1": "AISEA exists so AI communities in Southeast Asia don't have to operate alone.",
+        "paragraph2": "It does not replace local communities. It does not dictate culture or programming.",
+        "paragraph3": "Instead, AISEA does the work communities cannot easily do alone:",
+        "list": [
+          "collective bargaining power",
+          "continuity beyond individuals",
+          "long-term relationships with partners and funders",
+          "shared standards and coordination",
+          "protection against extractive dynamics"
+        ],
+        "paragraph4": "Communities stay local, but infrastructure is shared."
+      },
+      "authority": {
+        "title": "On authority and coordination",
+        "paragraph1": "Real coordination needs authority. Without it, alliances stay informal and fragile.",
+        "paragraph2": "AISEA operates with a central structure and delegated country teams. This allows negotiations, funding, and partnerships to happen once, rather than being repeated by every community."
+      },
+      "autonomy": {
+        "title": "On autonomy and choice",
+        "paragraph1": "AISEA does not prohibit communities from operating independently.",
+        "paragraph2": "Communities can and will continue to:",
+        "list": [
+          "seek their own sponsors",
+          "form local partnerships",
+          "run programs that make sense for their context"
+        ],
+        "paragraph3": "AISEA is built on trade-offs. Communities choose whether to participate because:",
+        "reasons": [
+          "shared negotiation produces better outcomes",
+          "shared infrastructure reduces individual burden",
+          "shared continuity protects long-term work"
+        ],
+        "paragraph4": "If AISEA does not offer real value, it does not deserve participation."
+      },
+      "valueFlow": {
+        "title": "On value flow",
+        "paragraph1": "Many ecosystems fail because value flows in one direction.",
+        "paragraph2": "Communities are often asked to host speakers, promote platforms, or run events in exchange for exposure or vague future promises. The work is done by community operators. The long-term benefit goes elsewhere.",
+        "paragraph3": "AISEA exists to change this. Access to communities should lead to real returns:",
+        "list": [
+          "funding that supports operators, not just one-off events",
+          "partnerships that last beyond a single activation",
+          "resources that reduce repeated work"
+        ],
+        "paragraph4": "If value keeps flowing out without being reinvested, the system is not working. AISEA exists to make sure communities benefit from the value they help create."
+      },
+      "crossBorder": {
+        "title": "On Cross-Border Collaboration",
+        "paragraph1": "Cross-border collaboration in Southeast Asia is harder than it should be.",
+        "paragraph2": "Talent is spread across the region, but access is not. Most collaboration today is limited to talks, one-off events, or personal introductions that fade quickly.",
+        "paragraph3": "This is not a lack of interest. It is a lack of structure. AISEA exists to make cross-border work the norm.",
+        "paragraph4": "By sharing standards, context, and coordination, AISEA allows communities and builders to work across countries without starting from scratch each time.",
+        "paragraph5": "This includes joint programs, shared reviews, cross-border teams, and regional showcases. The goal is simple: work done in one place should travel further than it currently does."
+      },
+      "continuity": {
+        "title": "On continuity and succession",
+        "paragraph1": "Communities should outlive their founders.",
+        "paragraph2": "AISEA exists to make this more likely by encouraging:",
+        "list": [
+          "shared leadership rather than single points of failure",
+          "documentation and institutional memory",
+          "smoother transitions when operators step back"
+        ],
+        "paragraph3": "Continuity is a requirement for any ecosystem that hopes to compound over time."
+      },
+      "accountability": {
+        "title": "On accountability",
+        "paragraph1": "AISEA exists to act on behalf of communities, not above them. Its role is to coordinate, negotiate, and maintain shared systems. It is not meant to operate without checks.",
+        "paragraph2": "Country-level AISEA teams are trusted with real responsibility. They are expected to act in the interest of the communities they represent, not for personal gain or attention. Their job is to bring support in and make sure value flows back.",
+        "paragraph3": "Accountability runs both ways. Communities that take part are expected to contribute and follow shared norms. In return, AISEA is expected to use its position carefully, openly, and for the benefit of the wider ecosystem.",
+        "paragraph4": "If something stops working, it should be addressed. Roles can be reviewed. Operators can change. Decisions can be questioned. Authority that cannot be challenged does not last.",
+        "paragraph5": "The system matters more than any individual."
+      },
+      "contribution": {
+        "title": "On community contribution",
+        "paragraph1": "AISEA is not a passive network.",
+        "paragraph2": "Communities that take part are expected to contribute to the shared system. What that contribution looks like may differ, but it must be real.",
+        "paragraph3": "Some communities contribute time and effort by helping run programs, reviewing work, or supporting cross-border efforts. Others contribute by putting forward serious builders and sharing what they learn. In some cases, communities contribute resources that help sustain the system itself.",
+        "paragraph4": "There is no single required form. But there is a shared expectation: participation involves giving, not just receiving.",
+        "paragraph5": "AISEA does not measure communities by size or reach. A small community that shows up consistently is more valuable than a large one that does not."
+      },
+      "commitment": {
+        "title": "A long-term commitment",
+        "paragraph1": "AISEA is designed to ensure that:",
+        "list": [
+          "communities do not collapse when individuals leave",
+          "operators are supported rather than exhausted",
+          "builders benefit without being exploited",
+          "the ecosystem compounds instead of resetting, and",
+          "the region comes together as a whole"
+        ],
+        "paragraph2": "If AISEA succeeds, it will not feel revolutionary. It will feel stable.",
+        "paragraph3": "And stability, in a region that constantly has to start over, is already a meaningful form of progress."
+      }
+    }
+  },
+  "workWithUs": {
+    "title": "Work with AI.SEA",
+    "intro": "AI.SEA works with organizations that want to engage real AI builders in Southeast Asia, not just run campaigns or collect logos. We focus on hands-on collaboration with clear outcomes.",
+    "toolPlatform": {
+      "title": "If you are a tool or platform.",
+      "description": "We design and run builder-facing programs such as hackathon tracks, sprints, co-build sessions, and pilots. This gives you real usage, technical feedback, and early adopters, not just impressions.",
+      "benefits": [
+        "Real usage and technical feedback",
+        "Early adopters in Southeast Asia",
+        "Hands-on engagement with builders"
+      ]
+    },
+    "companyOperator": {
+      "title": "If you are a company or operator.",
+      "description": "We help you explore, test, and deploy AI in realistic environments. This can take the form of scoped build sprints, problem-driven challenges, or embedded collaborations with experienced builders across the region.",
+      "forms": [
+        "Scoped build sprints",
+        "Problem-driven challenges",
+        "Embedded collaborations with experienced builders"
+      ]
+    },
+    "fundEcosystem": {
+      "title": "If you are a fund or ecosystem partner.",
+      "description": "We surface high-signal builders, teams, and projects through our activities. This includes deal flow, founder visibility, and early access to experiments before they become obvious.",
+      "includes": [
+        "Deal flow and founder visibility",
+        "Early access to experiments",
+        "High-signal builders and teams"
+      ]
+    },
+    "howWeWork": {
+      "title": "How we work.",
+      "description": "Engagements are designed to be practical and time-bound. We start with a clear objective, design a format that fits, and execute with local communities across SEA. Most work is run as a sprint or program, not an open-ended engagement."
+    },
+    "getInTouch": {
+      "title": "Get in touch.",
+      "description": "If you want to run a track, pilot a product, sponsor a program, or explore a longer-term partnership, reach out and we will scope something concrete.",
+      "buttonText": "Contact us",
+      "contactUrl": "https://airtable.com/appBgmnpu1bJljnxX/pagPGkKttUQAM4nGV/form"
+    }
+  }
+}
