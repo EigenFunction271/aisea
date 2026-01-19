@@ -211,8 +211,79 @@
     }
   },
   "workWithUs": {
-    "title": "Work with AI.SEA",
-    "intro": "AI.SEA works with organizations that want to engage real AI builders in Southeast Asia, not just run campaigns or collect logos. We focus on hands-on collaboration with clear outcomes.",
+    "hero": {
+      "title": "Reach 10,000+ active AI builders across APAC",
+      "subheading": "Stop paying for low-signal leads. Get direct access to builders who actually ship and give real feedback."
+    },
+    "traditionalGTM": {
+      "title": "Traditional GTM doesn't scale the way you need it to",
+      "point1": "Paid ads are expensive and noisy.",
+      "point2": "Cold outreach rarely reaches real builders.",
+      "point3": "DevRel takes months to show signal and is hard to measure.",
+      "conclusion": "Most teams only realize something is wrong after the roadmap is locked and budget is gone."
+    },
+    "aiseaHelps": {
+      "text1": "AI.SEA helps AI companies reach qualified technical users in Southeast Asia without burning budget on ads, cold outbound, or slow DevRel programs.",
+      "text2": "We work with teams who need real usage, fast feedback, and regional traction."
+    },
+    "whatAISEA": {
+      "title": "What AI.SEA gives you",
+      "card1": {
+        "title": "Direct Builder Access",
+        "description": "Reach active AI builders across Southeast Asia who are already shipping projects, not passive audiences or mailing lists."
+      },
+      "card2": {
+        "title": "Trusted Distribution",
+        "description": "Your product is introduced through established local communities, not ads, cold outreach, or generic newsletters. This ensures direct, targeted outreach to the best category of builders for your product."
+      },
+      "card3": {
+        "title": "In-Context Visibility",
+        "description": "Your product shows up inside hackathons, sprints, and co-build sessions where tools are chosen under real constraints."
+      },
+      "footer": "Learn what works before you commit roadmap, headcount, or regional GTM spend."
+    },
+    "getAccess": {
+      "title": "Get access to",
+      "stat1": {
+        "number": "10,000+",
+        "label": "builders"
+      },
+      "stat2": {
+        "number": "5",
+        "label": "countries"
+      },
+      "stat3": {
+        "number": "US$200k+",
+        "label": "committed"
+      }
+    },
+    "caseStudies": {
+      "title": "Case Studies",
+      "button": "Work with us",
+      "resultLabel": "Result:",
+      "lovable": {
+        "title": "Lovable Hackathon reached 200+ non-coders",
+        "paragraph1": "AI.SEA partnered with Lovable to run a targeted hackathon designed to reach builders outside their usual technical audience.",
+        "paragraph2": "Instead of engineers, the event attracted 200+ non-coders, including 40–50+ year old business owners, operators, and solo founders. Many participants were already running real businesses and were actively looking for tools to ship faster without engineering teams.",
+        "paragraph3": "During the hackathon, Lovable became the primary tool participants used to build landing pages, prototypes, and internal tools for their existing businesses. This was not experimentation for fun. It was applied usage under real commercial constraints.",
+        "result": "Strong product lock-in. Participants continued using Lovable beyond the event because it directly replaced slower, more expensive workflows they were already paying for."
+      },
+      "cursorAnthropic": {
+        "title": "Cursor and Anthropic onboarded ~700 senior builders in SEA in one day",
+        "paragraph1": "AI.SEA partnered with Cursor, Anthropic, and ecosystem partners to run one of Malaysia's largest AI hackathons.",
+        "paragraph2": "The event drew over 2,000 signups, with approximately 1,000 builders attending in person within a single day. Around 70% of participants were senior developers, founders, or technical leads, closely matching the ideal user profile for both Cursor and Anthropic.",
+        "paragraph3": "Participants actively used Cursor and Anthropic tools throughout the hackathon to build and ship working projects under time pressure. This created immediate hands-on onboarding, not passive exposure.",
+        "paragraph4": "The top 15 teams received recognition from local VCs and ecosystem partners including AWS.",
+        "result": "Public demonstration of how Cursor and Anthropic accelerated development speed, improved iteration quality, and enabled teams to ship more ambitious products within tight timelines."
+      },
+      "elevenlabs": {
+        "title": "ElevenLabs demonstrated a new product feature through 150+ builders in 2 hours",
+        "paragraph1": "AI.SEA partnered with ElevenLabs to run a focused 2-hour hackathon designed to showcase a new feature of its voice AI platform.",
+        "paragraph2": "150+ builders participated in a single, tightly scoped challenge: re-dub an existing short video using ElevenLabs. The constraint forced every participant to touch the feature directly, not just watch a demo.",
+        "paragraph3": "The competition format encouraged memes and humor, lowering the barrier to participation while still requiring real product usage. Participants were required to publicly demo their outputs on YouTube, creating organic distribution beyond the event itself.",
+        "result": "Within two hours, ElevenLabs achieved hands-on adoption, clear qualitative feedback, and broad public visibility for the new feature without running a traditional launch campaign."
+      }
+    },
     "toolPlatform": {
       "title": "If you are a tool or platform.",
       "description": "We design and run builder-facing programs such as hackathon tracks, sprints, co-build sessions, and pilots. This gives you real usage, technical feedback, and early adopters, not just impressions.",

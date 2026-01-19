@@ -10,7 +10,6 @@ import { useTranslations } from 'next-intl';
 
 import { BlurFade } from "@/components/ui/blur-fade";
 import { Button } from "@/components/ui/button";
-import { TextShimmer } from "@/components/ui/text-shimmer";
 import { Navbar1 } from "@/components/ui/navbar";
 import { Mail } from "lucide-react";
 import Image from "next/image";
@@ -304,47 +303,17 @@ export default function WorkWithUsPage() {
         <ShaderBackground />
         <div className="absolute inset-0 flex flex-col items-center justify-center text-center space-y-4 px-4 pointer-events-auto z-10">
           <BlurFade delay={0} duration={0.8} yOffset={20}>
-            <TextShimmer
-              as="h1"
-              className="font-[family-name:var(--font-perfectly-nineties)] text-7xl sm:text-8xl md:text-9xl lg:text-[10rem] font-bold leading-none [--base-color:#e4e4e7] [--bg:linear-gradient(90deg,#0000_calc(50%-var(--spread)),#60a5fa,#a78bfa,#f472b6,#fbbf24,#ffffff,#0000_calc(50%+var(--spread)))]"
-              duration={1}
-              spread={20}
-              once
-              delay={1.75}
-            >
-              Reach 10,000+ active AI builders across APAC
-            </TextShimmer>
+            <h1 className="font-[family-name:var(--font-perfectly-nineties)] text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-none text-white">
+              {t('hero.title')}
+            </h1>
           </BlurFade>
 
           <BlurFade delay={0.3}>
             <p className="font-[family-name:var(--font-geist-mono)] text-white/80 text-sm sm:text-base md:text-lg leading-relaxed max-w-2xl mx-auto">
-              Stop paying for low-signal leads. Get direct access to builders who actually ship and give real feedback.
+              {t('hero.subheading')}
             </p>
           </BlurFade>
 
-          <BlurFade delay={0.5}>
-            <div className="flex flex-col lg:flex-row items-center justify-center gap-8 lg:gap-12 max-w-6xl mx-auto px-4 mt-8">
-              <div className="flex-1 space-y-4 text-left">
-                <p className="font-[family-name:var(--font-geist-mono)] text-white/90 text-base sm:text-lg md:text-xl leading-relaxed">
-                  AI.SEA helps AI companies reach qualified technical users in Southeast Asia without burning budget on ads, cold outbound, or slow DevRel programs.
-                </p>
-                <p className="font-[family-name:var(--font-geist-mono)] text-white/90 text-base sm:text-lg md:text-xl leading-relaxed">
-                  We work with teams who need real usage, fast feedback, and regional traction.
-                </p>
-              </div>
-              <div className="flex-1 w-full lg:w-auto">
-                <div className="relative w-full aspect-[4/3] lg:max-w-md rounded-lg overflow-hidden">
-                  <Image
-                    src="/assets/images_slides/4.png"
-                    alt="AI.SEA builders"
-                    fill
-                    className="object-cover"
-                    priority
-                  />
-                </div>
-              </div>
-            </div>
-          </BlurFade>
         </div>
       </section>
 
@@ -368,15 +337,42 @@ export default function WorkWithUsPage() {
             </div>
             <div className="flex-1 space-y-6 text-left order-1 lg:order-2">
               <h2 className="font-[family-name:var(--font-perfectly-nineties)] text-4xl sm:text-5xl md:text-6xl font-bold text-white leading-tight">
-                Traditional GTM doesn't scale the way you need it to
+                {t('traditionalGTM.title')}
               </h2>
               <div className="space-y-4 font-[family-name:var(--font-geist-mono)] text-white/90 text-base sm:text-lg md:text-xl leading-relaxed">
-                <p>Paid ads are expensive and noisy.</p>
-                <p>Cold outreach rarely reaches real builders.</p>
-                <p>DevRel takes months to show signal and is hard to measure.</p>
+                <p>{t('traditionalGTM.point1')}</p>
+                <p>{t('traditionalGTM.point2')}</p>
+                <p>{t('traditionalGTM.point3')}</p>
                 <p className="pt-4 border-t border-white/20">
-                  Most teams only realize something is wrong after the roadmap is locked and budget is gone.
+                  {t('traditionalGTM.conclusion')}
                 </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* AI.SEA helps Section */}
+      <section className="relative z-20 bg-black text-white py-16 md:py-24">
+        <div className="max-w-6xl mx-auto px-4">
+          <div className="flex flex-col lg:flex-row items-center justify-center gap-8 lg:gap-12">
+            <div className="flex-1 space-y-4 text-left">
+              <p className="font-[family-name:var(--font-geist-mono)] text-white/90 text-base sm:text-lg md:text-xl leading-relaxed">
+                {t('aiseaHelps.text1')}
+              </p>
+              <p className="font-[family-name:var(--font-geist-mono)] text-white/90 text-base sm:text-lg md:text-xl leading-relaxed">
+                {t('aiseaHelps.text2')}
+              </p>
+            </div>
+            <div className="flex-1 w-full lg:w-auto">
+              <div className="relative w-full aspect-[4/3] lg:max-w-md rounded-lg overflow-hidden">
+                <Image
+                  src="/assets/images_slides/4.png"
+                  alt="AI.SEA builders"
+                  fill
+                  className="object-cover"
+                  priority
+                />
               </div>
             </div>
           </div>
@@ -387,19 +383,19 @@ export default function WorkWithUsPage() {
       <section className="relative z-20 bg-black text-white py-16 md:py-24">
         <div className="max-w-7xl mx-auto px-4">
           <h2 className="font-[family-name:var(--font-perfectly-nineties)] text-4xl sm:text-5xl md:text-6xl font-bold text-white text-center mb-12 md:mb-16">
-            What AI.SEA gives you
+            {t('whatAISEA.title')}
           </h2>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 mb-12">
             <Card className="bg-white/5 border-white/10 text-white">
               <CardHeader>
                 <CardTitle className="font-[family-name:var(--font-geist-mono)] text-xl md:text-2xl font-semibold text-white">
-                  Direct Builder Access
+                  {t('whatAISEA.card1.title')}
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="font-[family-name:var(--font-geist-mono)] text-white/90 text-base md:text-lg leading-relaxed">
-                  Reach active AI builders across Southeast Asia who are already shipping projects, not passive audiences or mailing lists.
+                  {t('whatAISEA.card1.description')}
                 </p>
               </CardContent>
             </Card>
@@ -407,12 +403,12 @@ export default function WorkWithUsPage() {
             <Card className="bg-white/5 border-white/10 text-white">
               <CardHeader>
                 <CardTitle className="font-[family-name:var(--font-geist-mono)] text-xl md:text-2xl font-semibold text-white">
-                  Trusted Distribution
+                  {t('whatAISEA.card2.title')}
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="font-[family-name:var(--font-geist-mono)] text-white/90 text-base md:text-lg leading-relaxed">
-                  Your product is introduced through established local communities, not ads, cold outreach, or generic newsletters. This ensures direct, targeted outreach to the best category of builders for your product.
+                  {t('whatAISEA.card2.description')}
                 </p>
               </CardContent>
             </Card>
@@ -420,19 +416,19 @@ export default function WorkWithUsPage() {
             <Card className="bg-white/5 border-white/10 text-white">
               <CardHeader>
                 <CardTitle className="font-[family-name:var(--font-geist-mono)] text-xl md:text-2xl font-semibold text-white">
-                  In-Context Visibility
+                  {t('whatAISEA.card3.title')}
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="font-[family-name:var(--font-geist-mono)] text-white/90 text-base md:text-lg leading-relaxed">
-                  Your product shows up inside hackathons, sprints, and co-build sessions where tools are chosen under real constraints.
+                  {t('whatAISEA.card3.description')}
                 </p>
               </CardContent>
             </Card>
           </div>
 
           <p className="font-[family-name:var(--font-geist-mono)] text-white/90 text-center text-lg md:text-xl leading-relaxed max-w-3xl mx-auto">
-            Learn what works before you commit roadmap, headcount, or regional GTM spend.
+            {t('whatAISEA.footer')}
           </p>
         </div>
       </section>
@@ -446,35 +442,35 @@ export default function WorkWithUsPage() {
       <section className="relative z-20 bg-black text-white py-16 md:py-24">
         <div className="max-w-6xl mx-auto px-4">
           <h2 className="font-[family-name:var(--font-perfectly-nineties)] text-4xl sm:text-5xl md:text-6xl font-bold text-white text-center mb-12 md:mb-16">
-            Get access to
+            {t('getAccess.title')}
           </h2>
           
           <div className="bg-white/5 border border-white/10 rounded-2xl p-8 md:p-12">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
               <div className="text-center">
                 <div className="font-[family-name:var(--font-perfectly-nineties)] text-5xl sm:text-6xl md:text-7xl font-bold text-white mb-4">
-                  10,000+
+                  {t('getAccess.stat1.number')}
                 </div>
                 <div className="font-[family-name:var(--font-geist-mono)] text-white/90 text-lg md:text-xl">
-                  builders
+                  {t('getAccess.stat1.label')}
                 </div>
               </div>
 
               <div className="text-center">
                 <div className="font-[family-name:var(--font-perfectly-nineties)] text-5xl sm:text-6xl md:text-7xl font-bold text-white mb-4">
-                  5
+                  {t('getAccess.stat2.number')}
                 </div>
                 <div className="font-[family-name:var(--font-geist-mono)] text-white/90 text-lg md:text-xl">
-                  countries
+                  {t('getAccess.stat2.label')}
                 </div>
               </div>
 
               <div className="text-center">
                 <div className="font-[family-name:var(--font-perfectly-nineties)] text-5xl sm:text-6xl md:text-7xl font-bold text-white mb-4">
-                  US$200k+
+                  {t('getAccess.stat3.number')}
                 </div>
                 <div className="font-[family-name:var(--font-geist-mono)] text-white/90 text-lg md:text-xl">
-                  committed
+                  {t('getAccess.stat3.label')}
                 </div>
               </div>
             </div>
@@ -486,7 +482,7 @@ export default function WorkWithUsPage() {
       <section className="relative z-20 bg-black text-white py-16 md:py-24">
         <div className="max-w-7xl mx-auto px-4">
           <h2 className="font-[family-name:var(--font-perfectly-nineties)] text-4xl sm:text-5xl md:text-6xl font-bold text-white text-center mb-12 md:mb-16">
-            Case Studies
+            {t('caseStudies.title')}
           </h2>
           
           <Carousel
@@ -499,129 +495,129 @@ export default function WorkWithUsPage() {
             <CarouselContent>
               <CarouselItem>
                 <Card className="bg-white/5 border-white/10 text-white overflow-hidden">
-                  <div className="flex flex-col lg:flex-row">
-                    <div className="lg:w-1/2 p-6 md:p-8 space-y-4">
-                      <CardHeader className="p-0">
-                        <CardTitle className="font-[family-name:var(--font-geist-mono)] text-2xl md:text-3xl font-semibold text-white mb-4">
-                          Lovable Hackathon reached 200+ non-coders
+                  <div className="p-6 md:p-8 space-y-4">
+                    <div className="flex items-start gap-4 md:gap-6">
+                      <div className="relative w-24 h-24 md:w-32 md:h-32 flex-shrink-0 rounded-lg overflow-hidden">
+                        <Image
+                          src="/assets/images_slides/bfg.avif"
+                          alt="Lovable Hackathon"
+                          fill
+                          className="object-cover"
+                          priority
+                        />
+                      </div>
+                      <CardHeader className="p-0 flex-1">
+                        <CardTitle className="font-[family-name:var(--font-geist-mono)] text-2xl md:text-3xl font-semibold text-white">
+                          {t('caseStudies.lovable.title')}
                         </CardTitle>
                       </CardHeader>
-                      <CardContent className="p-0 space-y-4">
+                    </div>
+                    <CardContent className="p-0 space-y-4">
                         <p className="font-[family-name:var(--font-geist-mono)] text-white/90 text-base md:text-lg leading-relaxed">
-                          AI.SEA partnered with Lovable to run a targeted hackathon designed to reach builders outside their usual technical audience.
+                          {t('caseStudies.lovable.paragraph1')}
                         </p>
                         <p className="font-[family-name:var(--font-geist-mono)] text-white/90 text-base md:text-lg leading-relaxed">
-                          Instead of engineers, the event attracted 200+ non-coders, including 40–50+ year old business owners, operators, and solo founders. Many participants were already running real businesses and were actively looking for tools to ship faster without engineering teams.
+                          {t('caseStudies.lovable.paragraph2')}
                         </p>
                         <p className="font-[family-name:var(--font-geist-mono)] text-white/90 text-base md:text-lg leading-relaxed">
-                          During the hackathon, Lovable became the primary tool participants used to build landing pages, prototypes, and internal tools for their existing businesses. This was not experimentation for fun. It was applied usage under real commercial constraints.
+                          {t('caseStudies.lovable.paragraph3')}
                         </p>
                         <div className="pt-4 border-t border-white/20">
                           <p className="font-[family-name:var(--font-geist-mono)] text-white font-semibold text-base md:text-lg mb-2">
-                            Result:
+                            {t('caseStudies.resultLabel')}
                           </p>
                           <p className="font-[family-name:var(--font-geist-mono)] text-white/90 text-base md:text-lg leading-relaxed">
-                            Strong product lock-in. Participants continued using Lovable beyond the event because it directly replaced slower, more expensive workflows they were already paying for.
+                            {t('caseStudies.lovable.result')}
                           </p>
                         </div>
                       </CardContent>
-                    </div>
-                    <div className="lg:w-1/2 relative aspect-[4/3] lg:aspect-auto lg:h-auto">
-                      <Image
-                        src="/assets/images_slides/bfg.avif"
-                        alt="Lovable Hackathon"
-                        fill
-                        className="object-cover"
-                        priority
-                      />
-                    </div>
                   </div>
                 </Card>
               </CarouselItem>
               
               <CarouselItem>
                 <Card className="bg-white/5 border-white/10 text-white overflow-hidden">
-                  <div className="flex flex-col lg:flex-row">
-                    <div className="lg:w-1/2 p-6 md:p-8 space-y-4">
-                      <CardHeader className="p-0">
-                        <CardTitle className="font-[family-name:var(--font-geist-mono)] text-2xl md:text-3xl font-semibold text-white mb-4">
-                          Cursor and Anthropic onboarded ~700 senior builders in SEA in one day
+                  <div className="p-6 md:p-8 space-y-4">
+                    <div className="flex items-start gap-4 md:gap-6">
+                      <div className="relative w-24 h-24 md:w-32 md:h-32 flex-shrink-0 rounded-lg overflow-hidden">
+                        <Image
+                          src="/assets/images_slides/cam.avif"
+                          alt="Cursor and Anthropic Hackathon"
+                          fill
+                          className="object-cover"
+                          priority
+                        />
+                      </div>
+                      <CardHeader className="p-0 flex-1">
+                        <CardTitle className="font-[family-name:var(--font-geist-mono)] text-2xl md:text-3xl font-semibold text-white">
+                          {t('caseStudies.cursorAnthropic.title')}
                         </CardTitle>
                       </CardHeader>
-                      <CardContent className="p-0 space-y-4">
+                    </div>
+                    <CardContent className="p-0 space-y-4">
                         <p className="font-[family-name:var(--font-geist-mono)] text-white/90 text-base md:text-lg leading-relaxed">
-                          AI.SEA partnered with Cursor, Anthropic, and ecosystem partners to run one of Malaysia's largest AI hackathons.
+                          {t('caseStudies.cursorAnthropic.paragraph1')}
                         </p>
                         <p className="font-[family-name:var(--font-geist-mono)] text-white/90 text-base md:text-lg leading-relaxed">
-                          The event drew over 2,000 signups, with approximately 1,000 builders attending in person within a single day. Around 70% of participants were senior developers, founders, or technical leads, closely matching the ideal user profile for both Cursor and Anthropic.
+                          {t('caseStudies.cursorAnthropic.paragraph2')}
                         </p>
                         <p className="font-[family-name:var(--font-geist-mono)] text-white/90 text-base md:text-lg leading-relaxed">
-                          Participants actively used Cursor and Anthropic tools throughout the hackathon to build and ship working projects under time pressure. This created immediate hands-on onboarding, not passive exposure.
+                          {t('caseStudies.cursorAnthropic.paragraph3')}
                         </p>
                         <p className="font-[family-name:var(--font-geist-mono)] text-white/90 text-base md:text-lg leading-relaxed">
-                          The top 15 teams received recognition from local VCs and ecosystem partners including AWS.
+                          {t('caseStudies.cursorAnthropic.paragraph4')}
                         </p>
                         <div className="pt-4 border-t border-white/20">
                           <p className="font-[family-name:var(--font-geist-mono)] text-white font-semibold text-base md:text-lg mb-2">
-                            Result:
+                            {t('caseStudies.resultLabel')}
                           </p>
                           <p className="font-[family-name:var(--font-geist-mono)] text-white/90 text-base md:text-lg leading-relaxed">
-                            Public demonstration of how Cursor and Anthropic accelerated development speed, improved iteration quality, and enabled teams to ship more ambitious products within tight timelines.
+                            {t('caseStudies.cursorAnthropic.result')}
                           </p>
                         </div>
                       </CardContent>
-                    </div>
-                    <div className="lg:w-1/2 relative aspect-[4/3] lg:aspect-auto lg:h-auto">
-                      <Image
-                        src="/assets/images_slides/cam.avif"
-                        alt="Cursor and Anthropic Hackathon"
-                        fill
-                        className="object-cover"
-                        priority
-                      />
-                    </div>
                   </div>
                 </Card>
               </CarouselItem>
               
               <CarouselItem>
                 <Card className="bg-white/5 border-white/10 text-white overflow-hidden">
-                  <div className="flex flex-col lg:flex-row">
-                    <div className="lg:w-1/2 p-6 md:p-8 space-y-4">
-                      <CardHeader className="p-0">
-                        <CardTitle className="font-[family-name:var(--font-geist-mono)] text-2xl md:text-3xl font-semibold text-white mb-4">
-                          ElevenLabs demonstrated a new product feature through 150+ builders in 2 hours
+                  <div className="p-6 md:p-8 space-y-4">
+                    <div className="flex items-start gap-4 md:gap-6">
+                      <div className="relative w-24 h-24 md:w-32 md:h-32 flex-shrink-0 rounded-lg overflow-hidden">
+                        <Image
+                          src="/assets/images_slides/sas.png"
+                          alt="ElevenLabs Hackathon"
+                          fill
+                          className="object-cover"
+                          priority
+                        />
+                      </div>
+                      <CardHeader className="p-0 flex-1">
+                        <CardTitle className="font-[family-name:var(--font-geist-mono)] text-2xl md:text-3xl font-semibold text-white">
+                          {t('caseStudies.elevenlabs.title')}
                         </CardTitle>
                       </CardHeader>
-                      <CardContent className="p-0 space-y-4">
+                    </div>
+                    <CardContent className="p-0 space-y-4">
                         <p className="font-[family-name:var(--font-geist-mono)] text-white/90 text-base md:text-lg leading-relaxed">
-                          AI.SEA partnered with ElevenLabs to run a focused 2-hour hackathon designed to showcase a new feature of its voice AI platform.
+                          {t('caseStudies.elevenlabs.paragraph1')}
                         </p>
                         <p className="font-[family-name:var(--font-geist-mono)] text-white/90 text-base md:text-lg leading-relaxed">
-                          150+ builders participated in a single, tightly scoped challenge: re-dub an existing short video using ElevenLabs. The constraint forced every participant to touch the feature directly, not just watch a demo.
+                          {t('caseStudies.elevenlabs.paragraph2')}
                         </p>
                         <p className="font-[family-name:var(--font-geist-mono)] text-white/90 text-base md:text-lg leading-relaxed">
-                          The competition format encouraged memes and humor, lowering the barrier to participation while still requiring real product usage. Participants were required to publicly demo their outputs on YouTube, creating organic distribution beyond the event itself.
+                          {t('caseStudies.elevenlabs.paragraph3')}
                         </p>
                         <div className="pt-4 border-t border-white/20">
                           <p className="font-[family-name:var(--font-geist-mono)] text-white font-semibold text-base md:text-lg mb-2">
-                            Result:
+                            {t('caseStudies.resultLabel')}
                           </p>
                           <p className="font-[family-name:var(--font-geist-mono)] text-white/90 text-base md:text-lg leading-relaxed">
-                            Within two hours, ElevenLabs achieved hands-on adoption, clear qualitative feedback, and broad public visibility for the new feature without running a traditional launch campaign.
+                            {t('caseStudies.elevenlabs.result')}
                           </p>
                         </div>
                       </CardContent>
-                    </div>
-                    <div className="lg:w-1/2 relative aspect-[4/3] lg:aspect-auto lg:h-auto">
-                      <Image
-                        src="/assets/images_slides/sas.png"
-                        alt="ElevenLabs Hackathon"
-                        fill
-                        className="object-cover"
-                        priority
-                      />
-                    </div>
                   </div>
                 </Card>
               </CarouselItem>
@@ -630,7 +626,17 @@ export default function WorkWithUsPage() {
             <CarouselNext className="text-white border-white/20 hover:bg-white/10 hover:border-white/40" />
           </Carousel>
           
-          <div className="flex justify-center mt-12">
+          {/* Get in touch Section */}
+          <div className="mt-12 mb-8">
+            <h2 className="font-[family-name:var(--font-geist-mono)] text-2xl md:text-3xl font-semibold text-white text-center mb-4">
+              {t('getInTouch.title')}
+            </h2>
+            <p className="font-[family-name:var(--font-geist-mono)] text-white/90 text-base md:text-lg leading-relaxed text-center max-w-2xl mx-auto mb-8">
+              {t('getInTouch.description')}
+            </p>
+          </div>
+          
+          <div className="flex justify-center items-center gap-4">
             <Button
               asChild
               size="lg"
@@ -641,108 +647,17 @@ export default function WorkWithUsPage() {
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                Work with us
+                {t('caseStudies.button')}
               </a>
             </Button>
-          </div>
-        </div>
-      </section>
-
-      {/* Content Section */}
-      <section className="relative z-20 bg-black text-white">
-        <div className="max-w-4xl mx-auto px-4 py-16">
-          <div className="space-y-12 font-[family-name:var(--font-geist-mono)]">
-            {/* Tool or Platform Section */}
-            <div>
-              <h2 className="text-2xl md:text-3xl font-semibold text-white mb-4">
-                {t('toolPlatform.title')}
-              </h2>
-              <p className="text-white/90 text-lg leading-relaxed mb-4">
-                {t('toolPlatform.description')}
-              </p>
-              <ul className="list-disc list-inside space-y-2 text-white/90 text-lg leading-relaxed ml-4">
-                {(t.raw('toolPlatform.benefits') as string[]).map((item: string, index: number) => (
-                  <li key={index}>{item}</li>
-                ))}
-              </ul>
-            </div>
-
-            {/* Company or Operator Section */}
-            <div>
-              <h2 className="text-2xl md:text-3xl font-semibold text-white mb-4">
-                {t('companyOperator.title')}
-              </h2>
-              <p className="text-white/90 text-lg leading-relaxed mb-4">
-                {t('companyOperator.description')}
-              </p>
-              <ul className="list-disc list-inside space-y-2 text-white/90 text-lg leading-relaxed ml-4">
-                {(t.raw('companyOperator.forms') as string[]).map((item: string, index: number) => (
-                  <li key={index}>{item}</li>
-                ))}
-              </ul>
-            </div>
-
-            {/* Fund or Ecosystem Partner Section */}
-            <div>
-              <h2 className="text-2xl md:text-3xl font-semibold text-white mb-4">
-                {t('fundEcosystem.title')}
-              </h2>
-              <p className="text-white/90 text-lg leading-relaxed mb-4">
-                {t('fundEcosystem.description')}
-              </p>
-              <ul className="list-disc list-inside space-y-2 text-white/90 text-lg leading-relaxed ml-4">
-                {(t.raw('fundEcosystem.includes') as string[]).map((item: string, index: number) => (
-                  <li key={index}>{item}</li>
-                ))}
-              </ul>
-            </div>
-
-            <hr className="border-white/20 my-12" />
-
-            {/* How we work Section */}
-            <div>
-              <h2 className="text-2xl md:text-3xl font-semibold text-white mb-4">
-                {t('howWeWork.title')}
-              </h2>
-              <p className="text-white/90 text-lg leading-relaxed">
-                {t('howWeWork.description')}
-              </p>
-            </div>
-
-            <hr className="border-white/20 my-12" />
-
-            {/* Get in touch Section */}
-            <div>
-              <h2 className="text-2xl md:text-3xl font-semibold text-white mb-4">
-                {t('getInTouch.title')}
-              </h2>
-              <p className="text-white/90 text-lg leading-relaxed mb-8">
-                {t('getInTouch.description')}
-              </p>
-              <div className="flex items-center gap-4 flex-wrap">
-                <Button
-                  asChild
-                  size="lg"
-                  className="font-[family-name:var(--font-geist-mono)] bg-white text-black hover:bg-white/90 font-medium rounded-full"
-                >
-                  <a
-                    href={t('getInTouch.contactUrl')}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    {t('getInTouch.buttonText')}
-                  </a>
-                </Button>
-                <a
-                  href={t('getInTouch.emailLink')}
-                  className="inline-flex items-center justify-center text-white/70 hover:text-white transition-colors duration-200"
-                  aria-label={t('getInTouch.emailLabel')}
-                  title={t('getInTouch.emailLabel')}
-                >
-                  <Mail className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8" />
-                </a>
-              </div>
-            </div>
+            <a
+              href={t('getInTouch.emailLink')}
+              className="inline-flex items-center justify-center text-white/70 hover:text-white transition-colors duration-200"
+              aria-label={t('getInTouch.emailLabel')}
+              title={t('getInTouch.emailLabel')}
+            >
+              <Mail className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8" />
+            </a>
           </div>
         </div>
       </section>

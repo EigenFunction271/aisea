@@ -211,8 +211,79 @@
     }
   },
   "workWithUs": {
-    "title": "Bekerja dengan AI.SEA",
-    "intro": "AI.SEA bekerja dengan organisasi yang ingin melibatkan pembangun AI yang sebenarnya di Asia Tenggara, bukan hanya menjalankan kampanye atau mengumpulkan logo. Kami fokus pada kolaborasi langsung dengan hasil yang jelas.",
+    "hero": {
+      "title": "Jangkau 10.000+ pembangun AI aktif di seluruh APAC",
+      "subheading": "Berhenti membayar untuk prospek berkualitas rendah. Dapatkan akses langsung ke pembangun yang benar-benar mengirimkan produk dan memberikan umpan balik nyata."
+    },
+    "traditionalGTM": {
+      "title": "GTM tradisional tidak berkembang sesuai kebutuhan Anda",
+      "point1": "Iklan berbayar mahal dan berisik.",
+      "point2": "Cold outreach jarang mencapai pembangun sebenarnya.",
+      "point3": "DevRel membutuhkan bulanan untuk menunjukkan sinyal dan sulit diukur.",
+      "conclusion": "Kebanyakan tim hanya menyadari ada yang salah setelah roadmap terkunci dan anggaran habis."
+    },
+    "aiseaHelps": {
+      "text1": "AI.SEA membantu perusahaan AI menjangkau pengguna teknis yang berkualitas di Asia Tenggara tanpa membakar anggaran untuk iklan, cold outbound, atau program DevRel yang lambat.",
+      "text2": "Kami bekerja dengan tim yang membutuhkan penggunaan nyata, umpan balik cepat, dan daya tarik regional."
+    },
+    "whatAISEA": {
+      "title": "Apa yang diberikan AI.SEA untuk Anda",
+      "card1": {
+        "title": "Akses Langsung ke Pembangun",
+        "description": "Jangkau pembangun AI aktif di seluruh Asia Tenggara yang sudah mengirimkan proyek, bukan audiens pasif atau mailing list."
+      },
+      "card2": {
+        "title": "Distribusi Terpercaya",
+        "description": "Produk Anda diperkenalkan melalui komunitas lokal yang mapan, bukan iklan, cold outreach, atau newsletter generik. Ini memastikan outreach langsung dan tertarget ke kategori pembangun terbaik untuk produk Anda."
+      },
+      "card3": {
+        "title": "Visibilitas dalam Konteks",
+        "description": "Produk Anda muncul di dalam hackathon, sprint, dan sesi co-build di mana alat dipilih di bawah kendala nyata."
+      },
+      "footer": "Pelajari apa yang berhasil sebelum Anda berkomitmen pada roadmap, headcount, atau pengeluaran GTM regional."
+    },
+    "getAccess": {
+      "title": "Dapatkan akses ke",
+      "stat1": {
+        "number": "10.000+",
+        "label": "pembangun"
+      },
+      "stat2": {
+        "number": "5",
+        "label": "negara"
+      },
+      "stat3": {
+        "number": "US$200k+",
+        "label": "berkomitmen"
+      }
+    },
+    "caseStudies": {
+      "title": "Studi Kasus",
+      "button": "Bekerja dengan kami",
+      "resultLabel": "Hasil:",
+      "lovable": {
+        "title": "Hackathon Lovable menjangkau 200+ non-coder",
+        "paragraph1": "AI.SEA bermitra dengan Lovable untuk menjalankan hackathon yang ditargetkan yang dirancang untuk menjangkau pembangun di luar audiens teknis mereka yang biasa.",
+        "paragraph2": "Alih-alih insinyur, acara ini menarik 200+ non-coder, termasuk pemilik bisnis, operator, dan founder solo berusia 40-50+ tahun. Banyak peserta sudah menjalankan bisnis nyata dan secara aktif mencari alat untuk mengirimkan produk lebih cepat tanpa tim engineering.",
+        "paragraph3": "Selama hackathon, Lovable menjadi alat utama yang digunakan peserta untuk membangun landing page, prototipe, dan alat internal untuk bisnis mereka yang sudah ada. Ini bukan eksperimen untuk bersenang-senang. Ini adalah penggunaan yang diterapkan di bawah kendala komersial nyata.",
+        "result": "Product lock-in yang kuat. Peserta terus menggunakan Lovable setelah acara karena secara langsung menggantikan workflow yang lebih lambat dan lebih mahal yang sudah mereka bayar."
+      },
+      "cursorAnthropic": {
+        "title": "Cursor dan Anthropic mengonboarding ~700 pembangun senior di SEA dalam satu hari",
+        "paragraph1": "AI.SEA bermitra dengan Cursor, Anthropic, dan mitra ekosistem untuk menjalankan salah satu hackathon AI terbesar di Malaysia.",
+        "paragraph2": "Acara ini menarik lebih dari 2.000 pendaftaran, dengan sekitar 1.000 pembangun hadir secara langsung dalam satu hari. Sekitar 70% peserta adalah developer senior, founder, atau technical lead, yang sangat cocok dengan profil pengguna ideal untuk Cursor dan Anthropic.",
+        "paragraph3": "Peserta secara aktif menggunakan alat Cursor dan Anthropic sepanjang hackathon untuk membangun dan mengirimkan proyek yang berfungsi di bawah tekanan waktu. Ini menciptakan onboarding langsung, bukan paparan pasif.",
+        "paragraph4": "15 tim teratas menerima pengakuan dari VC lokal dan mitra ekosistem termasuk AWS.",
+        "result": "Demonstrasi publik tentang bagaimana Cursor dan Anthropic mempercepat kecepatan pengembangan, meningkatkan kualitas iterasi, dan memungkinkan tim untuk mengirimkan produk yang lebih ambisius dalam tenggat waktu yang ketat."
+      },
+      "elevenlabs": {
+        "title": "ElevenLabs mendemonstrasikan fitur produk baru melalui 150+ pembangun dalam 2 jam",
+        "paragraph1": "AI.SEA bermitra dengan ElevenLabs untuk menjalankan hackathon 2 jam yang fokus yang dirancang untuk memamerkan fitur baru dari platform voice AI-nya.",
+        "paragraph2": "150+ pembangun berpartisipasi dalam satu tantangan yang sangat terbatas: mengisi ulang suara video pendek yang ada menggunakan ElevenLabs. Kendala ini memaksa setiap peserta untuk menyentuh fitur secara langsung, bukan hanya menonton demo.",
+        "paragraph3": "Format kompetisi mendorong meme dan humor, menurunkan hambatan partisipasi sambil tetap memerlukan penggunaan produk nyata. Peserta diharuskan untuk secara publik mendemonstrasikan output mereka di YouTube, menciptakan distribusi organik di luar acara itu sendiri.",
+        "result": "Dalam dua jam, ElevenLabs mencapai adopsi langsung, umpan balik kualitatif yang jelas, dan visibilitas publik yang luas untuk fitur baru tanpa menjalankan kampanye peluncuran tradisional."
+      }
+    },
     "toolPlatform": {
       "title": "Jika Anda adalah alat atau platform.",
       "description": "Kami merancang dan menjalankan program yang ditujukan untuk pembangun seperti jalur hackathon, sprint, sesi co-build, dan pilot. Ini memberi Anda penggunaan nyata, umpan balik teknis, dan pengadopsi awal, bukan hanya kesan.",

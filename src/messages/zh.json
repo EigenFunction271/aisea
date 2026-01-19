@@ -211,8 +211,117 @@
     }
   },
   "workWithUs": {
-    "title": "与我们合作",
-    "subtitle": "与 AISEA 合作",
-    "placeholder": "内容即将推出..."
+    "hero": {
+      "title": "触达亚太地区 10,000+ 活跃的 AI 建设者",
+      "subheading": "停止为低质量线索付费。直接接触真正交付产品并提供真实反馈的建设者。"
+    },
+    "traditionalGTM": {
+      "title": "传统 GTM 无法按您需要的方式扩展",
+      "point1": "付费广告昂贵且嘈杂。",
+      "point2": "冷外联很少能接触到真正的建设者。",
+      "point3": "DevRel 需要数月才能显示信号且难以衡量。",
+      "conclusion": "大多数团队只有在路线图锁定且预算耗尽后才意识到出了问题。"
+    },
+    "aiseaHelps": {
+      "text1": "AI.SEA 帮助 AI 公司在东南亚触达合格的技术用户，而无需在广告、冷外联或缓慢的 DevRel 计划上浪费预算。",
+      "text2": "我们与需要实际使用、快速反馈和区域吸引力的团队合作。"
+    },
+    "whatAISEA": {
+      "title": "AI.SEA 为您提供什么",
+      "card1": {
+        "title": "直接建设者访问",
+        "description": "触达整个东南亚正在交付项目的活跃 AI 建设者，而不是被动受众或邮件列表。"
+      },
+      "card2": {
+        "title": "可信分发",
+        "description": "您的产品通过已建立的本地社区引入，而不是广告、冷外联或通用新闻通讯。这确保直接、有针对性的触达最适合您产品的建设者类别。"
+      },
+      "card3": {
+        "title": "上下文可见性",
+        "description": "您的产品出现在黑客马拉松、冲刺和共同构建会议中，在这些场合工具是在真实约束下选择的。"
+      },
+      "footer": "在您承诺路线图、人员配置或区域 GTM 支出之前，了解什么有效。"
+    },
+    "getAccess": {
+      "title": "获得访问权限",
+      "stat1": {
+        "number": "10,000+",
+        "label": "建设者"
+      },
+      "stat2": {
+        "number": "5",
+        "label": "国家"
+      },
+      "stat3": {
+        "number": "US$200k+",
+        "label": "已承诺"
+      }
+    },
+    "caseStudies": {
+      "title": "案例研究",
+      "button": "与我们合作",
+      "resultLabel": "结果：",
+      "lovable": {
+        "title": "Lovable 黑客马拉松触达 200+ 非编程人员",
+        "paragraph1": "AI.SEA 与 Lovable 合作举办了一次有针对性的黑客马拉松，旨在触达其通常技术受众之外的建设者。",
+        "paragraph2": "该活动吸引了 200+ 非编程人员，包括 40-50+ 岁的企业主、运营者和独立创始人。许多参与者已经在经营真实业务，并积极寻找无需工程团队即可更快交付产品的工具。",
+        "paragraph3": "在黑客马拉松期间，Lovable 成为参与者用来为其现有业务构建落地页、原型和内部工具的主要工具。这不是为了好玩而进行的实验。这是在真实商业约束下的实际应用。",
+        "result": "强大的产品锁定。参与者继续在活动之外使用 Lovable，因为它直接替代了他们已经在付费的更慢、更昂贵的工作流程。"
+      },
+      "cursorAnthropic": {
+        "title": "Cursor 和 Anthropic 在一天内在东南亚成功让约 700 名高级建设者加入",
+        "paragraph1": "AI.SEA 与 Cursor、Anthropic 和生态系统合作伙伴合作，举办了马来西亚最大的 AI 黑客马拉松之一。",
+        "paragraph2": "该活动吸引了超过 2,000 名注册者，约 1,000 名建设者在一天内亲自参加。约 70% 的参与者是高级开发人员、创始人或技术负责人，与 Cursor 和 Anthropic 的理想用户画像非常匹配。",
+        "paragraph3": "参与者在整个黑客马拉松期间积极使用 Cursor 和 Anthropic 工具，在时间压力下构建和交付工作项目。这创造了即时的实践入门，而不是被动接触。",
+        "paragraph4": "前 15 名团队获得了包括 AWS 在内的本地 VC 和生态系统合作伙伴的认可。",
+        "result": "公开展示了 Cursor 和 Anthropic 如何加速开发速度、提高迭代质量，并使团队能够在紧张的时间表内交付更雄心勃勃的产品。"
+      },
+      "elevenlabs": {
+        "title": "ElevenLabs 在 2 小时内通过 150+ 名建设者展示了新产品功能",
+        "paragraph1": "AI.SEA 与 ElevenLabs 合作举办了一次专注的 2 小时黑客马拉松，旨在展示其语音 AI 平台的新功能。",
+        "paragraph2": "150+ 名建设者参与了一个单一、严格限定的挑战：使用 ElevenLabs 为现有短视频重新配音。这个约束迫使每个参与者直接接触该功能，而不仅仅是观看演示。",
+        "paragraph3": "竞赛形式鼓励表情包和幽默，降低了参与门槛，同时仍需要真实的产品使用。参与者被要求在 YouTube 上公开演示他们的输出，在活动本身之外创造有机分发。",
+        "result": "在两个小时內，ElevenLabs 实现了实践采用、清晰的定性反馈以及新功能的广泛公众可见性，而无需运行传统的发布活动。"
+      }
+    },
+    "toolPlatform": {
+      "title": "如果您是工具或平台。",
+      "description": "我们设计和运行面向建设者的计划，如黑客马拉松赛道、冲刺、共同构建会议和试点。这为您提供实际使用、技术反馈和早期采用者，而不仅仅是印象。",
+      "benefits": [
+        "实际使用和技术反馈",
+        "东南亚的早期采用者",
+        "与建设者的实践参与"
+      ]
+    },
+    "companyOperator": {
+      "title": "如果您是公司或运营者。",
+      "description": "我们帮助您在现实环境中探索、测试和部署 AI。这可以采取有范围的构建冲刺、问题驱动的挑战或与整个地区经验丰富的建设者的嵌入式协作形式。",
+      "forms": [
+        "有范围的构建冲刺",
+        "问题驱动的挑战",
+        "与经验丰富的建设者的嵌入式协作"
+      ]
+    },
+    "fundEcosystem": {
+      "title": "如果您是基金或生态系统合作伙伴。",
+      "description": "我们通过活动展示高信号的建设者、团队和项目。这包括交易流、创始人可见性以及在实验变得明显之前早期访问实验。",
+      "includes": [
+        "交易流和创始人可见性",
+        "早期访问实验",
+        "高信号的建设者和团队"
+      ]
+    },
+    "howWeWork": {
+      "title": "我们的工作方式。",
+      "description": "合作旨在实用且有时间限制。我们从明确的目标开始，设计合适的格式，并与整个东南亚的本地社区执行。大多数工作作为冲刺或计划运行，而不是开放式合作。"
+    },
+    "getInTouch": {
+      "title": "联系我们。",
+      "description": "如果您想运行赛道、试点产品、赞助计划或探索长期合作伙伴关系，请联系我们，我们将规划一些具体内容。",
+      "buttonText": "联系我们",
+      "contactUrl": "https://airtable.com/appBgmnpu1bJljnxX/pagPGkKttUQAM4nGV/form",
+      "emailLabel": "给我们发邮件",
+      "emailLink": "mailto:team@aisea.builders?subject=Partnership%20Inquiry&body=Hi%20AI.SEA%20team%2C%0A%0AI%27m%20interested%20in%20working%20with%20AI.SEA.%0A%0A%5BPlease%20tell%20us%20about%20your%20organization%20and%20what%20kind%20of%20partnership%20you%27re%20interested%20in%5D%0A%0AThanks%2C"
+    }
   }
 }

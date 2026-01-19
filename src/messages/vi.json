@@ -211,8 +211,79 @@
     }
   },
   "workWithUs": {
-    "title": "Làm việc với AI.SEA",
-    "intro": "AI.SEA làm việc với các tổ chức muốn thu hút các nhà xây dựng AI thực sự ở Đông Nam Á, không chỉ chạy chiến dịch hoặc thu thập logo. Chúng tôi tập trung vào hợp tác thực tế với kết quả rõ ràng.",
+    "hero": {
+      "title": "Tiếp cận 10.000+ nhà xây dựng AI hoạt động trên khắp APAC",
+      "subheading": "Ngừng trả tiền cho các khách hàng tiềm năng chất lượng thấp. Có được quyền truy cập trực tiếp vào các nhà xây dựng thực sự giao hàng và cung cấp phản hồi thực tế."
+    },
+    "traditionalGTM": {
+      "title": "GTM truyền thống không mở rộng theo cách bạn cần",
+      "point1": "Quảng cáo trả phí đắt đỏ và ồn ào.",
+      "point2": "Cold outreach hiếm khi tiếp cận được các nhà xây dựng thực sự.",
+      "point3": "DevRel mất nhiều tháng để hiển thị tín hiệu và khó đo lường.",
+      "conclusion": "Hầu hết các đội chỉ nhận ra có điều gì đó sai sau khi lộ trình bị khóa và ngân sách đã hết."
+    },
+    "aiseaHelps": {
+      "text1": "AI.SEA giúp các công ty AI tiếp cận người dùng kỹ thuật có trình độ ở Đông Nam Á mà không cần đốt ngân sách cho quảng cáo, cold outbound hoặc các chương trình DevRel chậm chạp.",
+      "text2": "Chúng tôi làm việc với các đội cần sử dụng thực tế, phản hồi nhanh và sức hút khu vực."
+    },
+    "whatAISEA": {
+      "title": "AI.SEA mang lại cho bạn điều gì",
+      "card1": {
+        "title": "Truy cập trực tiếp vào nhà xây dựng",
+        "description": "Tiếp cận các nhà xây dựng AI hoạt động trên khắp Đông Nam Á đang giao hàng dự án, không phải khán giả thụ động hoặc danh sách gửi thư."
+      },
+      "card2": {
+        "title": "Phân phối đáng tin cậy",
+        "description": "Sản phẩm của bạn được giới thiệu thông qua các cộng đồng địa phương đã được thiết lập, không phải quảng cáo, cold outreach hoặc bản tin chung chung. Điều này đảm bảo tiếp cận trực tiếp và có mục tiêu đến danh mục nhà xây dựng tốt nhất cho sản phẩm của bạn."
+      },
+      "card3": {
+        "title": "Khả năng hiển thị trong ngữ cảnh",
+        "description": "Sản phẩm của bạn xuất hiện bên trong hackathon, sprint và các phiên đồng xây dựng nơi các công cụ được chọn dưới các ràng buộc thực tế."
+      },
+      "footer": "Tìm hiểu những gì hoạt động trước khi bạn cam kết lộ trình, nhân sự hoặc chi tiêu GTM khu vực."
+    },
+    "getAccess": {
+      "title": "Có được quyền truy cập vào",
+      "stat1": {
+        "number": "10.000+",
+        "label": "nhà xây dựng"
+      },
+      "stat2": {
+        "number": "5",
+        "label": "quốc gia"
+      },
+      "stat3": {
+        "number": "US$200k+",
+        "label": "cam kết"
+      }
+    },
+    "caseStudies": {
+      "title": "Nghiên cứu tình huống",
+      "button": "Làm việc với chúng tôi",
+      "resultLabel": "Kết quả:",
+      "lovable": {
+        "title": "Hackathon Lovable tiếp cận 200+ người không phải lập trình viên",
+        "paragraph1": "AI.SEA hợp tác với Lovable để tổ chức một hackathon có mục tiêu được thiết kế để tiếp cận các nhà xây dựng bên ngoài đối tượng kỹ thuật thông thường của họ.",
+        "paragraph2": "Thay vì kỹ sư, sự kiện đã thu hút 200+ người không phải lập trình viên, bao gồm chủ doanh nghiệp, nhà điều hành và người sáng lập độc lập từ 40-50+ tuổi. Nhiều người tham gia đã đang điều hành các doanh nghiệp thực tế và đang tích cực tìm kiếm công cụ để giao hàng nhanh hơn mà không cần đội ngũ kỹ thuật.",
+        "paragraph3": "Trong suốt hackathon, Lovable trở thành công cụ chính mà người tham gia sử dụng để xây dựng landing page, nguyên mẫu và công cụ nội bộ cho các doanh nghiệp hiện có của họ. Đây không phải là thử nghiệm để vui. Đây là việc sử dụng được áp dụng dưới các ràng buộc thương mại thực tế.",
+        "result": "Khóa sản phẩm mạnh mẽ. Người tham gia tiếp tục sử dụng Lovable sau sự kiện vì nó trực tiếp thay thế các quy trình làm việc chậm hơn, đắt hơn mà họ đã trả tiền."
+      },
+      "cursorAnthropic": {
+        "title": "Cursor và Anthropic đã onboard ~700 nhà xây dựng cấp cao ở SEA trong một ngày",
+        "paragraph1": "AI.SEA hợp tác với Cursor, Anthropic và các đối tác hệ sinh thái để tổ chức một trong những hackathon AI lớn nhất của Malaysia.",
+        "paragraph2": "Sự kiện đã thu hút hơn 2.000 lượt đăng ký, với khoảng 1.000 nhà xây dựng tham dự trực tiếp trong một ngày. Khoảng 70% người tham gia là nhà phát triển cấp cao, người sáng lập hoặc trưởng nhóm kỹ thuật, phù hợp chặt chẽ với hồ sơ người dùng lý tưởng cho cả Cursor và Anthropic.",
+        "paragraph3": "Người tham gia tích cực sử dụng các công cụ Cursor và Anthropic trong suốt hackathon để xây dựng và giao hàng các dự án hoạt động dưới áp lực thời gian. Điều này tạo ra onboarding thực hành ngay lập tức, không phải tiếp xúc thụ động.",
+        "paragraph4": "15 đội hàng đầu đã nhận được sự công nhận từ các VC địa phương và đối tác hệ sinh thái bao gồm AWS.",
+        "result": "Trình diễn công khai về cách Cursor và Anthropic tăng tốc độ phát triển, cải thiện chất lượng lặp lại và cho phép các đội giao hàng các sản phẩm đầy tham vọng hơn trong thời hạn chặt chẽ."
+      },
+      "elevenlabs": {
+        "title": "ElevenLabs đã trình diễn một tính năng sản phẩm mới thông qua 150+ nhà xây dựng trong 2 giờ",
+        "paragraph1": "AI.SEA hợp tác với ElevenLabs để tổ chức một hackathon 2 giờ tập trung được thiết kế để giới thiệu một tính năng mới của nền tảng voice AI của nó.",
+        "paragraph2": "150+ nhà xây dựng tham gia một thử thách duy nhất, được phạm vi chặt chẽ: lồng tiếng lại một video ngắn hiện có bằng ElevenLabs. Ràng buộc này buộc mọi người tham gia phải chạm vào tính năng trực tiếp, không chỉ xem demo.",
+        "paragraph3": "Định dạng cuộc thi khuyến khích meme và sự hài hước, giảm rào cản tham gia trong khi vẫn yêu cầu sử dụng sản phẩm thực tế. Người tham gia được yêu cầu công khai demo đầu ra của họ trên YouTube, tạo phân phối hữu cơ ngoài chính sự kiện.",
+        "result": "Trong vòng hai giờ, ElevenLabs đạt được việc áp dụng thực hành, phản hồi định tính rõ ràng và khả năng hiển thị công khai rộng rãi cho tính năng mới mà không cần chạy chiến dịch ra mắt truyền thống."
+      }
+    },
     "toolPlatform": {
       "title": "Nếu bạn là công cụ hoặc nền tảng.",
       "description": "Chúng tôi thiết kế và chạy các chương trình hướng đến nhà xây dựng như các track hackathon, sprint, các phiên đồng xây dựng và pilot. Điều này mang lại cho bạn sử dụng thực tế, phản hồi kỹ thuật và người dùng sớm, không chỉ ấn tượng.",
@@ -248,7 +319,9 @@
       "title": "Liên hệ với chúng tôi.",
       "description": "Nếu bạn muốn chạy một track, thử nghiệm sản phẩm, tài trợ cho một chương trình hoặc khám phá quan hệ đối tác dài hạn, hãy liên hệ và chúng tôi sẽ phạm vi một cái gì đó cụ thể.",
       "buttonText": "Liên hệ chúng tôi",
-      "contactUrl": "https://airtable.com/appBgmnpu1bJljnxX/pagPGkKttUQAM4nGV/form"
+      "contactUrl": "https://airtable.com/appBgmnpu1bJljnxX/pagPGkKttUQAM4nGV/form",
+      "emailLabel": "Gửi email cho chúng tôi",
+      "emailLink": "mailto:team@aisea.builders?subject=Partnership%20Inquiry&body=Hi%20AI.SEA%20team%2C%0A%0AI%27m%20interested%20in%20working%20with%20AI.SEA.%0A%0A%5BPlease%20tell%20us%20about%20your%20organization%20and%20what%20kind%20of%20partnership%20you%27re%20interested%20in%5D%0A%0AThanks%2C"
     }
   }
 }
