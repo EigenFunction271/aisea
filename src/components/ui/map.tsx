@@ -31,15 +31,6 @@ interface LabelPosition {
   lng?: number;
 }
 
-// Asia-Pacific (APAC) bounding box
-// Covers East Asia, Southeast Asia, Oceania, and parts of South Asia
-const APAC_BOUNDS = {
-  minLat: -40,  // Includes Australia and New Zealand
-  maxLat: 50,   // Includes northern China, Japan, Korea
-  minLng: 70,   // Includes India and western Asia
-  maxLng: 180,  // Includes Pacific islands
-};
-
 // Full world bounds for projection
 const WORLD_WIDTH = 800;
 const WORLD_HEIGHT = 400;
@@ -89,23 +80,9 @@ export function WorldMap({
     return { x, y };
   };
 
-  // Calculate APAC-focused viewBox
-  const apacViewBox = useMemo(() => {
-    const apacMinX = (APAC_BOUNDS.minLng + 180) * (WORLD_WIDTH / 360);
-    const apacMaxX = (APAC_BOUNDS.maxLng + 180) * (WORLD_WIDTH / 360);
-    const apacMinY = (90 - APAC_BOUNDS.maxLat) * (WORLD_HEIGHT / 180);
-    const apacMaxY = (90 - APAC_BOUNDS.minLat) * (WORLD_HEIGHT / 180);
-    
-    // Add padding (10% on each side for better framing)
-    const paddingX = (apacMaxX - apacMinX) * 0.1;
-    const paddingY = (apacMaxY - apacMinY) * 0.1;
-    
-    const viewX = Math.max(0, apacMinX - paddingX);
-    const viewY = Math.max(0, apacMinY - paddingY);
-    const viewWidth = Math.min(WORLD_WIDTH, apacMaxX - apacMinX + paddingX * 2);
-    const viewHeight = Math.min(WORLD_HEIGHT, apacMaxY - apacMinY + paddingY * 2);
-    
-    return { x: viewX, y: viewY, width: viewWidth, height: viewHeight };
+  // Full world viewBox
+  const worldViewBox = useMemo(() => {
+    return { x: 0, y: 0, width: WORLD_WIDTH, height: WORLD_HEIGHT };
   }, []);
 
   // Memoize projected points to avoid recalculation
@@ -223,21 +200,15 @@ export function WorldMap({
   const pauseTime = 1.5; // Reduced from 2
   const fullCycleDuration = totalAnimationTime + pauseTime;
 
-  // Calculate image crop to focus on APAC region
+  // Full world image display
   const imageCropStyle = useMemo(() => {
-    const leftPercent = (apacViewBox.x / WORLD_WIDTH) * 100;
-    const topPercent = (apacViewBox.y / WORLD_HEIGHT) * 100;
-    const widthPercent = (apacViewBox.width / WORLD_WIDTH) * 100;
-    const heightPercent = (apacViewBox.height / WORLD_HEIGHT) * 100;
-    const scale = 100 / Math.min(widthPercent, heightPercent);
-    
     return {
-      objectPosition: `${leftPercent + widthPercent / 2}% ${topPercent + heightPercent / 2}%`,
+      objectPosition: 'center center',
       objectFit: 'cover' as const,
-      transform: `scale(${scale})`,
+      transform: 'scale(1)',
       transformOrigin: 'center center',
     };
-  }, [apacViewBox]);
+  }, []);
 
   return (
     <div className="w-full aspect-[2/1] md:aspect-[2.5/1] lg:aspect-[2/1] dark:bg-black bg-white rounded-lg relative font-sans overflow-hidden">
@@ -255,7 +226,7 @@ export function WorldMap({
       </div>
       <svg
         ref={svgRef}
-        viewBox={`${apacViewBox.x} ${apacViewBox.y} ${apacViewBox.width} ${apacViewBox.height}`}
+        viewBox={`${worldViewBox.x} ${worldViewBox.y} ${worldViewBox.width} ${worldViewBox.height}`}
         className="w-full h-full absolute inset-0 pointer-events-auto select-none"
         preserveAspectRatio="xMidYMid meet"
       >

@@ -506,40 +506,44 @@ export default function Home() {
             <WorldMap
               dots={[
                 {
-                  start: { lat: 3.1390, lng: 101.6869, label: "Kuala Lumpur" },
-                  end: { lat: -6.2088, lng: 106.8456, label: "Jakarta" },
+                  start: { lat: 3.1390, lng: 101.6869, label: undefined },
+                  end: { lat: -6.2088, lng: 106.8456, label: undefined },
                 },
                 {
-                  start: { lat: -6.2088, lng: 106.8456, label: "Jakarta" },
-                  end: { lat: -6.1783, lng: 106.6319, label: undefined }, // Tangerang - too close to Jakarta, label removed
+                  start: { lat: -6.2088, lng: 106.8456, label: undefined },
+                  end: { lat: -6.1783, lng: 106.6319, label: undefined }, // Tangerang
                 },
                 {
-                  start: { lat: -6.2088, lng: 106.8456, label: "Jakarta" },
-                  end: { lat: -8.6705, lng: 115.2126, label: "Bali" },
+                  start: { lat: -6.2088, lng: 106.8456, label: undefined },
+                  end: { lat: -8.6705, lng: 115.2126, label: undefined },
                 },
                 {
-                  start: { lat: 3.1390, lng: 101.6869, label: "Kuala Lumpur" },
-                  end: { lat: 10.8231, lng: 106.6297, label: "Ho Chi Minh" },
+                  start: { lat: 3.1390, lng: 101.6869, label: undefined },
+                  end: { lat: 10.8231, lng: 106.6297, label: undefined },
                 },
                 {
-                  start: { lat: 10.8231, lng: 106.6297, label: "Ho Chi Minh" },
-                  end: { lat: 16.0544, lng: 108.2022, label: undefined }, // Da Nang - label removed to reduce clutter
+                  start: { lat: 10.8231, lng: 106.6297, label: undefined },
+                  end: { lat: 16.0544, lng: 108.2022, label: undefined }, // Da Nang
                 },
                 {
-                  start: { lat: 10.8231, lng: 106.6297, label: "Ho Chi Minh" },
-                  end: { lat: 21.0285, lng: 105.8542, label: "Ha Noi" },
+                  start: { lat: 10.8231, lng: 106.6297, label: undefined },
+                  end: { lat: 21.0285, lng: 105.8542, label: undefined },
                 },
                 {
-                  start: { lat: 3.1390, lng: 101.6869, label: "Kuala Lumpur" },
-                  end: { lat: 35.6762, lng: 139.6503, label: "Tokyo" },
+                  start: { lat: 3.1390, lng: 101.6869, label: undefined },
+                  end: { lat: 35.6762, lng: 139.6503, label: undefined },
                 },
                 {
-                  start: { lat: -6.2088, lng: 106.8456, label: "Jakarta" },
-                  end: { lat: -27.4698, lng: 153.0251, label: "Brisbane" },
+                  start: { lat: -6.2088, lng: 106.8456, label: undefined },
+                  end: { lat: -27.4698, lng: 153.0251, label: undefined },
+                },
+                {
+                  start: { lat: 3.1390, lng: 101.6869, label: undefined },
+                  end: { lat: 19.0760, lng: 72.8777, label: undefined }, // Mumbai
                 },
               ]}
               lineColor="#0ea5e9"
-              showLabels={true}
+              showLabels={false}
               loop={true}
               animationDuration={2}
             />
@@ -550,10 +554,13 @@ export default function Home() {
               { name: "Kuala Lumpur", flag: "/assets/flags/malaysia.png" },
               { name: "Jakarta", flag: "/assets/flags/indonesia.png" },
               { name: "Bali", flag: "/assets/flags/indonesia.png" },
+              { name: "Tangerang", flag: "/assets/flags/indonesia.png" },
               { name: "Ho Chi Minh", flag: "/assets/flags/vietnam.png" },
               { name: "Ha Noi", flag: "/assets/flags/vietnam.png" },
+              { name: "Da Nang", flag: "/assets/flags/vietnam.png" },
               { name: "Tokyo", flag: "/assets/flags/japan.png" },
               { name: "Brisbane", flag: "/assets/flags/australia.png" },
+              { name: "Mumbai", flag: "/assets/flags/india.png" },
             ]}
             scrollSpeed={0.5}
             direction="left"
