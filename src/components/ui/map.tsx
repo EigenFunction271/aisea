@@ -132,13 +132,13 @@ export function WorldMap({
     const x = (clampedLng + 180) * (WORLD_WIDTH / 360);
     // Map latitude [-90, 90] to y [0, WORLD_HEIGHT]
     // In SVG, y=0 is at top, so we invert: lat 90° (North) = y 0, lat -90° (South) = y WORLD_HEIGHT
-    // If dots appear too high (north), the y values are too small - need to increase them
     // Standard formula: y = (90 - lat) * (WORLD_HEIGHT / 180)
-    // But DottedMap might use a slightly different coordinate system
-    // Adjust y to account for coordinate system - if dots are too high, move them down
+    // If dots appear too high (north), increase y to move them down
     let y = (90 - clampedLat) * (WORLD_HEIGHT / 180);
-    // No adjustment needed - formula is correct for equirectangular projection
-    // If still misaligned, the issue may be with DottedMap's coordinate system
+    // Add vertical offset to correct positioning - dots appearing too high need to move down
+    // Adjust based on aspect ratio mismatch between image and SVG coordinate system
+    const VERTICAL_OFFSET = 2.5; // Move dots down by this amount
+    y += VERTICAL_OFFSET;
     
     return { x, y };
   };
@@ -326,7 +326,7 @@ export function WorldMap({
                 d={pathD}
                 fill="none"
                 stroke="url(#path-gradient)"
-                strokeWidth="1"
+                strokeWidth="0.5"
                 initial={{ pathLength: 0 }}
                 animate={loop ? {
                   pathLength: [0, 0, 1, 1, 0],
@@ -372,7 +372,7 @@ export function WorldMap({
                   <circle
                     cx={proj.start.x}
                     cy={proj.start.y}
-                    r="1.5"
+                    r="1.35"
                     fill={lineColor}
                     filter="url(#glow)"
                     className="drop-shadow-lg"
@@ -382,13 +382,13 @@ export function WorldMap({
                   <circle
                     cx={proj.start.x}
                     cy={proj.start.y}
-                    r="1.5"
+                    r="1.35"
                     fill={lineColor}
                     opacity="0.4"
                   >
                     <animate
                       attributeName="r"
-                      values="1.5;4;1.5"
+                      values="1.35;3.6;1.35"
                       dur="2s"
                       begin="0s"
                       repeatCount="indefinite"
@@ -461,7 +461,7 @@ export function WorldMap({
                   <circle
                     cx={proj.end.x}
                     cy={proj.end.y}
-                    r="1.5"
+                    r="1.35"
                     fill={lineColor}
                     filter="url(#glow)"
                     className="drop-shadow-lg"
@@ -470,13 +470,13 @@ export function WorldMap({
                   <circle
                     cx={proj.end.x}
                     cy={proj.end.y}
-                    r="1.5"
+                    r="1.35"
                     fill={lineColor}
                     opacity="0.4"
                   >
                     <animate
                       attributeName="r"
-                      values="1.5;4;1.5"
+                      values="1.35;3.6;1.35"
                       dur="2s"
                       begin="0.5s"
                       repeatCount="indefinite"
