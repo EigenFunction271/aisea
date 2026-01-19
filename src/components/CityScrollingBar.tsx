@@ -21,10 +21,11 @@ export function CityScrollingBar({
 }: CityScrollingBarProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  // Memoize set width calculation
+  // Memoize set width calculation to avoid recalculation
+  // Following the same pattern as LogoScrollingBar
   const setWidth = useMemo(() => {
-    const itemWidth = 200; // Width per city item (flag + text)
-    const baseGap = 32;
+    const itemWidth = 150; // Approximate width per city item (flag + text + padding)
+    const baseGap = 32; // gap-8 = 2rem = 32px
     return (itemWidth + baseGap) * cities.length;
   }, [cities.length]);
 
@@ -34,25 +35,38 @@ export function CityScrollingBar({
 
     let animationId: number;
     let position = 0;
+    // For left scroll: positive translateX moves container right, content appears to scroll left
+    // For right scroll: negative translateX moves container left, content appears to scroll right
     const speed = direction === "right" ? -scrollSpeed : scrollSpeed;
 
     const animate = () => {
       position += speed;
       
+      // Seamlessly loop - reset position when it completes one set
+      // Since we have duplicate cities, resetting creates infinite scroll illusion
       if (direction === "left") {
+        // Left scroll: position increases (positive)
+        // Reset by subtracting setWidth when >= setWidth
+        // This creates seamless loop because duplicate cities are identical
         if (position >= setWidth) {
           position = position % setWidth;
         }
       } else if (direction === "right") {
+        // Right scroll: position decreases (negative)
+        // Reset by adding setWidth when <= -setWidth
+        // This creates seamless loop because duplicate cities are identical
         if (position <= -setWidth) {
           position = position % setWidth;
         }
       }
       
+      // Direct DOM manipulation to avoid React re-renders on every frame
+      // This significantly improves performance by bypassing React's reconciliation
       scrollContainer.style.transform = `translateX(${position}px)`;
       animationId = requestAnimationFrame(animate);
     };
 
+    // Start animation immediately
     animate();
 
     return () => {
@@ -62,7 +76,9 @@ export function CityScrollingBar({
     };
   }, [scrollSpeed, direction, setWidth]);
 
-  // Duplicate cities for seamless infinite scroll
+  // Memoize duplicated cities to avoid recreation on every render
+  // Duplicate cities many times to ensure seamless infinite scroll
+  // Need enough duplicates to cover viewport width + extra for seamless looping
   const duplicatedCities = useMemo(
     () => [...cities, ...cities, ...cities, ...cities, ...cities, ...cities],
     [cities]

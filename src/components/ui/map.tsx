@@ -31,9 +31,10 @@ interface LabelPosition {
   lng?: number;
 }
 
-// Full world bounds for projection
-const WORLD_WIDTH = 800;
-const WORLD_HEIGHT = 400;
+// DottedMap SVG coordinate system (2:1 aspect ratio)
+// These match the actual SVG coordinate system from DottedMap
+const WORLD_WIDTH = 200; // DottedMap width when height is 100
+const WORLD_HEIGHT = 100; // DottedMap height
 
 export function WorldMap({ 
   dots = [], 
@@ -62,20 +63,25 @@ export function WorldMap({
     [map, theme]
   );
 
-  // Project point to world coordinates using equirectangular projection
-  // This is a simple cylindrical projection that maps lat/lng directly to x/y
-  // Verified coordinates should match the DottedMap library's projection
+  // DottedMap uses a 2:1 aspect ratio (width:height) for world maps
+  // If height is 100, width is 200 in the SVG coordinate system
+  // But the actual rendered image is scaled to 1056x495
+  // We need to project to the SVG's coordinate system (200x100), not the rendered size
+  const DOTTED_MAP_SVG_WIDTH = 200; // DottedMap width when height is 100
+  const DOTTED_MAP_SVG_HEIGHT = 100; // DottedMap height
+
+  // Project point to DottedMap SVG coordinates using equirectangular projection
+  // The DottedMap SVG uses a 2:1 aspect ratio coordinate system
   const projectPoint = (lat: number, lng: number) => {
     // Clamp coordinates to valid ranges
     const clampedLat = Math.max(-90, Math.min(90, lat));
     const clampedLng = Math.max(-180, Math.min(180, lng));
     
-    // Equirectangular projection (Plate Carrée)
-    // Map longitude [-180, 180] to x [0, WORLD_WIDTH]
-    const x = (clampedLng + 180) * (WORLD_WIDTH / 360);
-    // Map latitude [-90, 90] to y [WORLD_HEIGHT, 0] (inverted because SVG y increases downward)
-    // This matches the standard equirectangular projection used by most map libraries
-    const y = (90 - clampedLat) * (WORLD_HEIGHT / 180);
+    // Equirectangular projection (Plate Carrée) matching DottedMap's coordinate system
+    // Map longitude [-180, 180] to x [0, DOTTED_MAP_SVG_WIDTH]
+    const x = (clampedLng + 180) * (DOTTED_MAP_SVG_WIDTH / 360);
+    // Map latitude [-90, 90] to y [0, DOTTED_MAP_SVG_HEIGHT] (inverted because SVG y increases downward)
+    const y = (90 - clampedLat) * (DOTTED_MAP_SVG_HEIGHT / 180);
     
     return { x, y };
   };

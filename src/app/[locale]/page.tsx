@@ -553,17 +553,17 @@ export default function Home() {
             cities={[
               { name: "Kuala Lumpur", flag: "/assets/flags/malaysia.png" },
               { name: "Jakarta", flag: "/assets/flags/indonesia.png" },
-              { name: "Bali", flag: "/assets/flags/indonesia.png" },
               { name: "Tangerang", flag: "/assets/flags/indonesia.png" },
+              { name: "Bali", flag: "/assets/flags/indonesia.png" },
               { name: "Ho Chi Minh", flag: "/assets/flags/vietnam.png" },
-              { name: "Ha Noi", flag: "/assets/flags/vietnam.png" },
               { name: "Da Nang", flag: "/assets/flags/vietnam.png" },
+              { name: "Ha Noi", flag: "/assets/flags/vietnam.png" },
               { name: "Tokyo", flag: "/assets/flags/japan.png" },
               { name: "Brisbane", flag: "/assets/flags/australia.png" },
               { name: "Mumbai", flag: "/assets/flags/india.png" },
             ]}
             scrollSpeed={0.5}
-            direction="left"
+            direction="right"
           />
         </div>
       </section>
