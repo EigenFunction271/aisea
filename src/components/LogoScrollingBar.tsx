@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect, useMemo } from "react";
 import { useTranslations } from 'next-intl';
 
 const logos = [
@@ -29,7 +29,13 @@ export function LogoScrollingBar({
 }: LogoScrollingBarProps = {}) {
   const t = useTranslations('whoWeWorkedWith');
   const scrollRef = useRef<HTMLDivElement>(null);
-  const [translateX, setTranslateX] = useState(0);
+
+  // Memoize set width calculation to avoid recalculation
+  const setWidth = useMemo(() => {
+    const logoWidth = 120;
+    const baseGap = 32; // gap-8 = 2rem = 32px
+    return (logoWidth + baseGap) * logos.length;
+  }, []);
 
   useEffect(() => {
     const scrollContainer = scrollRef.current;
@@ -42,12 +48,6 @@ export function LogoScrollingBar({
     const speed = direction === "right" ? -scrollSpeed : scrollSpeed;
 
     const animate = () => {
-      // Calculate the width of one set of logos
-      // Logo width (120px) + gap (32px for gap-8) = 152px per logo
-      const logoWidth = 120;
-      const baseGap = 32; // gap-8 = 2rem = 32px
-      const setWidth = (logoWidth + baseGap) * logos.length;
-      
       position += speed;
       
       // Seamlessly loop - reset position when it completes one set
@@ -56,19 +56,21 @@ export function LogoScrollingBar({
         // Left scroll: position increases (positive)
         // Reset by subtracting setWidth when >= setWidth
         // This creates seamless loop because duplicate logos are identical
-        while (position >= setWidth) {
-          position -= setWidth;
+        if (position >= setWidth) {
+          position = position % setWidth;
         }
       } else if (direction === "right") {
         // Right scroll: position decreases (negative)
         // Reset by adding setWidth when <= -setWidth
         // This creates seamless loop because duplicate logos are identical
-        while (position <= -setWidth) {
-          position += setWidth;
+        if (position <= -setWidth) {
+          position = position % setWidth;
         }
       }
       
-      setTranslateX(position);
+      // Direct DOM manipulation to avoid React re-renders on every frame
+      // This significantly improves performance by bypassing React's reconciliation
+      scrollContainer.style.transform = `translateX(${position}px)`;
       animationId = requestAnimationFrame(animate);
     };
 
@@ -80,11 +82,15 @@ export function LogoScrollingBar({
         cancelAnimationFrame(animationId);
       }
     };
-  }, [scrollSpeed, direction]);
+  }, [scrollSpeed, direction, setWidth]);
 
+  // Memoize duplicated logos to avoid recreation on every render
   // Duplicate logos many times to ensure seamless infinite scroll
   // Need enough duplicates to cover viewport width + extra for seamless looping
-  const duplicatedLogos = [...logos, ...logos, ...logos, ...logos, ...logos, ...logos];
+  const duplicatedLogos = useMemo(
+    () => [...logos, ...logos, ...logos, ...logos, ...logos, ...logos],
+    []
+  );
 
   return (
     <section className="relative z-10 w-full bg-black py-12 md:py-16">
@@ -100,7 +106,6 @@ export function LogoScrollingBar({
             ref={scrollRef}
             className="flex gap-8 md:gap-12 lg:gap-16"
             style={{
-              transform: `translateX(${translateX}px)`,
               willChange: "transform",
               width: "max-content",
             }}

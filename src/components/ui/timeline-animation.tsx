@@ -26,17 +26,20 @@ export function TimelineContent({
   const ref = useRef(null);
   const isInView = useInView(timelineRef || ref, { once: true, margin: "-100px" });
 
+  // Optimized: Removed expensive filter blur, using opacity + transform instead
+  // Filter blur causes expensive GPU repaints. Opacity + transform is hardware-accelerated.
   const defaultVariants: Variants = {
     hidden: {
       opacity: 0,
-      filter: "blur(10px)",
+      y: 10,
     },
     visible: (i: number) => ({
       opacity: 1,
-      filter: "blur(0px)",
+      y: 0,
       transition: {
         delay: i * 0.1,
         duration: 0.7,
+        ease: "easeOut",
       },
     }),
   };

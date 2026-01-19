@@ -215,10 +215,20 @@ extend({ CPPNShaderMaterial });
 function ShaderPlane() {
   const meshRef = useRef<THREE.Mesh>(null!);
   const materialRef = useRef<any>(null!);
+  const lastFrameTime = useRef(0);
+  const frameSkip = useRef(0);
 
   useFrame((state) => {
     if (!materialRef.current) return;
-    materialRef.current.iTime = state.clock.elapsedTime;
+    
+    // Throttle updates to ~60fps max to reduce CPU usage
+    const now = state.clock.elapsedTime;
+    if (now - lastFrameTime.current < 0.016) {
+      return;
+    }
+    lastFrameTime.current = now;
+    
+    materialRef.current.iTime = now;
     const { width, height } = state.size;
     materialRef.current.iResolution.set(width, height);
   });
@@ -262,8 +272,15 @@ function ShaderBackground() {
     <div ref={canvasRef} className="bg-black absolute inset-0 -z-10 w-full h-full pointer-events-none" aria-hidden>
       <Canvas
         camera={camera}
-        gl={{ antialias: true, alpha: false }}
+        gl={{ 
+          antialias: true, 
+          alpha: false,
+          powerPreference: "high-performance",
+          stencil: false,
+          depth: false,
+        }}
         dpr={[1, 2]}
+        performance={{ min: 0.5 }}
         style={{ width: '100%', height: '100%', pointerEvents: 'none' }}
       >
         <ShaderPlane />

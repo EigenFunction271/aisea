@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, useMemo } from "react";
+import { useRef, useState, useMemo, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import DottedMap from "dotted-map";
 import Image from "next/image";
@@ -17,6 +17,29 @@ interface MapProps {
   animationDuration?: number;
   loop?: boolean;
 }
+
+interface LabelPosition {
+  x: number;
+  y: number;
+  label: string;
+  originalX: number;
+  originalY: number;
+  width: number;
+  height: number;
+  needsLeaderLine?: boolean;
+}
+
+// Southeast Asia bounding box
+const SEA_BOUNDS = {
+  minLat: -10,
+  maxLat: 30,
+  minLng: 95,
+  maxLng: 140,
+};
+
+// Full world bounds for projection
+const WORLD_WIDTH = 800;
+const WORLD_HEIGHT = 400;
 
 export function WorldMap({ 
   dots = [], 
@@ -45,41 +68,185 @@ export function WorldMap({
     [map, theme]
   );
 
+  // Project point to world coordinates using equirectangular projection
+  // This is a simple cylindrical projection that maps lat/lng directly to x/y
+  // Verified coordinates should match the DottedMap library's projection
   const projectPoint = (lat: number, lng: number) => {
-    const x = (lng + 180) * (800 / 360);
-    const y = (90 - lat) * (400 / 180);
+    // Clamp coordinates to valid ranges
+    const clampedLat = Math.max(-90, Math.min(90, lat));
+    const clampedLng = Math.max(-180, Math.min(180, lng));
+    
+    // Equirectangular projection (Plate Carrée)
+    // Map longitude [-180, 180] to x [0, WORLD_WIDTH]
+    const x = (clampedLng + 180) * (WORLD_WIDTH / 360);
+    // Map latitude [-90, 90] to y [WORLD_HEIGHT, 0] (inverted because SVG y increases downward)
+    // This matches the standard equirectangular projection used by most map libraries
+    const y = (90 - clampedLat) * (WORLD_HEIGHT / 180);
+    
     return { x, y };
   };
 
-  const createCurvedPath = (
+  // Calculate SEA-focused viewBox
+  const seaViewBox = useMemo(() => {
+    const seaMinX = (SEA_BOUNDS.minLng + 180) * (WORLD_WIDTH / 360);
+    const seaMaxX = (SEA_BOUNDS.maxLng + 180) * (WORLD_WIDTH / 360);
+    const seaMinY = (90 - SEA_BOUNDS.maxLat) * (WORLD_HEIGHT / 180);
+    const seaMaxY = (90 - SEA_BOUNDS.minLat) * (WORLD_HEIGHT / 180);
+    
+    // Add padding (20% on each side)
+    const paddingX = (seaMaxX - seaMinX) * 0.2;
+    const paddingY = (seaMaxY - seaMinY) * 0.2;
+    
+    const viewX = Math.max(0, seaMinX - paddingX);
+    const viewY = Math.max(0, seaMinY - paddingY);
+    const viewWidth = Math.min(WORLD_WIDTH, seaMaxX - seaMinX + paddingX * 2);
+    const viewHeight = Math.min(WORLD_HEIGHT, seaMaxY - seaMinY + paddingY * 2);
+    
+    return { x: viewX, y: viewY, width: viewWidth, height: viewHeight };
+  }, []);
+
+  // Memoize projected points to avoid recalculation
+  const projectedPoints = useMemo(() => {
+    return dots.map(dot => ({
+      start: projectPoint(dot.start.lat, dot.start.lng),
+      end: projectPoint(dot.end.lat, dot.end.lng),
+      startLabel: dot.start.label,
+      endLabel: dot.end.label,
+    }));
+  }, [dots]);
+
+  // Optimized label positioning with reduced iterations
+  const labelPositions = useMemo(() => {
+    if (!showLabels) return [];
+    
+    const positions: LabelPosition[] = [];
+    const labelWidth = 100;
+    const labelHeight = 30;
+    const minDistance = 60;
+    
+    // Collect all label positions using memoized points
+    projectedPoints.forEach((proj, i) => {
+      if (proj.startLabel) {
+        positions.push({
+          x: proj.start.x - labelWidth / 2,
+          y: proj.start.y - 35,
+          label: proj.startLabel,
+          originalX: proj.start.x,
+          originalY: proj.start.y,
+          width: labelWidth,
+          height: labelHeight,
+        });
+      }
+      if (proj.endLabel) {
+        positions.push({
+          x: proj.end.x - labelWidth / 2,
+          y: proj.end.y - 35,
+          label: proj.endLabel,
+          originalX: proj.end.x,
+          originalY: proj.end.y,
+          width: labelWidth,
+          height: labelHeight,
+        });
+      }
+    });
+
+    // Optimized overlap resolution - reduced iterations
+    const resolvedPositions = positions.map((pos, i) => {
+      let adjustedX = pos.x;
+      let adjustedY = pos.y;
+      const maxAttempts = 20; // Reduced from 50
+      
+      for (let attempt = 0; attempt < maxAttempts; attempt++) {
+        let hasOverlap = false;
+        
+        for (let j = 0; j < positions.length; j++) {
+          if (i === j) continue;
+          
+          const other = positions[j];
+          const dx = adjustedX - other.x;
+          const dy = adjustedY - other.y;
+          const distanceSq = dx * dx + dy * dy; // Use squared distance to avoid sqrt
+          
+          if (distanceSq < minDistance * minDistance) {
+            hasOverlap = true;
+            const distance = Math.sqrt(distanceSq);
+            const angle = Math.atan2(dy, dx);
+            const pushDistance = minDistance - distance + 5;
+            adjustedX += Math.cos(angle) * pushDistance;
+            adjustedY += Math.sin(angle) * pushDistance;
+            
+            adjustedX = Math.max(0, Math.min(WORLD_WIDTH - labelWidth, adjustedX));
+            adjustedY = Math.max(0, Math.min(WORLD_HEIGHT - labelHeight, adjustedY));
+          }
+        }
+        
+        if (!hasOverlap) break;
+      }
+      
+      const finalY = adjustedY < pos.originalY - 20 ? adjustedY : pos.originalY - 45;
+      const offsetX = Math.abs(adjustedX - (pos.originalX - labelWidth / 2));
+      const offsetY = Math.abs(finalY - (pos.originalY - 35));
+      
+      return {
+        ...pos,
+        x: adjustedX,
+        y: finalY,
+        needsLeaderLine: offsetX > 10 || offsetY > 10,
+      };
+    });
+    
+    return resolvedPositions;
+  }, [projectedPoints, showLabels]);
+
+  // Memoize path creation
+  const createCurvedPath = useCallback((
     start: { x: number; y: number },
     end: { x: number; y: number }
   ) => {
     const midX = (start.x + end.x) / 2;
     const midY = Math.min(start.y, end.y) - 50;
     return `M ${start.x} ${start.y} Q ${midX} ${midY} ${end.x} ${end.y}`;
-  };
+  }, []);
 
-  // Calculate animation timing
-  const staggerDelay = 0.3;
+  // Simplified animation timing
+  const staggerDelay = 0.2; // Reduced from 0.3
   const totalAnimationTime = dots.length * staggerDelay + animationDuration;
-  const pauseTime = 2; // Pause for 2 seconds when all paths are drawn
+  const pauseTime = 1.5; // Reduced from 2
   const fullCycleDuration = totalAnimationTime + pauseTime;
+
+  // Calculate image crop to focus on SEA region
+  const imageCropStyle = useMemo(() => {
+    const leftPercent = (seaViewBox.x / WORLD_WIDTH) * 100;
+    const topPercent = (seaViewBox.y / WORLD_HEIGHT) * 100;
+    const widthPercent = (seaViewBox.width / WORLD_WIDTH) * 100;
+    const heightPercent = (seaViewBox.height / WORLD_HEIGHT) * 100;
+    const scale = 100 / Math.min(widthPercent, heightPercent);
+    
+    return {
+      objectPosition: `${leftPercent + widthPercent / 2}% ${topPercent + heightPercent / 2}%`,
+      objectFit: 'cover' as const,
+      transform: `scale(${scale})`,
+      transformOrigin: 'center center',
+    };
+  }, [seaViewBox]);
 
   return (
     <div className="w-full aspect-[2/1] md:aspect-[2.5/1] lg:aspect-[2/1] dark:bg-black bg-white rounded-lg relative font-sans overflow-hidden">
-      <Image
-        src={`data:image/svg+xml;utf8,${encodeURIComponent(svgMap)}`}
-        className="h-full w-full [mask-image:linear-gradient(to_bottom,transparent,white_10%,white_90%,transparent)] pointer-events-none select-none object-cover"
-        alt="world map"
-        height="495"
-        width="1056"
-        draggable={false}
-        priority
-      />
+      <div className="absolute inset-0 overflow-hidden">
+        <Image
+          src={`data:image/svg+xml;utf8,${encodeURIComponent(svgMap)}`}
+          className="h-full w-full pointer-events-none select-none"
+          alt="world map"
+          height="495"
+          width="1056"
+          draggable={false}
+          priority
+          style={imageCropStyle}
+        />
+      </div>
       <svg
         ref={svgRef}
-        viewBox="0 0 800 400"
+        viewBox={`${seaViewBox.x} ${seaViewBox.y} ${seaViewBox.width} ${seaViewBox.height}`}
         className="w-full h-full absolute inset-0 pointer-events-auto select-none"
         preserveAspectRatio="xMidYMid meet"
       >
@@ -99,13 +266,13 @@ export function WorldMap({
               <feMergeNode in="SourceGraphic" />
             </feMerge>
           </filter>
+          
         </defs>
 
-        {dots.map((dot, i) => {
-          const startPoint = projectPoint(dot.start.lat, dot.start.lng);
-          const endPoint = projectPoint(dot.end.lat, dot.end.lng);
+        {projectedPoints.map((proj, i) => {
+          const pathD = createCurvedPath(proj.start, proj.end);
           
-          // Calculate keyframe times for this specific path
+          // Simplified animation timing
           const startTime = (i * staggerDelay) / fullCycleDuration;
           const endTime = (i * staggerDelay + animationDuration) / fullCycleDuration;
           const resetTime = totalAnimationTime / fullCycleDuration;
@@ -113,7 +280,7 @@ export function WorldMap({
           return (
             <g key={`path-group-${i}`}>
               <motion.path
-                d={createCurvedPath(startPoint, endPoint)}
+                d={pathD}
                 fill="none"
                 stroke="url(#path-gradient)"
                 strokeWidth="1"
@@ -134,171 +301,194 @@ export function WorldMap({
                   delay: i * staggerDelay,
                   ease: "easeInOut",
                 }}
+                style={{ 
+                  willChange: 'pathLength',
+                  // Optimize rendering performance
+                  shapeRendering: 'optimizeSpeed',
+                }}
               />
               
-              {loop && (
-                <motion.circle
-                  r="4"
-                  fill={lineColor}
-                  initial={{ offsetDistance: "0%", opacity: 0 }}
-                  animate={{
-                    offsetDistance: [null, "0%", "100%", "100%", "100%"],
-                    opacity: [0, 0, 1, 0, 0],
-                  }}
-                  transition={{
-                    duration: fullCycleDuration,
-                    times: [0, startTime, endTime, resetTime, 1],
-                    ease: "easeInOut",
-                    repeat: Infinity,
-                    repeatDelay: 0,
-                  }}
-                  style={{
-                    offsetPath: `path('${createCurvedPath(startPoint, endPoint)}')`,
-                  }}
-                />
-              )}
+              {/* Simplified: Remove animated circle for better performance */}
             </g>
           );
         })}
 
-        {dots.map((dot, i) => {
-          const startPoint = projectPoint(dot.start.lat, dot.start.lng);
-          const endPoint = projectPoint(dot.end.lat, dot.end.lng);
+        {projectedPoints.map((proj, i) => {
+          const dot = dots[i];
           
           return (
             <g key={`points-group-${i}`}>
               {/* Start Point */}
               <g key={`start-${i}`}>
-                <motion.g
-                  onHoverStart={() => setHoveredLocation(dot.start.label || `Location ${i}`)}
-                  onHoverEnd={() => setHoveredLocation(null)}
-                  className="cursor-pointer"
-                  whileHover={{ scale: 1.2 }}
-                  transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                <g
+                  onMouseEnter={() => setHoveredLocation(proj.startLabel || `Location ${i}`)}
+                  onMouseLeave={() => setHoveredLocation(null)}
+                  className="cursor-pointer transition-transform hover:scale-110"
+                  style={{ transformOrigin: `${proj.start.x}px ${proj.start.y}px` }}
                 >
                   <circle
-                    cx={startPoint.x}
-                    cy={startPoint.y}
+                    cx={proj.start.x}
+                    cy={proj.start.y}
                     r="3"
                     fill={lineColor}
                     filter="url(#glow)"
                     className="drop-shadow-lg"
+                    style={{ willChange: 'transform' }}
                   />
+                  {/* Simplified pulsing animation - single ring instead of multiple */}
                   <circle
-                    cx={startPoint.x}
-                    cy={startPoint.y}
+                    cx={proj.start.x}
+                    cy={proj.start.y}
                     r="3"
                     fill={lineColor}
-                    opacity="0.5"
+                    opacity="0.4"
                   >
                     <animate
                       attributeName="r"
-                      from="3"
-                      to="12"
+                      values="3;10;3"
                       dur="2s"
                       begin="0s"
                       repeatCount="indefinite"
                     />
                     <animate
                       attributeName="opacity"
-                      from="0.6"
-                      to="0"
+                      values="0.6;0;0.6"
                       dur="2s"
                       begin="0s"
                       repeatCount="indefinite"
                     />
                   </circle>
-                </motion.g>
+                </g>
                 
-                {showLabels && dot.start.label && (
-                  <motion.g
-                    initial={{ opacity: 0, y: 5 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.5 * i + 0.3, duration: 0.5 }}
-                    className="pointer-events-none"
-                  >
-                    <foreignObject
-                      x={startPoint.x - 50}
-                      y={startPoint.y - 35}
-                      width="100"
-                      height="30"
-                      className="block"
+                {showLabels && proj.startLabel && (() => {
+                  const labelPos = labelPositions.find(p => 
+                    p.label === proj.startLabel && 
+                    Math.abs(p.originalX - proj.start.x) < 1 && 
+                    Math.abs(p.originalY - proj.start.y) < 1
+                  );
+                  if (!labelPos) return null;
+                  
+                  return (
+                    <motion.g
+                      initial={{ opacity: 0, y: 5 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.3 + i * 0.1, duration: 0.5 }}
+                      className="pointer-events-none"
                     >
-                      <div className="flex items-center justify-center h-full">
-                        <span className="text-sm font-medium px-2 py-0.5 rounded-md bg-white/95 dark:bg-black/95 text-black dark:text-white border border-gray-200 dark:border-gray-700 shadow-sm">
-                          {dot.start.label}
-                        </span>
-                      </div>
-                    </foreignObject>
-                  </motion.g>
-                )}
+                      {labelPos.needsLeaderLine && (
+                        <line
+                          x1={proj.start.x}
+                          y1={proj.start.y}
+                          x2={labelPos.x + labelPos.width / 2}
+                          y2={labelPos.y + labelPos.height / 2}
+                          stroke={lineColor}
+                          strokeWidth="0.5"
+                          strokeOpacity="0.3"
+                          strokeDasharray="2,2"
+                        />
+                      )}
+                      <foreignObject
+                        x={labelPos.x}
+                        y={labelPos.y}
+                        width={labelPos.width}
+                        height={labelPos.height}
+                        className="block"
+                      >
+                        <div className="flex items-center justify-center h-full">
+                          <span className="text-sm font-medium px-2 py-0.5 rounded-md bg-white/95 dark:bg-black/95 text-black dark:text-white border border-gray-200 dark:border-gray-700 shadow-sm">
+                            {labelPos.label}
+                          </span>
+                        </div>
+                      </foreignObject>
+                    </motion.g>
+                  );
+                })()}
               </g>
               
               {/* End Point */}
               <g key={`end-${i}`}>
-                <motion.g
-                  onHoverStart={() => setHoveredLocation(dot.end.label || `Destination ${i}`)}
-                  onHoverEnd={() => setHoveredLocation(null)}
-                  className="cursor-pointer"
-                  whileHover={{ scale: 1.2 }}
-                  transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                <g
+                  onMouseEnter={() => setHoveredLocation(proj.endLabel || `Destination ${i}`)}
+                  onMouseLeave={() => setHoveredLocation(null)}
+                  className="cursor-pointer transition-transform hover:scale-110"
+                  style={{ transformOrigin: `${proj.end.x}px ${proj.end.y}px` }}
                 >
                   <circle
-                    cx={endPoint.x}
-                    cy={endPoint.y}
+                    cx={proj.end.x}
+                    cy={proj.end.y}
                     r="3"
                     fill={lineColor}
                     filter="url(#glow)"
                     className="drop-shadow-lg"
+                    style={{ willChange: 'transform' }}
                   />
                   <circle
-                    cx={endPoint.x}
-                    cy={endPoint.y}
+                    cx={proj.end.x}
+                    cy={proj.end.y}
                     r="3"
                     fill={lineColor}
-                    opacity="0.5"
+                    opacity="0.4"
                   >
                     <animate
                       attributeName="r"
-                      from="3"
-                      to="12"
+                      values="3;10;3"
                       dur="2s"
                       begin="0.5s"
                       repeatCount="indefinite"
                     />
                     <animate
                       attributeName="opacity"
-                      from="0.6"
-                      to="0"
+                      values="0.6;0;0.6"
                       dur="2s"
                       begin="0.5s"
                       repeatCount="indefinite"
                     />
                   </circle>
-                </motion.g>
+                </g>
                 
-                {showLabels && dot.end.label && (
-                  <motion.g
-                    initial={{ opacity: 0, y: 5 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.5 * i + 0.5, duration: 0.5 }}
-                    className="pointer-events-none"
-                  >
-                    <foreignObject
-                      x={endPoint.x - 50}
-                      y={endPoint.y - 35}
-                      width="100"
-                      height="30"
-                      className="block"
+                {showLabels && proj.endLabel && (() => {
+                  const labelPos = labelPositions.find(p => 
+                    p.label === proj.endLabel && 
+                    Math.abs(p.originalX - proj.end.x) < 1 && 
+                    Math.abs(p.originalY - proj.end.y) < 1
+                  );
+                  if (!labelPos) return null;
+                  
+                  return (
+                    <motion.g
+                      initial={{ opacity: 0, y: 5 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.5 + i * 0.1, duration: 0.5 }}
+                      className="pointer-events-none"
                     >
-                      <div className="flex items-center justify-center h-full">
-                        <span className="text-sm font-medium px-2 py-0.5 rounded-md bg-white/95 dark:bg-black/95 text-black dark:text-white border border-gray-200 dark:border-gray-700 shadow-sm">
-                          {dot.end.label}
-                        </span>
-                      </div>
-                    </foreignObject>
-                  </motion.g>
-                )}
+                      {labelPos.needsLeaderLine && (
+                        <line
+                          x1={proj.end.x}
+                          y1={proj.end.y}
+                          x2={labelPos.x + labelPos.width / 2}
+                          y2={labelPos.y + labelPos.height / 2}
+                          stroke={lineColor}
+                          strokeWidth="0.5"
+                          strokeOpacity="0.3"
+                          strokeDasharray="2,2"
+                        />
+                      )}
+                      <foreignObject
+                        x={labelPos.x}
+                        y={labelPos.y}
+                        width={labelPos.width}
+                        height={labelPos.height}
+                        className="block"
+                      >
+                        <div className="flex items-center justify-center h-full">
+                          <span className="text-sm font-medium px-2 py-0.5 rounded-md bg-white/95 dark:bg-black/95 text-black dark:text-white border border-gray-200 dark:border-gray-700 shadow-sm">
+                            {labelPos.label}
+                          </span>
+                        </div>
+                      </foreignObject>
+                    </motion.g>
+                  );
+                })()}
               </g>
             </g>
           );
@@ -306,12 +496,13 @@ export function WorldMap({
       </svg>
       
       {/* Mobile Tooltip */}
-      <AnimatePresence>
+      <AnimatePresence mode="wait">
         {hoveredLocation && (
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 10 }}
+            transition={{ duration: 0.2 }}
             className="absolute bottom-4 left-4 bg-white/90 dark:bg-black/90 text-black dark:text-white px-3 py-2 rounded-lg text-sm font-medium backdrop-blur-sm sm:hidden border border-gray-200 dark:border-gray-700"
           >
             {hoveredLocation}
