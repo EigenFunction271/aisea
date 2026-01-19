@@ -2,6 +2,7 @@
 
 import { Navbar1 } from "@/components/ui/navbar";
 import { Button } from "@/components/ui/button";
+import { Mail } from "lucide-react";
 import { useTranslations } from 'next-intl';
 
 export default function WorkWithUsPage() {
@@ -86,19 +87,29 @@ export default function WorkWithUsPage() {
             <p className="text-white/90 text-lg leading-relaxed mb-8">
               {t('getInTouch.description')}
             </p>
-            <Button
-              asChild
-              size="lg"
-              className="font-[family-name:var(--font-geist-mono)] bg-white text-black hover:bg-white/90 font-medium rounded-full"
-            >
-              <a
-                href={t('getInTouch.contactUrl')}
-                target="_blank"
-                rel="noopener noreferrer"
+            <div className="flex items-center gap-4 flex-wrap">
+              <Button
+                asChild
+                size="lg"
+                className="font-[family-name:var(--font-geist-mono)] bg-white text-black hover:bg-white/90 font-medium rounded-full"
               >
-                {t('getInTouch.buttonText')}
+                <a
+                  href={t('getInTouch.contactUrl')}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {t('getInTouch.buttonText')}
+                </a>
+              </Button>
+              <a
+                href={t('getInTouch.emailLink')}
+                className="inline-flex items-center justify-center text-white/70 hover:text-white transition-colors duration-200"
+                aria-label={t('getInTouch.emailLabel')}
+                title={t('getInTouch.emailLabel')}
+              >
+                <Mail className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8" />
               </a>
-            </Button>
+            </div>
           </div>
         </div>
       </div>

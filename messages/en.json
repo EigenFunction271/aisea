@@ -67,6 +67,10 @@
   "whoWeWorkedWith": {
     "title": "Who we've worked with"
   },
+  "globalNetwork": {
+    "title": "Our global network",
+    "subheading": "Join 10,000+ builders already active across the world."
+  },
   "seeAllPastEvents": "See all past events",
   "startChapter": {
     "title": "Start a chapter in your city today",
@@ -244,7 +248,9 @@
       "title": "Get in touch.",
       "description": "If you want to run a track, pilot a product, sponsor a program, or explore a longer-term partnership, reach out and we will scope something concrete.",
       "buttonText": "Contact us",
-      "contactUrl": "https://airtable.com/appBgmnpu1bJljnxX/pagPGkKttUQAM4nGV/form"
+      "contactUrl": "https://airtable.com/appBgmnpu1bJljnxX/pagPGkKttUQAM4nGV/form",
+      "emailLabel": "Send us an email",
+      "emailLink": "mailto:team@aisea.builders?subject=Partnership%20Inquiry&body=Hi%20AI.SEA%20team%2C%0A%0AI%27m%20interested%20in%20working%20with%20AI.SEA.%0A%0A%5BPlease%20tell%20us%20about%20your%20organization%20and%20what%20kind%20of%20partnership%20you%27re%20interested%20in%5D%0A%0AThanks%2C"
     }
   }
 }

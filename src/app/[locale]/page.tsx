@@ -11,12 +11,14 @@ import { useTranslations } from 'next-intl';
 import { BlurFade } from "@/components/ui/blur-fade";
 import { Button } from "@/components/ui/button";
 import { TextShimmer } from "@/components/ui/text-shimmer";
-import { MessageCircle, Instagram, Linkedin, Calendar } from "lucide-react";
+import { Calendar } from "lucide-react";
+import Image from "next/image";
 import { WhatIsAISEA } from "@/components/WhatIsAISEA";
 import { WhatAISeaDoes } from "@/components/WhatAISeaDoes";
 import { HowItWorks } from "@/components/HowItWorks";
 import { LogoScrollingBar } from "@/components/LogoScrollingBar";
 import { Navbar1 } from "@/components/ui/navbar";
+import { WorldMap } from "@/components/ui/map";
 
 // ===================== SHADER =====================
 const vertexShader = `
@@ -272,6 +274,8 @@ const LUMA_REGISTER_URL = "https://luma.com/ai-sea-week";
 const DISCORD_URL = "https://discord.gg/aKsgdBrG";
 const INSTAGRAM_URL = "https://www.instagram.com/aisea.builders/";
 const LINKEDIN_URL = "https://www.linkedin.com/company/ai-sea-week/";
+const X_TWITTER_URL = "https://x.com/home";
+const YOUTUBE_URL = "https://www.youtube.com/@AISEABUILDERS";
 const CALENDAR_URL = "https://luma.com/ai-sea?k=c";
 
 export default function Home() {
@@ -394,6 +398,62 @@ export default function Home() {
       {/* How it Works Section */}
       <section className="relative z-20">
         <HowItWorks />
+      </section>
+
+      {/* Global Network Section */}
+      <section className="relative z-20 py-32 px-4 bg-black">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl md:text-5xl font-semibold text-white mb-4 font-[family-name:var(--font-perfectly-nineties)]">
+              {t('globalNetwork.title')}
+            </h2>
+            <p className="text-lg md:text-xl text-white/80 font-[family-name:var(--font-geist-mono)]">
+              {t('globalNetwork.subheading')}
+            </p>
+          </div>
+          <div className="w-full">
+            <WorldMap
+              dots={[
+                {
+                  start: { lat: 3.1390, lng: 101.6869, label: "Kuala Lumpur" },
+                  end: { lat: -6.2088, lng: 106.8456, label: "Jakarta" },
+                },
+                {
+                  start: { lat: -6.2088, lng: 106.8456, label: "Jakarta" },
+                  end: { lat: -6.1783, lng: 106.6319, label: "Tangerang" },
+                },
+                {
+                  start: { lat: -6.2088, lng: 106.8456, label: "Jakarta" },
+                  end: { lat: -8.6705, lng: 115.2126, label: "Bali" },
+                },
+                {
+                  start: { lat: 3.1390, lng: 101.6869, label: "Kuala Lumpur" },
+                  end: { lat: 10.8231, lng: 106.6297, label: "Ho Chi Minh" },
+                },
+                {
+                  start: { lat: 10.8231, lng: 106.6297, label: "Ho Chi Minh" },
+                  end: { lat: 16.0544, lng: 108.2022, label: "Da Nang" },
+                },
+                {
+                  start: { lat: 10.8231, lng: 106.6297, label: "Ho Chi Minh" },
+                  end: { lat: 21.0285, lng: 105.8542, label: "Ha Noi" },
+                },
+                {
+                  start: { lat: 3.1390, lng: 101.6869, label: "Kuala Lumpur" },
+                  end: { lat: 35.6762, lng: 139.6503, label: "Tokyo" },
+                },
+                {
+                  start: { lat: -6.2088, lng: 106.8456, label: "Jakarta" },
+                  end: { lat: -27.4698, lng: 153.0251, label: "Brisbane" },
+                },
+              ]}
+              lineColor="#0ea5e9"
+              showLabels={true}
+              loop={true}
+              animationDuration={2}
+            />
+          </div>
+        </div>
       </section>
 
       {/* Logo Scrolling Bar */}
