@@ -56,10 +56,12 @@ export const GlassFrame = ({
       uTexture: { value: null },
       winResolution: {
         value: new THREE.Vector2(
-          window.innerWidth,
-          window.innerHeight
+          typeof window !== 'undefined' ? window.innerWidth : 1920,
+          typeof window !== 'undefined' ? window.innerHeight : 1080
         ).multiplyScalar(
-          Math.min(window.devicePixelRatio, FRAME_DEFAULTS.MAX_PIXEL_RATIO)
+          typeof window !== 'undefined'
+            ? Math.min(window.devicePixelRatio, FRAME_DEFAULTS.MAX_PIXEL_RATIO)
+            : 1
         ),
       },
       uIorR: { value: DISPERSION_CONFIG.IOR.RED },
@@ -128,9 +130,10 @@ function renderBackside(
   gl.setRenderTarget(renderTarget);
   gl.render(scene, camera);
 
-  // @ts-ignore - ShaderMaterial uniforms are not properly typed
+  // @ts-ignore - ShaderMaterial uniforms are not properly typed in Three.js types
+  // The material is guaranteed to be ShaderMaterial at runtime, but TypeScript doesn't know this
   mesh.material.uniforms.uTexture.value = renderTarget.texture;
-  // @ts-ignore
+  // @ts-ignore - ShaderMaterial side property exists but isn't in the base Material type
   mesh.material.side = THREE.BackSide;
   mesh.visible = true;
 }
@@ -145,8 +148,9 @@ function renderFrontside(
   gl.setRenderTarget(renderTarget);
   gl.render(scene, camera);
 
-  // @ts-ignore - ShaderMaterial uniforms are not properly typed
+  // @ts-ignore - ShaderMaterial uniforms are not properly typed in Three.js types
+  // The material is guaranteed to be ShaderMaterial at runtime, but TypeScript doesn't know this
   mesh.material.uniforms.uTexture.value = renderTarget.texture;
-  // @ts-ignore
+  // @ts-ignore - ShaderMaterial side property exists but isn't in the base Material type
   mesh.material.side = THREE.FrontSide;
 }

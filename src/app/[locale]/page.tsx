@@ -18,8 +18,16 @@ import { WhatAISeaDoes } from "@/components/WhatAISeaDoes";
 import { HowItWorks } from "@/components/HowItWorks";
 import { LogoScrollingBar } from "@/components/LogoScrollingBar";
 import { Navbar1 } from "@/components/ui/navbar";
-import { WorldMap } from "@/components/ui/map";
+import dynamic from 'next/dynamic';
 import { Link } from '@/i18n/routing';
+
+const WorldMap = dynamic(
+  () => import('@/components/ui/map').then(mod => ({ default: mod.WorldMap })),
+  {
+    ssr: false,
+    loading: () => <div className="w-full h-[400px] bg-black/20 animate-pulse rounded-lg" />
+  }
+);
 
 // ===================== SHADER =====================
 const vertexShader = `
@@ -319,9 +327,6 @@ export default function Home() {
                 href={LUMA_REGISTER_URL}
                 target="_blank"
                 rel="noopener noreferrer"
-                onClick={(e) => {
-                  console.log('Register Now clicked', e);
-                }}
               >
                 {t('hero.registerNow')}
               </a>
@@ -336,9 +341,6 @@ export default function Home() {
                 rel="noopener noreferrer"
                 className="inline-flex items-center justify-center text-white/70 hover:text-white transition-colors duration-200 relative z-20"
                 aria-label="Join Discord"
-                onClick={(e) => {
-                  console.log('Discord clicked', e);
-                }}
               >
                 <Image
                   src="/assets/icons/Discord-Symbol-Blurple.svg"
@@ -354,9 +356,6 @@ export default function Home() {
                 rel="noopener noreferrer"
                 className="inline-flex items-center justify-center text-white/70 hover:text-white transition-colors duration-200 relative z-20"
                 aria-label="Follow on Instagram"
-                onClick={(e) => {
-                  console.log('Instagram clicked', e);
-                }}
               >
                 <Image
                   src="/assets/icons/Instagram_logo.svg"
@@ -372,9 +371,6 @@ export default function Home() {
                 rel="noopener noreferrer"
                 className="inline-flex items-center justify-center text-white/70 hover:text-white transition-colors duration-200 relative z-20"
                 aria-label="Follow on LinkedIn"
-                onClick={(e) => {
-                  console.log('LinkedIn clicked', e);
-                }}
               >
                 <Image
                   src="/assets/icons/LinkedIn_logo.svg"
@@ -390,9 +386,6 @@ export default function Home() {
                 rel="noopener noreferrer"
                 className="inline-flex items-center justify-center text-white/70 hover:text-white transition-colors duration-200 relative z-20"
                 aria-label="Follow on X"
-                onClick={(e) => {
-                  console.log('X clicked', e);
-                }}
               >
                 <Image
                   src="/assets/icons/X_Twitter_logo.svg"
@@ -408,9 +401,6 @@ export default function Home() {
                 rel="noopener noreferrer"
                 className="inline-flex items-center justify-center text-white/70 hover:text-white transition-colors duration-200 relative z-20"
                 aria-label="Subscribe on YouTube"
-                onClick={(e) => {
-                  console.log('YouTube clicked', e);
-                }}
               >
                 <Image
                   src="/assets/icons/YouTube_logo.svg"
@@ -426,9 +416,6 @@ export default function Home() {
                 rel="noopener noreferrer"
                 className="inline-flex items-center justify-center text-white/70 hover:text-white transition-colors duration-200 relative z-20"
                 aria-label="View Calendar"
-                onClick={(e) => {
-                  console.log('Calendar clicked', e);
-                }}
               >
                 <Calendar className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8" />
               </a>

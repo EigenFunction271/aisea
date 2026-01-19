@@ -1,15 +1,21 @@
 import { getRequestConfig } from 'next-intl/server';
 import { routing } from '@/i18n/routing';
 
+// Type guard for locale validation
+const isValidLocale = (loc: string | undefined): loc is typeof routing.locales[number] => {
+  if (!loc) return false;
+  return routing.locales.includes(loc as typeof routing.locales[number]);
+};
+
 export default getRequestConfig(async ({ requestLocale }) => {
   let locale = await requestLocale;
 
-  if (!locale || !routing.locales.includes(locale as any)) {
+  if (!isValidLocale(locale)) {
     locale = routing.defaultLocale;
   }
 
-  // Ensure locale is always a string
-  const finalLocale = locale as string;
+  // Ensure locale is always a string (now type-safe)
+  const finalLocale = locale;
 
   let messages;
   try {
@@ -32,6 +38,10 @@ export default getRequestConfig(async ({ requestLocale }) => {
     }
   } catch (error) {
     // Fallback to default locale if import fails
+    // Log error in development for debugging
+    if (process.env.NODE_ENV === "development") {
+      console.error("Failed to load messages for locale:", finalLocale, error);
+    }
     messages = (await import('../messages/en.json')).default;
   }
 
