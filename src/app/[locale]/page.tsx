@@ -17,6 +17,7 @@ import { WhatIsAISEA } from "@/components/WhatIsAISEA";
 import { WhatAISeaDoes } from "@/components/WhatAISeaDoes";
 import { HowItWorks } from "@/components/HowItWorks";
 import { LogoScrollingBar } from "@/components/LogoScrollingBar";
+import { CityScrollingBar } from "@/components/CityScrollingBar";
 import { Navbar1 } from "@/components/ui/navbar";
 import dynamic from 'next/dynamic';
 import { Link } from '@/i18n/routing';
@@ -454,6 +455,32 @@ export default function Home() {
         <LogoScrollingBar scrollSpeed={1.0} direction="right" showTitle={true} />
       </div>
 
+      {/* See All Past Events and Work With Us Buttons */}
+      <div className="relative z-20 flex justify-center gap-4 py-8 bg-black">
+        <Button
+          asChild
+          variant="outline"
+          className="font-[family-name:var(--font-geist-mono)] bg-transparent border-white/20 text-white hover:bg-white/10 hover:border-white/40 font-medium rounded-full"
+        >
+          <a
+            href="https://luma.com/ai-sea?k=c&period=past"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {t('seeAllPastEvents')}
+          </a>
+        </Button>
+        <Button
+          asChild
+          variant="outline"
+          className="font-[family-name:var(--font-geist-mono)] bg-transparent border-white/20 text-white hover:bg-white/10 hover:border-white/40 font-medium rounded-full"
+        >
+          <Link href="/work-with-us">
+            {t('nav.workWithUs')}
+          </Link>
+        </Button>
+      </div>
+
       {/* What AI.SEA Does Section */}
       <section className="relative z-20">
         <WhatAISeaDoes />
@@ -484,7 +511,7 @@ export default function Home() {
                 },
                 {
                   start: { lat: -6.2088, lng: 106.8456, label: "Jakarta" },
-                  end: { lat: -6.1783, lng: 106.6319, label: "Tangerang" },
+                  end: { lat: -6.1783, lng: 106.6319, label: undefined }, // Tangerang - too close to Jakarta, label removed
                 },
                 {
                   start: { lat: -6.2088, lng: 106.8456, label: "Jakarta" },
@@ -496,7 +523,7 @@ export default function Home() {
                 },
                 {
                   start: { lat: 10.8231, lng: 106.6297, label: "Ho Chi Minh" },
-                  end: { lat: 16.0544, lng: 108.2022, label: "Da Nang" },
+                  end: { lat: 16.0544, lng: 108.2022, label: undefined }, // Da Nang - label removed to reduce clutter
                 },
                 {
                   start: { lat: 10.8231, lng: 106.6297, label: "Ho Chi Minh" },
@@ -517,34 +544,22 @@ export default function Home() {
               animationDuration={2}
             />
           </div>
+          {/* City Scrolling Bar */}
+          <CityScrollingBar
+            cities={[
+              { name: "Kuala Lumpur", flag: "/assets/flags/malaysia.png" },
+              { name: "Jakarta", flag: "/assets/flags/indonesia.png" },
+              { name: "Bali", flag: "/assets/flags/indonesia.png" },
+              { name: "Ho Chi Minh", flag: "/assets/flags/vietnam.png" },
+              { name: "Ha Noi", flag: "/assets/flags/vietnam.png" },
+              { name: "Tokyo", flag: "/assets/flags/japan.png" },
+              { name: "Brisbane", flag: "/assets/flags/australia.png" },
+            ]}
+            scrollSpeed={0.5}
+            direction="left"
+          />
         </div>
       </section>
-
-      {/* See All Past Events and Work With Us Buttons */}
-      <div className="relative z-20 flex justify-center gap-4 py-8 bg-black">
-        <Button
-          asChild
-          variant="outline"
-          className="font-[family-name:var(--font-geist-mono)] bg-transparent border-white/20 text-white hover:bg-white/10 hover:border-white/40 font-medium rounded-full"
-        >
-          <a
-            href="https://luma.com/ai-sea?k=c&period=past"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            {t('seeAllPastEvents')}
-          </a>
-        </Button>
-        <Button
-          asChild
-          variant="outline"
-          className="font-[family-name:var(--font-geist-mono)] bg-transparent border-white/20 text-white hover:bg-white/10 hover:border-white/40 font-medium rounded-full"
-        >
-          <Link href="/work-with-us">
-            {t('nav.workWithUs')}
-          </Link>
-        </Button>
-      </div>
 
       {/* Start a Chapter Section */}
       <section className="relative z-20 py-32 px-4 bg-black">
