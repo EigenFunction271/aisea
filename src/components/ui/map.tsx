@@ -27,6 +27,8 @@ interface LabelPosition {
   width: number;
   height: number;
   needsLeaderLine?: boolean;
+  lat?: number; // Store original lat/lng for verification
+  lng?: number;
 }
 
 // Southeast Asia bounding box
@@ -125,7 +127,9 @@ export function WorldMap({
     const minDistance = 60;
     
     // Collect all label positions using memoized points
+    // Store original coordinates for accurate matching
     projectedPoints.forEach((proj, i) => {
+      const dot = dots[i];
       if (proj.startLabel) {
         positions.push({
           x: proj.start.x - labelWidth / 2,
@@ -135,6 +139,8 @@ export function WorldMap({
           originalY: proj.start.y,
           width: labelWidth,
           height: labelHeight,
+          lat: dot.start.lat,
+          lng: dot.start.lng,
         });
       }
       if (proj.endLabel) {
@@ -146,6 +152,8 @@ export function WorldMap({
           originalY: proj.end.y,
           width: labelWidth,
           height: labelHeight,
+          lat: dot.end.lat,
+          lng: dot.end.lng,
         });
       }
     });
@@ -361,10 +369,12 @@ export function WorldMap({
                 </g>
                 
                 {showLabels && proj.startLabel && (() => {
+                  const dot = dots[i];
+                  // Match by label and coordinates for accuracy
                   const labelPos = labelPositions.find(p => 
                     p.label === proj.startLabel && 
-                    Math.abs(p.originalX - proj.start.x) < 1 && 
-                    Math.abs(p.originalY - proj.start.y) < 1
+                    p.lat === dot.start.lat &&
+                    p.lng === dot.start.lng
                   );
                   if (!labelPos) return null;
                   
@@ -447,10 +457,12 @@ export function WorldMap({
                 </g>
                 
                 {showLabels && proj.endLabel && (() => {
+                  const dot = dots[i];
+                  // Match by label and coordinates for accuracy
                   const labelPos = labelPositions.find(p => 
                     p.label === proj.endLabel && 
-                    Math.abs(p.originalX - proj.end.x) < 1 && 
-                    Math.abs(p.originalY - proj.end.y) < 1
+                    p.lat === dot.end.lat &&
+                    p.lng === dot.end.lng
                   );
                   if (!labelPos) return null;
                   
