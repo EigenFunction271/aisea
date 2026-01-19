@@ -31,10 +31,13 @@ interface LabelPosition {
   lng?: number;
 }
 
-// DottedMap SVG coordinate system (2:1 aspect ratio)
-// These match the actual SVG coordinate system from DottedMap
-const WORLD_WIDTH = 200; // DottedMap width when height is 100
-const WORLD_HEIGHT = 100; // DottedMap height
+// DottedMap coordinate system
+// Inspected SVG shows viewBox="0 0 210 100" (not 200x100!)
+// However, the rendered image is 1056x495 (aspect 2.133:1)
+// To match the image aspect ratio, we adjust WORLD_WIDTH: 100 * (1056/495) = 213.33
+// This ensures vertical alignment between the image and SVG overlay
+const WORLD_WIDTH = 213.33; // Adjusted to match image aspect ratio (1056/495)
+const WORLD_HEIGHT = 100; // Actual SVG height from DottedMap viewBox
 
 export function WorldMap({ 
   dots = [], 
@@ -53,15 +56,62 @@ export function WorldMap({
     []
   );
 
-  const svgMap = useMemo(
-    () => map.getSVG({
+  const svgMap = useMemo(() => {
+    const svg = map.getSVG({
       radius: 0.22,
       color: theme === "dark" ? "#FFFF7F40" : "#00000040",
       shape: "circle",
       backgroundColor: theme === "dark" ? "black" : "white",
-    }),
-    [map, theme]
-  );
+    });
+    
+    // Inspect SVG structure (only log once)
+    if (typeof window !== 'undefined' && !(window as any).__dottedMapInspected) {
+      (window as any).__dottedMapInspected = true;
+      
+      // Extract viewBox
+      const viewBoxMatch = svg.match(/viewBox=['"]([^'"]+)['"]/);
+      const widthMatch = svg.match(/width=['"]([^'"]+)['"]/);
+      const heightMatch = svg.match(/height=['"]([^'"]+)['"]/);
+      
+      console.log("=== DottedMap SVG Inspection ===");
+      if (viewBoxMatch) {
+        const [x, y, width, height] = viewBoxMatch[1].split(' ').map(Number);
+        console.log("viewBox:", viewBoxMatch[1]);
+        console.log(`  x: ${x}, y: ${y}, width: ${width}, height: ${height}`);
+        console.log(`  Aspect ratio: ${width}:${height} = ${(width/height).toFixed(2)}:1`);
+      }
+      if (widthMatch) console.log("width attribute:", widthMatch[1]);
+      if (heightMatch) console.log("height attribute:", heightMatch[1]);
+      
+      // Test projection
+      if (viewBoxMatch) {
+        const [x, y, width, height] = viewBoxMatch[1].split(' ').map(Number);
+        const project = (lat: number, lng: number) => {
+          const px = x + (lng + 180) * (width / 360);
+          const py = y + (90 - lat) * (height / 180);
+          return { x: px, y: py };
+        };
+        
+        console.log("\n=== Test Projections (using viewBox) ===");
+        console.log("Jakarta (-6.2088, 106.8456):", project(-6.2088, 106.8456));
+        console.log("Kuala Lumpur (3.1390, 101.6869):", project(3.1390, 101.6869));
+        console.log("Tokyo (35.6762, 139.6503):", project(35.6762, 139.6503));
+      }
+      
+      console.log("\n=== Current Projection (using WORLD_WIDTH/HEIGHT) ===");
+      console.log(`WORLD_WIDTH: ${WORLD_WIDTH}, WORLD_HEIGHT: ${WORLD_HEIGHT}`);
+      const currentProject = (lat: number, lng: number) => {
+        const px = (lng + 180) * (WORLD_WIDTH / 360);
+        const py = (90 - lat) * (WORLD_HEIGHT / 180);
+        return { x: px, y: py };
+      };
+      console.log("Jakarta:", currentProject(-6.2088, 106.8456));
+      console.log("Kuala Lumpur:", currentProject(3.1390, 101.6869));
+      console.log("Tokyo:", currentProject(35.6762, 139.6503));
+    }
+    
+    return svg;
+  }, [map, theme]);
 
   // DottedMap uses a 2:1 aspect ratio (width:height) for world maps
   // If height is 100, width is 200 in the SVG coordinate system
@@ -71,17 +121,24 @@ export function WorldMap({
   const DOTTED_MAP_SVG_HEIGHT = 100; // DottedMap height
 
   // Project point to DottedMap SVG coordinates using equirectangular projection
-  // The DottedMap SVG uses a 2:1 aspect ratio coordinate system
+  // DottedMap uses standard equirectangular projection with y=0 at top
   const projectPoint = (lat: number, lng: number) => {
     // Clamp coordinates to valid ranges
     const clampedLat = Math.max(-90, Math.min(90, lat));
     const clampedLng = Math.max(-180, Math.min(180, lng));
     
-    // Equirectangular projection (Plate Carrée) matching DottedMap's coordinate system
-    // Map longitude [-180, 180] to x [0, DOTTED_MAP_SVG_WIDTH]
-    const x = (clampedLng + 180) * (DOTTED_MAP_SVG_WIDTH / 360);
-    // Map latitude [-90, 90] to y [0, DOTTED_MAP_SVG_HEIGHT] (inverted because SVG y increases downward)
-    const y = (90 - clampedLat) * (DOTTED_MAP_SVG_HEIGHT / 180);
+    // Equirectangular projection (Plate Carrée)
+    // Map longitude [-180, 180] to x [0, WORLD_WIDTH]
+    const x = (clampedLng + 180) * (WORLD_WIDTH / 360);
+    // Map latitude [-90, 90] to y [0, WORLD_HEIGHT]
+    // In SVG, y=0 is at top, so we invert: lat 90° (North) = y 0, lat -90° (South) = y WORLD_HEIGHT
+    // If dots appear too high (north), the y values are too small - need to increase them
+    // Standard formula: y = (90 - lat) * (WORLD_HEIGHT / 180)
+    // But DottedMap might use a slightly different coordinate system
+    // Adjust y to account for coordinate system - if dots are too high, move them down
+    let y = (90 - clampedLat) * (WORLD_HEIGHT / 180);
+    // No adjustment needed - formula is correct for equirectangular projection
+    // If still misaligned, the issue may be with DottedMap's coordinate system
     
     return { x, y };
   };
@@ -315,7 +372,7 @@ export function WorldMap({
                   <circle
                     cx={proj.start.x}
                     cy={proj.start.y}
-                    r="3"
+                    r="1.5"
                     fill={lineColor}
                     filter="url(#glow)"
                     className="drop-shadow-lg"
@@ -325,13 +382,13 @@ export function WorldMap({
                   <circle
                     cx={proj.start.x}
                     cy={proj.start.y}
-                    r="3"
+                    r="1.5"
                     fill={lineColor}
                     opacity="0.4"
                   >
                     <animate
                       attributeName="r"
-                      values="3;10;3"
+                      values="1.5;4;1.5"
                       dur="2s"
                       begin="0s"
                       repeatCount="indefinite"
@@ -404,7 +461,7 @@ export function WorldMap({
                   <circle
                     cx={proj.end.x}
                     cy={proj.end.y}
-                    r="3"
+                    r="1.5"
                     fill={lineColor}
                     filter="url(#glow)"
                     className="drop-shadow-lg"
@@ -413,13 +470,13 @@ export function WorldMap({
                   <circle
                     cx={proj.end.x}
                     cy={proj.end.y}
-                    r="3"
+                    r="1.5"
                     fill={lineColor}
                     opacity="0.4"
                   >
                     <animate
                       attributeName="r"
-                      values="3;10;3"
+                      values="1.5;4;1.5"
                       dur="2s"
                       begin="0.5s"
                       repeatCount="indefinite"
