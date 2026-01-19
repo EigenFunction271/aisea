@@ -19,6 +19,7 @@ import { HowItWorks } from "@/components/HowItWorks";
 import { LogoScrollingBar } from "@/components/LogoScrollingBar";
 import { Navbar1 } from "@/components/ui/navbar";
 import { WorldMap } from "@/components/ui/map";
+import { Link } from '@/i18n/routing';
 
 // ===================== SHADER =====================
 const vertexShader = `
@@ -274,7 +275,7 @@ const LUMA_REGISTER_URL = "https://luma.com/ai-sea-week";
 const DISCORD_URL = "https://discord.gg/aKsgdBrG";
 const INSTAGRAM_URL = "https://www.instagram.com/aisea.builders/";
 const LINKEDIN_URL = "https://www.linkedin.com/company/ai-sea-week/";
-const X_TWITTER_URL = "https://x.com/home";
+const X_TWITTER_URL = "https://x.com/AI__SEA";
 const YOUTUBE_URL = "https://www.youtube.com/@AISEABUILDERS";
 const CALENDAR_URL = "https://luma.com/ai-sea?k=c";
 
@@ -339,7 +340,13 @@ export default function Home() {
                   console.log('Discord clicked', e);
                 }}
               >
-                <MessageCircle className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8" />
+                <Image
+                  src="/assets/icons/Discord-Symbol-Blurple.svg"
+                  alt="Discord"
+                  width={32}
+                  height={32}
+                  className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8"
+                />
               </a>
               <a
                 href={INSTAGRAM_URL}
@@ -351,7 +358,13 @@ export default function Home() {
                   console.log('Instagram clicked', e);
                 }}
               >
-                <Instagram className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8" />
+                <Image
+                  src="/assets/icons/Instagram_logo.svg"
+                  alt="Instagram"
+                  width={32}
+                  height={32}
+                  className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8"
+                />
               </a>
               <a
                 href={LINKEDIN_URL}
@@ -363,7 +376,49 @@ export default function Home() {
                   console.log('LinkedIn clicked', e);
                 }}
               >
-                <Linkedin className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8" />
+                <Image
+                  src="/assets/icons/LinkedIn_logo.svg"
+                  alt="LinkedIn"
+                  width={32}
+                  height={32}
+                  className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8"
+                />
+              </a>
+              <a
+                href={X_TWITTER_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center text-white/70 hover:text-white transition-colors duration-200 relative z-20"
+                aria-label="Follow on X"
+                onClick={(e) => {
+                  console.log('X clicked', e);
+                }}
+              >
+                <Image
+                  src="/assets/icons/X_Twitter_logo.svg"
+                  alt="X (Twitter)"
+                  width={32}
+                  height={32}
+                  className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8"
+                />
+              </a>
+              <a
+                href={YOUTUBE_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center text-white/70 hover:text-white transition-colors duration-200 relative z-20"
+                aria-label="Subscribe on YouTube"
+                onClick={(e) => {
+                  console.log('YouTube clicked', e);
+                }}
+              >
+                <Image
+                  src="/assets/icons/YouTube_logo.svg"
+                  alt="YouTube"
+                  width={32}
+                  height={32}
+                  className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8"
+                />
               </a>
               <a
                 href={CALENDAR_URL}
@@ -389,6 +444,11 @@ export default function Home() {
       <section className="relative z-20">
         <WhatIsAISEA />
       </section>
+
+      {/* Who we've worked with Section */}
+      <div className="relative z-20 bg-black">
+        <LogoScrollingBar scrollSpeed={1.0} direction="right" showTitle={true} />
+      </div>
 
       {/* What AI.SEA Does Section */}
       <section className="relative z-20">
@@ -456,13 +516,8 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Logo Scrolling Bar */}
-      <div className="relative z-20 bg-black">
-        <LogoScrollingBar scrollSpeed={1.0} direction="right" showTitle={true} />
-      </div>
-      
-      {/* See All Past Events Button */}
-      <div className="relative z-20 flex justify-center py-8 bg-black">
+      {/* See All Past Events and Work With Us Buttons */}
+      <div className="relative z-20 flex justify-center gap-4 py-8 bg-black">
         <Button
           asChild
           variant="outline"
@@ -475,6 +530,15 @@ export default function Home() {
           >
             {t('seeAllPastEvents')}
           </a>
+        </Button>
+        <Button
+          asChild
+          variant="outline"
+          className="font-[family-name:var(--font-geist-mono)] bg-transparent border-white/20 text-white hover:bg-white/10 hover:border-white/40 font-medium rounded-full"
+        >
+          <Link href="/work-with-us">
+            {t('nav.workWithUs')}
+          </Link>
         </Button>
       </div>
 
