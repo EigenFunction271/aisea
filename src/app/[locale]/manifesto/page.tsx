@@ -2,6 +2,9 @@
 
 import { Navbar1 } from "@/components/ui/navbar";
 import { useTranslations } from 'next-intl';
+import Image from 'next/image';
+
+const DISCORD_URL = "https://discord.gg/aKsgdBrG";
 
 export default function ManifestoPage() {
   const t = useTranslations('manifesto');
@@ -277,6 +280,31 @@ export default function ManifestoPage() {
           <p className="text-white/90 text-lg leading-relaxed">
             {t('sections.commitment.paragraph3')}
           </p>
+        </div>
+
+        {/* Discord Link Section */}
+        <div className="mt-16 pt-12 border-t border-white/20 flex flex-col items-center gap-4">
+          <p className="text-white/70 text-sm font-[family-name:var(--font-geist-mono)]">
+            Join our community
+          </p>
+          <a
+            href={DISCORD_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center justify-center gap-3 text-white/80 hover:text-white transition-colors duration-200 group"
+            aria-label="Join Discord"
+          >
+            <Image
+              src="/assets/icons/Discord-Symbol-Blurple.svg"
+              alt="Discord"
+              width={40}
+              height={40}
+              className="w-10 h-10 group-hover:opacity-90 transition-opacity"
+            />
+            <span className="font-[family-name:var(--font-geist-mono)] text-lg">
+              Join us on Discord
+            </span>
+          </a>
         </div>
       </div>
     </div>
