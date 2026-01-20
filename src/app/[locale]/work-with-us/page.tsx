@@ -639,36 +639,6 @@ export default function WorkWithUsPage() {
         </div>
       </section>
 
-      {/* FAQ Section */}
-      <section className="relative z-20 bg-black text-white py-16 md:py-24">
-        <div className="max-w-4xl mx-auto px-4">
-          <h2 className="font-[family-name:var(--font-perfectly-nineties)] text-4xl sm:text-5xl md:text-6xl font-bold text-white text-center mb-12 md:mb-16">
-            {t('faq.title')}
-          </h2>
-          
-          <Accordion type="single" collapsible className="w-full space-y-4">
-            {(t.raw('faq.items') as Array<{ question: string; answer: string[] }>).map((item, index) => (
-              <AccordionItem
-                key={index}
-                value={`item-${index}`}
-                className="border-white/10 bg-white/5 rounded-lg px-6 py-2"
-              >
-                <AccordionTrigger className="font-[family-name:var(--font-geist-mono)] text-lg md:text-xl font-semibold text-white hover:no-underline py-4">
-                  {item.question}
-                </AccordionTrigger>
-                <AccordionContent className="font-[family-name:var(--font-geist-mono)] text-white/90 text-base md:text-lg leading-relaxed pt-2 pb-4">
-                  <div className="space-y-4">
-                    {item.answer.map((paragraph, pIndex) => (
-                      <p key={pIndex}>{paragraph}</p>
-                    ))}
-                  </div>
-                </AccordionContent>
-              </AccordionItem>
-            ))}
-          </Accordion>
-        </div>
-      </section>
-
       {/* Get in touch Section */}
       <section className="relative z-20 bg-black text-white py-16 md:py-24">
         <div className="max-w-7xl mx-auto px-4">
@@ -704,6 +674,36 @@ export default function WorkWithUsPage() {
               <Mail className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8" />
             </a>
           </div>
+        </div>
+      </section>
+
+      {/* FAQ Section */}
+      <section className="relative z-20 bg-black text-white py-16 md:py-24">
+        <div className="max-w-4xl mx-auto px-4">
+          <h2 className="font-[family-name:var(--font-perfectly-nineties)] text-4xl sm:text-5xl md:text-6xl font-bold text-white text-center mb-12 md:mb-16">
+            {t('faq.title')}
+          </h2>
+          
+          <Accordion type="single" collapsible className="w-full space-y-4">
+            {(t.raw('faq.items') as Array<{ question: string; answer: string[] }>).map((item, index) => (
+              <AccordionItem
+                key={index}
+                value={`item-${index}`}
+                className="border-white/10 bg-white/5 rounded-lg px-6 py-2"
+              >
+                <AccordionTrigger className="font-[family-name:var(--font-geist-mono)] text-lg md:text-xl font-semibold text-white hover:no-underline py-4">
+                  {item.question}
+                </AccordionTrigger>
+                <AccordionContent className="font-[family-name:var(--font-geist-mono)] text-white/90 text-base md:text-lg leading-relaxed pt-2 pb-4">
+                  <div className="space-y-4">
+                    {item.answer.map((paragraph, pIndex) => (
+                      <p key={pIndex}>{paragraph}</p>
+                    ))}
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
         </div>
       </section>
     </div>
