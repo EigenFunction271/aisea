@@ -322,6 +322,59 @@
       "contactUrl": "https://airtable.com/appBgmnpu1bJljnxX/pagPGkKttUQAM4nGV/form",
       "emailLabel": "Kirim email kepada kami",
       "emailLink": "mailto:team@aisea.builders?subject=Partnership%20Inquiry&body=Hi%20AI.SEA%20team%2C%0A%0AI%27m%20interested%20in%20working%20with%20AI.SEA.%0A%0A%5BPlease%20tell%20us%20about%20your%20organization%20and%20what%20kind%20of%20partnership%20you%27re%20interested%20in%5D%0A%0AThanks%2C"
+    },
+    "faq": {
+      "title": "FAQ",
+      "items": [
+        {
+          "question": "Apa yang membuat AI.SEA berbeda?",
+          "answer": [
+            "AI.SEA menggabungkan jangkauan regional dengan pencocokan yang tepat.",
+            "Kami mengoperasikan jaringan hub-and-spoke dari komunitas pembangun lokal di seluruh Asia Tenggara. Itu memberi mitra akses ke kumpulan pembangun yang luas, sambil tetap memungkinkan kami untuk menampilkan orang yang tepat untuk alat, masalah, atau kasus penggunaan tertentu.",
+            "Kebanyakan komunitas menawarkan skala atau kedalaman. Kami dibangun untuk melakukan keduanya."
+          ]
+        },
+        {
+          "question": "Dengan siapa Anda bekerja?",
+          "answer": [
+            "Kami bekerja dengan tim yang membangun produk AI serius: alat pengembang, platform, infrastruktur, startup, dan dana yang peduli tentang penggunaan nyata, umpan balik, dan adopsi jangka panjang.",
+            "Jika Anda mencari eksposur logo atau sponsor pasif, kami tidak cocok."
+          ]
+        },
+        {
+          "question": "Apa yang sebenarnya melibatkan \"bekerja dengan AI.SEA\"?",
+          "answer": [
+            "Ini berarti berkolaborasi pada inisiatif yang digerakkan oleh pembangunan. Ini dapat mencakup jalur hackathon, sesi co-build, sprint, program pilot, atau aktivasi yang dikoordinasikan secara regional — semuanya dirancang di sekitar penggunaan dan eksekusi nyata."
+          ]
+        },
+        {
+          "question": "Bagaimana Anda memastikan kualitas, bukan hanya volume?",
+          "answer": [
+            "Distribusi terjadi di tingkat komunitas. Seleksi terjadi di tingkat pembangun.",
+            "Kami tidak menyiarkan segalanya kepada semua orang. Kami merutekan peluang melalui pemimpin lokal dan format yang menampilkan pembangun dengan keterampilan, niat, dan kesiapan yang tepat untuk mengirimkan."
+          ]
+        },
+        {
+          "question": "Apa yang didapat mitra dari ini?",
+          "answer": [
+            "Akses ke pembangun berisiko tinggi di seluruh SEA, penggunaan produk nyata dalam build langsung, umpan balik praktisi langsung, dan kemampuan untuk mengaktifkan beberapa pasar melalui satu permukaan yang dikoordinasikan."
+          ]
+        },
+        {
+          "question": "Bisakah kami menjalankan sesuatu secara lokal atau regional?",
+          "answer": [
+            "Keduanya mungkin.",
+            "Anda dapat mengaktifkan satu kota atau komunitas, atau menjalankan upaya terkoordinasi di beberapa negara menggunakan format dan infrastruktur bersama."
+          ]
+        },
+        {
+          "question": "Bagaimana kami memulai?",
+          "answer": [
+            "Hubungi kami dengan apa yang Anda bangun, siapa yang ingin Anda jangkau, dan seperti apa kesuksesan bagi Anda.",
+            "Jika ada kecocokan yang jelas, kami akan merancang sesuatu yang konkret dan fokus pada eksekusi bersama."
+          ]
+        }
+      ]
     }
   }
 }

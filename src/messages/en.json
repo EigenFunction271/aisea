@@ -322,6 +322,59 @@
       "contactUrl": "https://airtable.com/appBgmnpu1bJljnxX/pagPGkKttUQAM4nGV/form",
       "emailLabel": "Send us an email",
       "emailLink": "mailto:team@aisea.builders?subject=Partnership%20Inquiry&body=Hi%20AI.SEA%20team%2C%0A%0AI%27m%20interested%20in%20working%20with%20AI.SEA.%0A%0A%5BPlease%20tell%20us%20about%20your%20organization%20and%20what%20kind%20of%20partnership%20you%27re%20interested%20in%5D%0A%0AThanks%2C"
+    },
+    "faq": {
+      "title": "FAQ",
+      "items": [
+        {
+          "question": "What makes AI.SEA different?",
+          "answer": [
+            "AI.SEA combines regional reach with precise matching.",
+            "We operate a hub-and-spoke network of local builder communities across Southeast Asia. That gives partners access to a wide pool of builders, while still allowing us to surface the right people for specific tools, problems, or use cases.",
+            "Most communities offer either scale or depth. We're built to do both."
+          ]
+        },
+        {
+          "question": "Who do you work with?",
+          "answer": [
+            "We work with teams building serious AI products: developer tools, platforms, infrastructure, startups, and funds that care about real usage, feedback, and long-term adoption.",
+            "If you're looking for logo exposure or passive sponsorships, we're not a fit."
+          ]
+        },
+        {
+          "question": "What does \"working with AI.SEA\" actually involve?",
+          "answer": [
+            "It means collaborating on build-driven initiatives. This can include hackathon tracks, co-build sessions, sprints, pilot programs, or regionally coordinated activations — all designed around real usage and execution."
+          ]
+        },
+        {
+          "question": "How do you ensure quality, not just volume?",
+          "answer": [
+            "Distribution happens at the community level. Selection happens at the builder level.",
+            "We don't broadcast everything to everyone. We route opportunities through local leads and formats that surface builders with the right skills, intent, and readiness to ship."
+          ]
+        },
+        {
+          "question": "What do partners get out of this?",
+          "answer": [
+            "Access to high-signal builders across SEA, real product usage in live builds, direct practitioner feedback, and the ability to activate multiple markets through a single coordinated surface."
+          ]
+        },
+        {
+          "question": "Can we run something locally or regionally?",
+          "answer": [
+            "Both are possible.",
+            "You can activate a single city or community, or run a coordinated effort across multiple countries using shared formats and infrastructure."
+          ]
+        },
+        {
+          "question": "How do we get started?",
+          "answer": [
+            "Reach out with what you're building, who you want to reach, and what success looks like for you.",
+            "If there's a clear fit, we'll design something concrete and execution-focused together."
+          ]
+        }
+      ]
     }
   }
 }

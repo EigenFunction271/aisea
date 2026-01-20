@@ -322,6 +322,59 @@
       "contactUrl": "https://airtable.com/appBgmnpu1bJljnxX/pagPGkKttUQAM4nGV/form",
       "emailLabel": "Gửi email cho chúng tôi",
       "emailLink": "mailto:team@aisea.builders?subject=Partnership%20Inquiry&body=Hi%20AI.SEA%20team%2C%0A%0AI%27m%20interested%20in%20working%20with%20AI.SEA.%0A%0A%5BPlease%20tell%20us%20about%20your%20organization%20and%20what%20kind%20of%20partnership%20you%27re%20interested%20in%5D%0A%0AThanks%2C"
+    },
+    "faq": {
+      "title": "Câu hỏi thường gặp",
+      "items": [
+        {
+          "question": "Điều gì làm cho AI.SEA khác biệt?",
+          "answer": [
+            "AI.SEA kết hợp phạm vi khu vực với khớp chính xác.",
+            "Chúng tôi vận hành một mạng lưới hub-and-spoke của các cộng đồng nhà xây dựng địa phương trên khắp Đông Nam Á. Điều đó mang lại cho các đối tác quyền truy cập vào một nhóm nhà xây dựng rộng lớn, đồng thời vẫn cho phép chúng tôi hiển thị những người phù hợp cho các công cụ, vấn đề hoặc trường hợp sử dụng cụ thể.",
+            "Hầu hết các cộng đồng cung cấp quy mô hoặc chiều sâu. Chúng tôi được xây dựng để làm cả hai."
+          ]
+        },
+        {
+          "question": "Bạn làm việc với ai?",
+          "answer": [
+            "Chúng tôi làm việc với các nhóm xây dựng sản phẩm AI nghiêm túc: công cụ nhà phát triển, nền tảng, cơ sở hạ tầng, startup và quỹ quan tâm đến việc sử dụng thực tế, phản hồi và áp dụng lâu dài.",
+            "Nếu bạn đang tìm kiếm tiếp xúc logo hoặc tài trợ thụ động, chúng tôi không phù hợp."
+          ]
+        },
+        {
+          "question": "\"Làm việc với AI.SEA\" thực sự liên quan đến điều gì?",
+          "answer": [
+            "Nó có nghĩa là hợp tác về các sáng kiến được thúc đẩy bởi xây dựng. Điều này có thể bao gồm các track hackathon, phiên đồng xây dựng, sprint, chương trình thí điểm hoặc kích hoạt được phối hợp theo khu vực — tất cả đều được thiết kế xung quanh việc sử dụng và thực thi thực tế."
+          ]
+        },
+        {
+          "question": "Làm thế nào để bạn đảm bảo chất lượng, không chỉ khối lượng?",
+          "answer": [
+            "Phân phối xảy ra ở cấp cộng đồng. Lựa chọn xảy ra ở cấp nhà xây dựng.",
+            "Chúng tôi không phát sóng mọi thứ cho mọi người. Chúng tôi định tuyến cơ hội thông qua các nhà lãnh đạo địa phương và các định dạng hiển thị các nhà xây dựng với các kỹ năng, ý định và sự sẵn sàng phù hợp để giao hàng."
+          ]
+        },
+        {
+          "question": "Các đối tác nhận được gì từ điều này?",
+          "answer": [
+            "Truy cập vào các nhà xây dựng có tín hiệu cao trên khắp SEA, sử dụng sản phẩm thực tế trong các build trực tiếp, phản hồi trực tiếp từ người thực hành và khả năng kích hoạt nhiều thị trường thông qua một bề mặt được phối hợp duy nhất."
+          ]
+        },
+        {
+          "question": "Chúng tôi có thể chạy một cái gì đó ở địa phương hoặc khu vực không?",
+          "answer": [
+            "Cả hai đều có thể.",
+            "Bạn có thể kích hoạt một thành phố hoặc cộng đồng duy nhất, hoặc chạy một nỗ lực được phối hợp trên nhiều quốc gia sử dụng các định dạng và cơ sở hạ tầng được chia sẻ."
+          ]
+        },
+        {
+          "question": "Làm thế nào để chúng tôi bắt đầu?",
+          "answer": [
+            "Liên hệ với những gì bạn đang xây dựng, những người bạn muốn tiếp cận và thành công trông như thế nào đối với bạn.",
+            "Nếu có sự phù hợp rõ ràng, chúng tôi sẽ thiết kế một cái gì đó cụ thể và tập trung vào thực thi cùng nhau."
+          ]
+        }
+      ]
     }
   }
 }

@@ -22,6 +22,12 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 
 // ===================== SHADER =====================
 const vertexShader = `
@@ -625,9 +631,43 @@ export default function WorkWithUsPage() {
             <CarouselPrevious className="text-white border-white/20 hover:bg-white/10 hover:border-white/40" />
             <CarouselNext className="text-white border-white/20 hover:bg-white/10 hover:border-white/40" />
           </Carousel>
+        </div>
+      </section>
+
+      {/* FAQ Section */}
+      <section className="relative z-20 bg-black text-white py-16 md:py-24">
+        <div className="max-w-4xl mx-auto px-4">
+          <h2 className="font-[family-name:var(--font-perfectly-nineties)] text-4xl sm:text-5xl md:text-6xl font-bold text-white text-center mb-12 md:mb-16">
+            {t('faq.title')}
+          </h2>
           
-          {/* Get in touch Section */}
-          <div className="mt-12 mb-8">
+          <Accordion type="single" collapsible className="w-full space-y-4">
+            {(t.raw('faq.items') as Array<{ question: string; answer: string[] }>).map((item, index) => (
+              <AccordionItem
+                key={index}
+                value={`item-${index}`}
+                className="border-white/10 bg-white/5 rounded-lg px-6 py-2"
+              >
+                <AccordionTrigger className="font-[family-name:var(--font-geist-mono)] text-lg md:text-xl font-semibold text-white hover:no-underline py-4">
+                  {item.question}
+                </AccordionTrigger>
+                <AccordionContent className="font-[family-name:var(--font-geist-mono)] text-white/90 text-base md:text-lg leading-relaxed pt-2 pb-4">
+                  <div className="space-y-4">
+                    {item.answer.map((paragraph, pIndex) => (
+                      <p key={pIndex}>{paragraph}</p>
+                    ))}
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
+        </div>
+      </section>
+
+      {/* Get in touch Section */}
+      <section className="relative z-20 bg-black text-white py-16 md:py-24">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="mb-8">
             <h2 className="font-[family-name:var(--font-geist-mono)] text-2xl md:text-3xl font-semibold text-white text-center mb-4">
               {t('getInTouch.title')}
             </h2>
