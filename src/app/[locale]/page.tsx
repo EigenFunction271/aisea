@@ -13,7 +13,6 @@ import { HowItWorks } from "@/components/HowItWorks";
 import { LogoScrollingBar } from "@/components/LogoScrollingBar";
 import { CityScrollingBar } from "@/components/CityScrollingBar";
 import { Navbar1 } from "@/components/ui/navbar";
-import { ShaderBackground } from "@/components/ShaderBackground";
 import dynamic from 'next/dynamic';
 import { Link } from '@/i18n/routing';
 
@@ -22,6 +21,15 @@ const WorldMap = dynamic(
   {
     ssr: false,
     loading: () => <div className="w-full h-[400px] bg-black/20 animate-pulse rounded-lg" />
+  }
+);
+
+// Lazy load shader background to reduce initial bundle size
+const ShaderBackground = dynamic(
+  () => import('@/components/ShaderBackground').then(mod => ({ default: mod.ShaderBackground })),
+  {
+    ssr: false,
+    loading: () => <div className="bg-black absolute inset-0 -z-10 w-full h-full pointer-events-none" aria-hidden />
   }
 );
 

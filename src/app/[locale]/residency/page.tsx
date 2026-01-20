@@ -15,8 +15,17 @@ import {
   StepperSeparator,
   StepperTrigger,
 } from "@/components/ui/stepper";
-import { ShaderBackground } from "@/components/ShaderBackground";
+import dynamic from 'next/dynamic';
 import Image from "next/image";
+
+// Lazy load shader background to reduce initial bundle size
+const ShaderBackground = dynamic(
+  () => import('@/components/ShaderBackground').then(mod => ({ default: mod.ShaderBackground })),
+  {
+    ssr: false,
+    loading: () => <div className="bg-black absolute inset-0 -z-10 w-full h-full pointer-events-none" aria-hidden />
+  }
+);
 
 // Helper function to parse markdown-style bold (**text**) and render as bold
 function parseBoldText(text: string): React.ReactNode {
