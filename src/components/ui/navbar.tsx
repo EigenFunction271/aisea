@@ -31,6 +31,7 @@ const Navbar1 = () => {
   
   const navItems = [
     { label: t('workWithUs'), href: "/work-with-us" },
+    { label: t('residency'), href: "/residency" },
   ];
 
   return (
@@ -54,14 +55,27 @@ const Navbar1 = () => {
         <div className="hidden md:flex items-center gap-6">
           <NavigationMenu>
             <NavigationMenuList className="gap-6">
-              {/* Home with Dropdown */}
+              {/* Home Button */}
+              <NavigationMenuItem>
+                <Link href="/" legacyBehavior passHref>
+                  <NavigationMenuLink
+                    className={cn(
+                      "text-sm text-white/70 hover:text-white/90 transition-colors font-medium"
+                    )}
+                  >
+                    {t('home')}
+                  </NavigationMenuLink>
+                </Link>
+              </NavigationMenuItem>
+              
+              {/* About with Dropdown */}
               <NavigationMenuItem>
                 <NavigationMenuTrigger 
                   className={cn(
                     "text-sm text-white/70 hover:text-white/90 transition-colors font-medium bg-transparent border-none data-[state=open]:bg-transparent data-[state=open]:text-white/90"
                   )}
                 >
-                  {t('home')}
+                  {t('about')}
                 </NavigationMenuTrigger>
                 <NavigationMenuContent>
                   <ul className="grid w-[200px] gap-1 p-2">
@@ -118,6 +132,9 @@ const Navbar1 = () => {
                 >
                   {t('home')}
                 </Link>
+                <div className="text-base text-white/80 hover:text-white font-medium">
+                  {t('about')}
+                </div>
                 {dropdownItems.map((item) => (
                   <Link
                     key={item.href}

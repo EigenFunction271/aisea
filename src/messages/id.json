@@ -1,9 +1,11 @@
 {
   "nav": {
     "home": "Beranda",
+    "about": "Tentang",
     "events": "Acara",
     "manifesto": "Manifesto",
-    "workWithUs": "Bekerja dengan kami"
+    "workWithUs": "Bekerja dengan kami",
+    "residency": "Residensi"
   },
   "hero": {
     "title": "AISEA",
@@ -389,6 +391,55 @@
       "paragraph2": "Tujuannya sederhana: kumpulkan talenta berkualitas tinggi, hilangkan hambatan, berikan mereka alat dan konteks yang serius, lalu biarkan mereka bekerja.",
       "paragraph3": "Ini bukan akselerator. Tidak ada pitch, tidak ada demo day, dan tidak ada pernyataan masalah yang dipaksakan.",
       "paragraph4": "Pembangun bekerja pada apa yang mereka yakini seharusnya ada. AI.SEA menyediakan akses, lingkungan, dan tekanan. Apa yang dihasilkan kembali ke ekosistem."
+    },
+    "whoItsFor": {
+      "title": "Untuk Siapa AI.SEA Residency",
+      "intro": "AI.SEA Residency adalah untuk pembangun yang sudah mengirimkan produk. Orang yang tidak membutuhkan motivasi, struktur, atau izin. Para pembangun yang ingin mengubah dunia dan ingin dikelilingi oleh orang lain yang ingin melakukan hal yang sama.",
+      "ifYou": "Ini untuk Anda jika:",
+      "bullets": [
+        "Anda telah membangun dan mengirimkan hal-hal nyata, bahkan jika mereka gagal",
+        "Anda lebih peduli melakukan pekerjaan daripada membicarakannya",
+        "Anda dibatasi oleh lingkungan, bukan ambisi",
+        "Anda siap menghabiskan waktu singkat membangun dengan kapasitas penuh, tanpa gangguan"
+      ],
+      "lookingFor": "Kami tidak mencari kredensial mewah, pengikut besar, atau bertahun-tahun pengalaman. Kami mencari **momentum**, **ambisi**, dan **dorongan** untuk melakukan yang mustahil."
+    },
+    "whoItsNotFor": {
+      "title": "Bukan Untuk Siapa",
+      "intro": "Ini bukan untuk Anda jika",
+      "bullets": [
+        "Anda menginginkan kurikulum, mentor, atau roadmap",
+        "Anda mengejar peluang pitch atau hadiah",
+        "Anda mengoptimalkan visibilitas dan viralitas daripada kemajuan"
+      ],
+      "conclusion": "Tidak ada demo untuk mengesankan. Hanya hasil dan kemajuan yang penting."
+    },
+    "howItWorks": {
+      "title": "Cara kerjanya",
+      "step1": {
+        "title": "Daftar",
+        "description": "Kirim aplikasi yang menunjukkan pekerjaan nyata. Kami mencari bukti bagaimana Anda membangun."
+      },
+      "step2": {
+        "title": "Tinjauan Sinyal",
+        "description": "Aplikasi ditinjau untuk kedalaman, lintasan, dan kesesuaian dengan lingkungan residensi."
+      },
+      "step3": {
+        "title": "Tindak Lanjut Singkat (Jika Diperlukan)",
+        "description": "Beberapa pelamar mungkin diminta untuk tindak lanjut singkat atau percakapan. Ini bukan wawancara, ini pemeriksaan kesesuaian."
+      },
+      "step4": {
+        "title": "Undangan",
+        "description": "Sebagian kecil kelompok diundang untuk bergabung dengan setiap residensi. Kursi dibatasi dengan desain."
+      },
+      "step5": {
+        "title": "Komitmen",
+        "description": "Jika diundang, Anda diharapkan untuk sepenuhnya berkomitmen selama durasi residensi."
+      }
+    },
+    "apply": {
+      "title": "Siap mengubah lintasan Anda?",
+      "button": "Daftar untuk bergabung dengan Residency sekarang"
     }
   }
 }

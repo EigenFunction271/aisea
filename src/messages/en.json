@@ -1,9 +1,11 @@
 {
   "nav": {
     "home": "Home",
+    "about": "About",
     "events": "Events",
     "manifesto": "Manifesto",
-    "workWithUs": "Work with us"
+    "workWithUs": "Work with us",
+    "residency": "Residency"
   },
   "hero": {
     "title": "AISEA",
@@ -389,6 +391,55 @@
       "paragraph2": "Its purpose is simple: bring high-signal talent together, remove friction, give them serious tools and context, then get out of the way.",
       "paragraph3": "This is not an accelerator. There are no pitches, no demo days, and no forced problem statements.",
       "paragraph4": "Builders work on what they believe should exist. AI.SEA provides access, environment, and pressure. What comes out goes back into the ecosystem."
+    },
+    "whoItsFor": {
+      "title": "Who the AI.SEA Residency Is For",
+      "intro": "The AI.SEA Residency is for builders who already ship. People who don't need motivation, structure, or permission. The builders who want to change the world and want to be surrounded by others who want to do the same.",
+      "ifYou": "This is for you if:",
+      "bullets": [
+        "you've built and shipped real things, even if they failed",
+        "you care more about doing the work than talking about it",
+        "you're constrained by environment, not ambition",
+        "you're ready to spend a short period building at full capacity, with no distractions"
+      ],
+      "lookingFor": "We aren't looking for fancy credentials, huge followings, or years of experience. We are looking for **momentum**, **ambition**, and the **drive** to do the impossible."
+    },
+    "whoItsNotFor": {
+      "title": "Who It's Not For",
+      "intro": "It's not for you if",
+      "bullets": [
+        "you want a curriculum, a mentor, or a roadmap",
+        "you're chasing pitch opportunities or prizes",
+        "you're optimizing for visibility and virality over progress"
+      ],
+      "conclusion": "There are no demos to impress. Only outcomes and progress matter."
+    },
+    "howItWorks": {
+      "title": "How it works",
+      "step1": {
+        "title": "Apply",
+        "description": "Submit an application showing real work. We're looking for evidence of how you build."
+      },
+      "step2": {
+        "title": "Signal Review",
+        "description": "Applications are reviewed for depth, trajectory, and fit with the residency environment."
+      },
+      "step3": {
+        "title": "Short Follow-Up (If Needed)",
+        "description": "Some applicants may be asked for a short follow-up or conversation. This is not an interview, it's a fit check."
+      },
+      "step4": {
+        "title": "Invitation",
+        "description": "A small group is invited to join each residency. Seats are limited by design."
+      },
+      "step5": {
+        "title": "Commit",
+        "description": "If invited, you're expected to fully commit for the duration of the residency."
+      }
+    },
+    "apply": {
+      "title": "Ready to change your trajectory?",
+      "button": "Apply to join the Residency now"
     }
   }
 }

@@ -10,6 +10,17 @@ import { useTranslations } from 'next-intl';
 
 import { BlurFade } from "@/components/ui/blur-fade";
 import { Navbar1 } from "@/components/ui/navbar";
+import { Button } from "@/components/ui/button";
+import {
+  Stepper,
+  StepperContent,
+  StepperIndicator,
+  StepperItem,
+  StepperNav,
+  StepperPanel,
+  StepperSeparator,
+  StepperTrigger,
+} from "@/components/ui/stepper";
 import Image from "next/image";
 
 // ===================== SHADER =====================
@@ -333,6 +344,105 @@ export default function ResidencyPage() {
                 />
               </div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Who It's For Section */}
+      <section className="relative z-20 bg-black text-white py-16 md:py-24">
+        <div className="max-w-4xl mx-auto px-4">
+          <h2 className="font-[family-name:var(--font-perfectly-nineties)] text-4xl sm:text-5xl md:text-6xl font-bold text-white leading-tight mb-8">
+            {t('whoItsFor.title')}
+          </h2>
+          <div className="space-y-6 font-[family-name:var(--font-geist-mono)] text-white/90 text-base sm:text-lg md:text-xl leading-relaxed">
+            <p>{t('whoItsFor.intro')}</p>
+            <p>{t('whoItsFor.ifYou')}</p>
+            <ul className="list-disc list-inside space-y-3 ml-4">
+              {(t.raw('whoItsFor.bullets') as string[]).map((item: string, index: number) => (
+                <li key={index}>{item}</li>
+              ))}
+            </ul>
+            <p>{t('whoItsFor.lookingFor')}</p>
+          </div>
+        </div>
+      </section>
+
+      {/* Who It's Not For Section */}
+      <section className="relative z-20 bg-black text-white py-16 md:py-24">
+        <div className="max-w-4xl mx-auto px-4">
+          <h2 className="font-[family-name:var(--font-perfectly-nineties)] text-4xl sm:text-5xl md:text-6xl font-bold text-white leading-tight mb-8">
+            {t('whoItsNotFor.title')}
+          </h2>
+          <div className="space-y-6 font-[family-name:var(--font-geist-mono)] text-white/90 text-base sm:text-lg md:text-xl leading-relaxed">
+            <p>{t('whoItsNotFor.intro')}</p>
+            <ul className="list-disc list-inside space-y-3 ml-4">
+              {(t.raw('whoItsNotFor.bullets') as string[]).map((item: string, index: number) => (
+                <li key={index}>{item}</li>
+              ))}
+            </ul>
+            <p>{t('whoItsNotFor.conclusion')}</p>
+          </div>
+        </div>
+      </section>
+
+      {/* How It Works Section */}
+      <section className="relative z-20 bg-black text-white py-16 md:py-24">
+        <div className="max-w-6xl mx-auto px-4">
+          <h2 className="font-[family-name:var(--font-perfectly-nineties)] text-4xl sm:text-5xl md:text-6xl font-bold text-white leading-tight mb-12 text-center">
+            {t('howItWorks.title')}
+          </h2>
+          <Stepper defaultValue={1} className="space-y-8">
+            <StepperNav>
+              {[1, 2, 3, 4, 5].map((step) => (
+                <StepperItem key={step} step={step}>
+                  <StepperTrigger>
+                    <StepperIndicator className="data-[state=completed]:bg-yellow-500 data-[state=completed]:text-black data-[state=active]:bg-yellow-500 data-[state=active]:text-black data-[state=inactive]:bg-white/20 data-[state=inactive]:text-white/60 border-white/20">
+                      {step}
+                    </StepperIndicator>
+                  </StepperTrigger>
+                  {5 > step && <StepperSeparator className="group-data-[state=completed]/step:bg-yellow-500 group-data-[state=active]/step:bg-yellow-500/50" />}
+                </StepperItem>
+              ))}
+            </StepperNav>
+
+            <StepperPanel className="text-center">
+              {[1, 2, 3, 4, 5].map((step) => (
+                <StepperContent key={step} value={step}>
+                  <div className="max-w-3xl mx-auto">
+                    <h3 className="font-[family-name:var(--font-perfectly-nineties)] text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-4">
+                      {t(`howItWorks.step${step}.title`)}
+                    </h3>
+                    <p className="font-[family-name:var(--font-geist-mono)] text-white/90 text-base sm:text-lg md:text-xl leading-relaxed">
+                      {t(`howItWorks.step${step}.description`)}
+                    </p>
+                  </div>
+                </StepperContent>
+              ))}
+            </StepperPanel>
+          </Stepper>
+        </div>
+      </section>
+
+      {/* Apply Section */}
+      <section className="relative z-20 bg-black text-white py-16 md:py-24">
+        <div className="max-w-4xl mx-auto px-4">
+          <div className="text-center">
+            <h2 className="font-[family-name:var(--font-perfectly-nineties)] text-4xl sm:text-5xl md:text-6xl font-bold text-white leading-tight mb-8">
+              {t('apply.title')}
+            </h2>
+            <Button
+              asChild
+              size="lg"
+              className="font-[family-name:var(--font-geist-mono)] bg-white text-black hover:bg-white/90 font-medium rounded-full text-sm md:text-base mt-6"
+            >
+              <a
+                href="https://airtable.com/appBgmnpu1bJljnxX/pagEZn6n60tDty3lP/form"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {t('apply.button')}
+              </a>
+            </Button>
           </div>
         </div>
       </section>

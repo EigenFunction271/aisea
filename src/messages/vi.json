@@ -1,9 +1,11 @@
 {
   "nav": {
     "home": "Trang chủ",
+    "about": "Về chúng tôi",
     "events": "Sự kiện",
     "manifesto": "Tuyên ngôn",
-    "workWithUs": "Làm việc với chúng tôi"
+    "workWithUs": "Làm việc với chúng tôi",
+    "residency": "Residency"
   },
   "hero": {
     "title": "AISEA",
@@ -389,6 +391,55 @@
       "paragraph2": "Mục đích của nó rất đơn giản: tập hợp những tài năng chất lượng cao lại với nhau, loại bỏ ma sát, cung cấp cho họ các công cụ và bối cảnh nghiêm túc, sau đó để họ tự làm việc.",
       "paragraph3": "Đây không phải là một chương trình tăng tốc. Không có pitch, không có demo day, và không có câu lệnh vấn đề bắt buộc.",
       "paragraph4": "Những người xây dựng làm việc trên những gì họ tin rằng nên tồn tại. AI.SEA cung cấp quyền truy cập, môi trường và áp lực. Những gì được tạo ra sẽ quay trở lại hệ sinh thái."
+    },
+    "whoItsFor": {
+      "title": "AI.SEA Residency Dành Cho Ai",
+      "intro": "AI.SEA Residency dành cho những người xây dựng đã từng giao hàng. Những người không cần động lực, cấu trúc hoặc sự cho phép. Những người xây dựng muốn thay đổi thế giới và muốn được bao quanh bởi những người khác muốn làm điều tương tự.",
+      "ifYou": "Điều này dành cho bạn nếu:",
+      "bullets": [
+        "bạn đã xây dựng và giao những thứ thực sự, ngay cả khi chúng thất bại",
+        "bạn quan tâm đến việc làm công việc hơn là nói về nó",
+        "bạn bị ràng buộc bởi môi trường, không phải tham vọng",
+        "bạn sẵn sàng dành một khoảng thời gian ngắn để xây dựng với công suất đầy đủ, không có sự phân tâm"
+      ],
+      "lookingFor": "Chúng tôi không tìm kiếm bằng cấp hào nhoáng, lượng người theo dõi lớn, hoặc nhiều năm kinh nghiệm. Chúng tôi đang tìm kiếm **động lực**, **tham vọng**, và **động lực** để làm điều không thể."
+    },
+    "whoItsNotFor": {
+      "title": "Không Dành Cho Ai",
+      "intro": "Điều này không dành cho bạn nếu",
+      "bullets": [
+        "bạn muốn một chương trình giảng dạy, một người cố vấn, hoặc một lộ trình",
+        "bạn đang theo đuổi cơ hội pitch hoặc giải thưởng",
+        "bạn đang tối ưu hóa cho khả năng hiển thị và lan truyền hơn là tiến bộ"
+      ],
+      "conclusion": "Không có demo nào để gây ấn tượng. Chỉ có kết quả và tiến bộ mới quan trọng."
+    },
+    "howItWorks": {
+      "title": "Cách thức hoạt động",
+      "step1": {
+        "title": "Nộp đơn",
+        "description": "Gửi đơn đăng ký thể hiện công việc thực tế. Chúng tôi đang tìm kiếm bằng chứng về cách bạn xây dựng."
+      },
+      "step2": {
+        "title": "Xem xét Tín hiệu",
+        "description": "Các đơn đăng ký được xem xét về độ sâu, quỹ đạo và sự phù hợp với môi trường residency."
+      },
+      "step3": {
+        "title": "Theo dõi Ngắn (Nếu Cần)",
+        "description": "Một số ứng viên có thể được yêu cầu theo dõi ngắn hoặc trò chuyện. Đây không phải là phỏng vấn, mà là kiểm tra sự phù hợp."
+      },
+      "step4": {
+        "title": "Lời mời",
+        "description": "Một nhóm nhỏ được mời tham gia mỗi residency. Số chỗ ngồi bị giới hạn theo thiết kế."
+      },
+      "step5": {
+        "title": "Cam kết",
+        "description": "Nếu được mời, bạn được kỳ vọng sẽ cam kết hoàn toàn trong suốt thời gian residency."
+      }
+    },
+    "apply": {
+      "title": "Sẵn sàng thay đổi quỹ đạo của bạn?",
+      "button": "Nộp đơn tham gia Residency ngay bây giờ"
     }
   }
 }
