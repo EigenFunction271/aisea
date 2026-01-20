@@ -8,7 +8,8 @@
   "hero": {
     "title": "AISEA",
     "description": "Jadilah bagian dari gerakan pembangun AI terbesar di Asia Tenggara.",
-    "registerNow": "Daftar Sekarang"
+    "joinUs": "Bergabung dengan kami",
+    "workWithUs": "Bekerja dengan kami"
   },
   "whatIsAISEA": {
     "title": "Apa itu AI.SEA",
@@ -375,6 +376,12 @@
           ]
         }
       ]
+    }
+  },
+  "residency": {
+    "hero": {
+      "title": "AI.SEA Residency",
+      "subheading": "Rumah bagi para pembangun paling ambisius di dunia"
     }
   }
 }

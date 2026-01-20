@@ -8,7 +8,8 @@
   "hero": {
     "title": "AISEA",
     "description": "Be part of Southeast Asia's largest grassroots builder movement.",
-    "registerNow": "Register Now"
+    "joinUs": "Join us",
+    "workWithUs": "Work with us"
   },
   "whatIsAISEA": {
     "title": "What is AI.SEA",
@@ -375,6 +376,12 @@
           ]
         }
       ]
+    }
+  },
+  "residency": {
+    "hero": {
+      "title": "AI.SEA Residency",
+      "subheading": "The home for the world's most ambitious builders"
     }
   }
 }

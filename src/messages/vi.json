@@ -8,7 +8,8 @@
   "hero": {
     "title": "AISEA",
     "description": "Tham gia phong trào xây dựng AI lớn nhất Đông Nam Á.",
-    "registerNow": "Đăng ký ngay"
+    "joinUs": "Tham gia cùng chúng tôi",
+    "workWithUs": "Làm việc với chúng tôi"
   },
   "whatIsAISEA": {
     "title": "AI.SEA là gì",
@@ -375,6 +376,12 @@
           ]
         }
       ]
+    }
+  },
+  "residency": {
+    "hero": {
+      "title": "AI.SEA Residency",
+      "subheading": "Ngôi nhà cho những người xây dựng đầy tham vọng nhất thế giới"
     }
   }
 }

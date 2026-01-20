@@ -8,7 +8,8 @@
   "hero": {
     "title": "AISEA",
     "description": "成为东南亚最大的草根建设者运动的一部分。",
-    "registerNow": "立即注册"
+    "joinUs": "加入我们",
+    "workWithUs": "与我们合作"
   },
   "whatIsAISEA": {
     "title": "什么是 AI.SEA",
@@ -375,6 +376,12 @@
           ]
         }
       ]
+    }
+  },
+  "residency": {
+    "hero": {
+      "title": "AI.SEA Residency",
+      "subheading": "世界上最雄心勃勃的建设者的家园"
     }
   }
 }
