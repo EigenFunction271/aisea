@@ -309,8 +309,13 @@ export default function WorkWithUsPage() {
         <ShaderBackground />
         <div className="absolute inset-0 flex flex-col items-center justify-center text-center space-y-4 px-4 pointer-events-auto z-10">
           <BlurFade delay={0} duration={0.8} yOffset={20}>
-            <h1 className="font-[family-name:var(--font-perfectly-nineties)] text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-none text-white">
-              {t('hero.title')}
+            <h1 className="font-[family-name:var(--font-perfectly-nineties)] text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-tight text-white">
+              {t('hero.title').split(' across ').map((part, index, array) => (
+                <span key={index}>
+                  {part}
+                  {index < array.length - 1 && <><br />across </>}
+                </span>
+              ))}
             </h1>
           </BlurFade>
 
