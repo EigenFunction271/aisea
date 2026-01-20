@@ -10,6 +10,8 @@ import {
   NavigationMenuList,
   NavigationMenuItem,
   NavigationMenuLink,
+  NavigationMenuTrigger,
+  NavigationMenuContent,
 } from "@/components/ui/navigation-menu"
 import {
   Sheet,
@@ -22,10 +24,12 @@ import { cn } from "@/lib/utils"
 const Navbar1 = () => {
   const t = useTranslations('nav');
   
-  const navItems = [
-    { label: t('home'), href: "/" },
+  const dropdownItems = [
     { label: t('events'), href: "/events" },
     { label: t('manifesto'), href: "/manifesto" },
+  ];
+  
+  const navItems = [
     { label: t('workWithUs'), href: "/work-with-us" },
   ];
 
@@ -50,6 +54,35 @@ const Navbar1 = () => {
         <div className="hidden md:flex items-center gap-6">
           <NavigationMenu>
             <NavigationMenuList className="gap-6">
+              {/* Home with Dropdown */}
+              <NavigationMenuItem>
+                <NavigationMenuTrigger 
+                  className={cn(
+                    "text-sm text-white/70 hover:text-white/90 transition-colors font-medium bg-transparent border-none data-[state=open]:bg-transparent data-[state=open]:text-white/90"
+                  )}
+                >
+                  {t('home')}
+                </NavigationMenuTrigger>
+                <NavigationMenuContent>
+                  <ul className="grid w-[200px] gap-1 p-2">
+                    {dropdownItems.map((item) => (
+                      <li key={item.href}>
+                        <Link href={item.href} legacyBehavior passHref>
+                          <NavigationMenuLink
+                            className={cn(
+                              "block select-none rounded-sm px-3 py-2 text-sm text-white/70 hover:text-white hover:bg-white/10 transition-colors font-medium"
+                            )}
+                          >
+                            {item.label}
+                          </NavigationMenuLink>
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </NavigationMenuContent>
+              </NavigationMenuItem>
+              
+              {/* Regular Nav Items */}
               {navItems.map((item) => (
                 <NavigationMenuItem key={item.href}>
                   <Link href={item.href} legacyBehavior passHref>
@@ -79,6 +112,21 @@ const Navbar1 = () => {
             </SheetTrigger>
             <SheetContent side="right" className="bg-black/95 backdrop-blur-md border-white/10">
               <div className="flex flex-col space-y-6 mt-8">
+                <Link
+                  href="/"
+                  className="text-base text-white/80 hover:text-white font-medium"
+                >
+                  {t('home')}
+                </Link>
+                {dropdownItems.map((item) => (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className="text-base text-white/60 hover:text-white font-medium ml-4"
+                  >
+                    {item.label}
+                  </Link>
+                ))}
                 {navItems.map((item) => (
                   <Link
                     key={item.href}
