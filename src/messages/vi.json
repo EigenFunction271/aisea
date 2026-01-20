@@ -382,6 +382,13 @@
     "hero": {
       "title": "AI.SEA Residency",
       "subheading": "Ngôi nhà cho những người xây dựng đầy tham vọng nhất thế giới"
+    },
+    "threeMonths": {
+      "title": "Ba tháng để thực hiện công việc tốt nhất của bạn.",
+      "paragraph1": "AI.SEA Residency là một chương trình ngắn, có chọn lọc dành cho những người xây dựng xuất sắc ở Đông Nam Á.",
+      "paragraph2": "Mục đích của nó rất đơn giản: tập hợp những tài năng chất lượng cao lại với nhau, loại bỏ ma sát, cung cấp cho họ các công cụ và bối cảnh nghiêm túc, sau đó để họ tự làm việc.",
+      "paragraph3": "Đây không phải là một chương trình tăng tốc. Không có pitch, không có demo day, và không có câu lệnh vấn đề bắt buộc.",
+      "paragraph4": "Những người xây dựng làm việc trên những gì họ tin rằng nên tồn tại. AI.SEA cung cấp quyền truy cập, môi trường và áp lực. Những gì được tạo ra sẽ quay trở lại hệ sinh thái."
     }
   }
 }

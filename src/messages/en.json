@@ -382,6 +382,13 @@
     "hero": {
       "title": "AI.SEA Residency",
       "subheading": "The home for the world's most ambitious builders"
+    },
+    "threeMonths": {
+      "title": "Three months to do your best work.",
+      "paragraph1": "The AI.SEA Residency is a short, selective program for exceptional builders in Southeast Asia.",
+      "paragraph2": "Its purpose is simple: bring high-signal talent together, remove friction, give them serious tools and context, then get out of the way.",
+      "paragraph3": "This is not an accelerator. There are no pitches, no demo days, and no forced problem statements.",
+      "paragraph4": "Builders work on what they believe should exist. AI.SEA provides access, environment, and pressure. What comes out goes back into the ecosystem."
     }
   }
 }

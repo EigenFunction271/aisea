@@ -10,6 +10,7 @@ import { useTranslations } from 'next-intl';
 
 import { BlurFade } from "@/components/ui/blur-fade";
 import { Navbar1 } from "@/components/ui/navbar";
+import Image from "next/image";
 
 // ===================== SHADER =====================
 const vertexShader = `
@@ -305,6 +306,36 @@ export default function ResidencyPage() {
 
       {/* Spacer to allow scrolling past hero */}
       <div className="relative z-0 h-screen pointer-events-none" />
+
+      {/* Three Months Section */}
+      <section className="relative z-20 bg-black text-white py-16 md:py-24">
+        <div className="max-w-6xl mx-auto px-4">
+          <div className="flex flex-col lg:flex-row items-start justify-center gap-8 lg:gap-12">
+            <div className="flex-1 space-y-6 order-2 lg:order-1">
+              <h2 className="font-[family-name:var(--font-perfectly-nineties)] text-4xl sm:text-5xl md:text-6xl font-bold text-white leading-tight">
+                {t('threeMonths.title')}
+              </h2>
+              <div className="space-y-6 font-[family-name:var(--font-geist-mono)] text-white/90 text-base sm:text-lg md:text-xl leading-relaxed">
+                <p>{t('threeMonths.paragraph1')}</p>
+                <p>{t('threeMonths.paragraph2')}</p>
+                <p>{t('threeMonths.paragraph3')}</p>
+                <p>{t('threeMonths.paragraph4')}</p>
+              </div>
+            </div>
+            <div className="flex-1 w-full lg:w-auto order-1 lg:order-2">
+              <div className="relative w-full aspect-[4/3] lg:max-w-md rounded-lg overflow-hidden">
+                <Image
+                  src="/assets/images_general/res1.png"
+                  alt="AI.SEA Residency"
+                  fill
+                  className="object-cover"
+                  priority
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
     </div>
   );
 }

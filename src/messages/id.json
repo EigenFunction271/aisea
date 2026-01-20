@@ -382,6 +382,13 @@
     "hero": {
       "title": "AI.SEA Residency",
       "subheading": "Rumah bagi para pembangun paling ambisius di dunia"
+    },
+    "threeMonths": {
+      "title": "Tiga bulan untuk melakukan pekerjaan terbaik Anda.",
+      "paragraph1": "AI.SEA Residency adalah program singkat dan selektif untuk pembangun luar biasa di Asia Tenggara.",
+      "paragraph2": "Tujuannya sederhana: kumpulkan talenta berkualitas tinggi, hilangkan hambatan, berikan mereka alat dan konteks yang serius, lalu biarkan mereka bekerja.",
+      "paragraph3": "Ini bukan akselerator. Tidak ada pitch, tidak ada demo day, dan tidak ada pernyataan masalah yang dipaksakan.",
+      "paragraph4": "Pembangun bekerja pada apa yang mereka yakini seharusnya ada. AI.SEA menyediakan akses, lingkungan, dan tekanan. Apa yang dihasilkan kembali ke ekosistem."
     }
   }
 }
