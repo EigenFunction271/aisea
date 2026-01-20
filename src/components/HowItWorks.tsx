@@ -1,12 +1,14 @@
 "use client";
 import { TimelineContent } from "@/components/ui/timeline-animation";
-import { useRef } from "react";
+import { useRef, useMemo } from "react";
 import { useTranslations } from 'next-intl';
 
 export function HowItWorks() {
   const t = useTranslations('howItWorks');
   const heroRef = useRef<HTMLDivElement>(null);
-  const revealVariants = {
+  
+  // Memoize animation variants to avoid recreation on every render
+  const revealVariants = useMemo(() => ({
     visible: (i: number) => ({
       y: 0,
       opacity: 1,
@@ -21,8 +23,9 @@ export function HowItWorks() {
       y: 40,
       opacity: 0,
     },
-  };
-  const textVariants = {
+  }), []);
+  
+  const textVariants = useMemo(() => ({
     visible: (i: number) => ({
       filter: "blur(0px)",
       opacity: 1,
@@ -35,9 +38,10 @@ export function HowItWorks() {
       filter: "blur(10px)",
       opacity: 0,
     },
-  };
+  }), []);
 
-  const cards = [
+  // Memoize cards data to avoid recreation on every render
+  const cards = useMemo(() => [
     {
       title: t('card1.title'),
       description: t('card1.description'),
@@ -50,7 +54,7 @@ export function HowItWorks() {
       title: t('card3.title'),
       description: t('card3.description'),
     },
-  ];
+  ], [t]);
 
   return (
     <section className="py-32 px-4 bg-black min-h-[120vh]">

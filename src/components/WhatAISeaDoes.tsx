@@ -1,12 +1,14 @@
 "use client";
 
+import { useMemo } from "react";
 import { ScrollingFeatureShowcase, type SlideData } from "@/components/ui/interactive-scrolling-story-component";
 import { useTranslations } from 'next-intl';
 
 export function WhatAISeaDoes() {
   const t = useTranslations('whatAISeaDoes');
   
-  const aiseaSlidesData: SlideData[] = [
+  // Memoize slides data to avoid recreation on every render
+  const aiseaSlidesData: SlideData[] = useMemo(() => [
     {
       title: t('slide1.title'),
       description: t('slide1.description'),
@@ -31,7 +33,7 @@ export function WhatAISeaDoes() {
       textColor: "#ffffff",
       features: (t.raw('slide3.features') as string[]),
     },
-  ];
+  ], [t]);
 
   return (
     <ScrollingFeatureShowcase

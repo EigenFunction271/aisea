@@ -1,6 +1,7 @@
 "use client" 
 
 import * as React from "react"
+import { useMemo } from "react"
 import Image from "next/image"
 import { Menu } from "lucide-react"
 import { useTranslations } from 'next-intl';
@@ -24,15 +25,16 @@ import { cn } from "@/lib/utils"
 const Navbar1 = () => {
   const t = useTranslations('nav');
   
-  const dropdownItems = [
+  // Memoize navigation items to avoid recreation on every render
+  const dropdownItems = useMemo(() => [
     { label: t('events'), href: "/events" },
     { label: t('manifesto'), href: "/manifesto" },
-  ];
+  ], [t]);
   
-  const navItems = [
+  const navItems = useMemo(() => [
     { label: t('workWithUs'), href: "/work-with-us" },
     { label: t('residency'), href: "/residency" },
-  ];
+  ], [t]);
 
   return (
     <div className="flex justify-center w-full py-2 px-6 fixed top-0 left-0 right-0 z-50 pointer-events-none">

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from 'react';
+import Image from 'next/image';
 
 export interface SlideData {
   title: string;
@@ -171,16 +172,14 @@ export function ScrollingFeatureShowcase({
                   style={{ transform: `translateY(-${safeActiveIndex * 100}%)` }}
                 >
                   {slidesData.map((slide, index) => (
-                    <div key={index} className="w-full h-full">
-                      <img
+                    <div key={index} className="relative w-full h-full">
+                      <Image
                         src={slide.image}
                         alt={slide.title}
-                        className="h-full w-full object-cover"
-                        onError={(e: React.SyntheticEvent<HTMLImageElement, Event>) => { 
-                          const target = e.currentTarget;
-                          target.onerror = null; 
-                          target.src = `https://placehold.co/800x1200/e2e8f0/4a5568?text=Image+Not+Found`; 
-                        }}
+                        fill
+                        className="object-cover"
+                        sizes="75vw"
+                        loading={index === 0 ? "eager" : "lazy"}
                       />
                     </div>
                   ))}

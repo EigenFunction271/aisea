@@ -2,6 +2,7 @@
 
 import { useRef, useEffect, useMemo } from "react";
 import { useTranslations } from 'next-intl';
+import Image from "next/image";
 
 const logos = [
   { name: "11labs", src: "/assets/logos/11labs.png" },
@@ -119,15 +120,15 @@ export function LogoScrollingBar({
                   height: "60px",
                 }}
               >
-                <img
+                <Image
                   src={logo.src}
                   alt={logo.name}
+                  width={120}
+                  height={60}
                   className="h-full w-full object-contain opacity-70 grayscale transition-opacity duration-300 hover:opacity-100 hover:grayscale-0"
-                  onError={(e) => {
-                    const target = e.currentTarget;
-                    target.onerror = null;
-                    target.src = "/placeholder.svg";
-                  }}
+                  sizes="120px"
+                  loading="lazy"
+                  unoptimized={logo.src.endsWith('.svg')}
                 />
               </div>
             ))}

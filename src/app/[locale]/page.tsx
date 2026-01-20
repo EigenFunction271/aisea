@@ -1,11 +1,5 @@
 "use client";
 
-import { useRef, useMemo } from 'react';
-import { Canvas, useFrame, extend } from '@react-three/fiber';
-import { shaderMaterial } from '@react-three/drei';
-import * as THREE from 'three';
-import { useGSAP } from '@gsap/react';
-import gsap from 'gsap';
 import { useTranslations } from 'next-intl';
 
 import { BlurFade } from "@/components/ui/blur-fade";
@@ -19,6 +13,7 @@ import { HowItWorks } from "@/components/HowItWorks";
 import { LogoScrollingBar } from "@/components/LogoScrollingBar";
 import { CityScrollingBar } from "@/components/CityScrollingBar";
 import { Navbar1 } from "@/components/ui/navbar";
+import { ShaderBackground } from "@/components/ShaderBackground";
 import dynamic from 'next/dynamic';
 import { Link } from '@/i18n/routing';
 
