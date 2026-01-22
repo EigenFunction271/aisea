@@ -289,6 +289,10 @@ export default function Home() {
                   start: { lat: 3.1390, lng: 101.6869, label: undefined },
                   end: { lat: 19.0760, lng: 72.8777, label: undefined }, // Mumbai
                 },
+                {
+                  start: { lat: 3.1390, lng: 101.6869, label: undefined },
+                  end: { lat: 6.9271, lng: 79.8612, label: undefined }, // Colombo
+                },
               ]}
               lineColor="#0ea5e9"
               showLabels={false}
@@ -309,6 +313,7 @@ export default function Home() {
               { name: "Tokyo", flag: "/assets/flags/japan.png" },
               { name: "Brisbane", flag: "/assets/flags/australia.png" },
               { name: "Mumbai", flag: "/assets/flags/india.png" },
+              { name: "Colombo", flag: "/assets/flags/sri_lanka.png" },
             ]}
             scrollSpeed={0.5}
             direction="right"

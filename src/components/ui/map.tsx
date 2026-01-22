@@ -61,53 +61,33 @@ export function WorldMap({
       backgroundColor: theme === "dark" ? "black" : "white",
     });
     
-    // Inspect SVG structure (only log once)
-    if (typeof window !== 'undefined' && !(window as any).__dottedMapInspected) {
-      (window as any).__dottedMapInspected = true;
-      
-      // Extract viewBox
-      const viewBoxMatch = svg.match(/viewBox=['"]([^'"]+)['"]/);
-      const widthMatch = svg.match(/width=['"]([^'"]+)['"]/);
-      const heightMatch = svg.match(/height=['"]([^'"]+)['"]/);
-      
-      console.log("=== DottedMap SVG Inspection ===");
-      if (viewBoxMatch) {
-        const [x, y, width, height] = viewBoxMatch[1].split(' ').map(Number);
-        console.log("viewBox:", viewBoxMatch[1]);
-        console.log(`  x: ${x}, y: ${y}, width: ${width}, height: ${height}`);
-        console.log(`  Aspect ratio: ${width}:${height} = ${(width/height).toFixed(2)}:1`);
-      }
-      if (widthMatch) console.log("width attribute:", widthMatch[1]);
-      if (heightMatch) console.log("height attribute:", heightMatch[1]);
-      
-      // Test projection
-      if (viewBoxMatch) {
-        const [x, y, width, height] = viewBoxMatch[1].split(' ').map(Number);
-        const project = (lat: number, lng: number) => {
-          const px = x + (lng + 180) * (width / 360);
-          const py = y + (90 - lat) * (height / 180);
-          return { x: px, y: py };
-        };
-        
-        console.log("\n=== Test Projections (using viewBox) ===");
-        console.log("Jakarta (-6.2088, 106.8456):", project(-6.2088, 106.8456));
-        console.log("Kuala Lumpur (3.1390, 101.6869):", project(3.1390, 101.6869));
-        console.log("Tokyo (35.6762, 139.6503):", project(35.6762, 139.6503));
-      }
-      
-      console.log("\n=== Current Projection (using WORLD_WIDTH/HEIGHT) ===");
-      console.log(`WORLD_WIDTH: ${WORLD_WIDTH}, WORLD_HEIGHT: ${WORLD_HEIGHT}`);
-      const currentProject = (lat: number, lng: number) => {
-        const px = (lng + 180) * (WORLD_WIDTH / 360);
-        const py = (90 - lat) * (WORLD_HEIGHT / 180);
-        return { x: px, y: py };
-      };
-      console.log("Jakarta:", currentProject(-6.2088, 106.8456));
-      console.log("Kuala Lumpur:", currentProject(3.1390, 101.6869));
-      console.log("Tokyo:", currentProject(35.6762, 139.6503));
+    // Normalize the DottedMap SVG to match our overlay coordinate system exactly
+    const targetViewBox = `0 0 ${WORLD_WIDTH} ${WORLD_HEIGHT}`;
+    
+    // Replace viewBox to match our coordinate system exactly
+    let normalizedSvg = svg.replace(
+      /viewBox=['"]([^'"]+)['"]/,
+      `viewBox="${targetViewBox}"`
+    );
+    
+    // Ensure preserveAspectRatio matches overlay
+    if (!normalizedSvg.includes('preserveAspectRatio')) {
+      normalizedSvg = normalizedSvg.replace(
+        `viewBox="${targetViewBox}"`,
+        `viewBox="${targetViewBox}" preserveAspectRatio="xMidYMid meet"`
+      );
+    } else {
+      normalizedSvg = normalizedSvg.replace(
+        /preserveAspectRatio=['"]([^'"]+)['"]/,
+        'preserveAspectRatio="xMidYMid meet"'
+      );
     }
     
-    return svg;
+    // Remove width/height attributes that might interfere with scaling
+    normalizedSvg = normalizedSvg.replace(/\s+width=['"]([^'"]+)['"]/g, '');
+    normalizedSvg = normalizedSvg.replace(/\s+height=['"]([^'"]+)['"]/g, '');
+    
+    return normalizedSvg;
   }, [map, theme]);
 
   // DottedMap uses a 2:1 aspect ratio (width:height) for world maps
@@ -131,7 +111,8 @@ export function WorldMap({
     // Map latitude [-90, 90] to y [0, WORLD_HEIGHT]
     // In SVG, y=0 is at top, so we invert: lat 90° (North) = y 0, lat -90° (South) = y WORLD_HEIGHT
     // Standard formula: y = (90 - lat) * (WORLD_HEIGHT / 180)
-    let y = (90 - clampedLat) * (WORLD_HEIGHT / 180);
+    // Apply vertical shift down by 14.1 viewBox units
+    let y = (90 - clampedLat) * (WORLD_HEIGHT / 180) - 14.1;
     
     return { x, y };
   };
@@ -258,15 +239,16 @@ export function WorldMap({
 
   return (
     <div className="w-full aspect-[2/1] md:aspect-[2.5/1] lg:aspect-[2/1] dark:bg-black bg-white rounded-lg relative font-sans overflow-hidden">
-      {/* Render DottedMap SVG directly to ensure coordinate system matches exactly */}
-      <div 
-        className="absolute inset-0 pointer-events-none select-none overflow-hidden"
+      {/* Base DottedMap SVG - normalized to match overlay viewBox exactly */}
+      <div
+        className="absolute inset-0 w-full h-full pointer-events-none select-none"
         dangerouslySetInnerHTML={{ __html: svgMap }}
         style={{
-          width: '100%',
-          height: '100%',
+          // Ensure the SVG scales identically to the overlay
+          display: 'block',
         }}
       />
+      {/* Overlay SVG with dots and lines - shares exact same viewBox and preserveAspectRatio */}
       <svg
         ref={svgRef}
         viewBox={`${worldViewBox.x} ${worldViewBox.y} ${worldViewBox.width} ${worldViewBox.height}`}

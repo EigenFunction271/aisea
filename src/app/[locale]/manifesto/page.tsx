@@ -285,7 +285,7 @@ export default function ManifestoPage() {
         {/* Discord Link Section */}
         <div className="mt-16 pt-12 border-t border-white/20 flex flex-col items-center gap-4">
           <p className="text-white/70 text-sm font-[family-name:var(--font-geist-mono)]">
-            Join our community
+            Join the movement
           </p>
           <a
             href={DISCORD_URL}
