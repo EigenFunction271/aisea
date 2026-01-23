@@ -98,6 +98,21 @@
   "manifesto": {
     "title": "Manifesto AISEA",
     "subtitle": "Tentang membangun institusi, bukan hanya komunitas",
+    "navigation": {
+      "onThisPage": "Di halaman ini",
+      "items": [
+        { "label": "Kemandirian", "href": "#independence" },
+        { "label": "Apa itu AI.SEA", "href": "#what-is-aisea" },
+        { "label": "Otoritas", "href": "#authority" },
+        { "label": "Otonomi", "href": "#autonomy" },
+        { "label": "Aliran Nilai", "href": "#value-flow" },
+        { "label": "Lintas Batas", "href": "#cross-border" },
+        { "label": "Kontinuitas", "href": "#continuity" },
+        { "label": "Akuntabilitas", "href": "#accountability" },
+        { "label": "Kontribusi", "href": "#contribution" },
+        { "label": "Komitmen", "href": "#commitment" }
+      ]
+    },
     "intro": {
       "paragraph1": "Asia Tenggara tidak kekurangan talenta. Tidak kekurangan ambisi.",
       "paragraph2": "Yang kurang adalah daya tahan.",
@@ -217,6 +232,20 @@
     "hero": {
       "title": "Jangkau 10.000+ pembangun AI aktif di seluruh APAC",
       "subheading": "Berhenti membayar untuk prospek berkualitas rendah. Dapatkan akses langsung ke pembangun yang benar-benar mengirimkan produk dan memberikan umpan balik nyata."
+    },
+    "navigation": {
+      "onThisPage": "Di halaman ini",
+      "title": "Bekerja dengan AI.SEA",
+      "items": [
+        { "label": "Tantangan GTM", "href": "#traditional-gtm" },
+        { "label": "Cara kami membantu", "href": "#aisea-helps" },
+        { "label": "Apa yang Anda dapatkan", "href": "#what-you-get" },
+        { "label": "Akses", "href": "#access" },
+        { "label": "Studi kasus", "href": "#case-studies" },
+        { "label": "Kontak", "href": "#get-in-touch" },
+        { "label": "FAQ", "href": "#faq" }
+      ],
+      "caseStudiesHint": "Geser atau gunakan panah untuk menjelajahi"
     },
     "traditionalGTM": {
       "title": "GTM tradisional tidak berkembang sesuai kebutuhan Anda",

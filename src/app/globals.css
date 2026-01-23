@@ -126,6 +126,7 @@
   }
   html {
     overflow-y: auto;
+    scroll-behavior: smooth;
   }
   body {
     @apply bg-background text-foreground;

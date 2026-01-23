@@ -98,6 +98,21 @@
   "manifesto": {
     "title": "AISEA 宣言",
     "subtitle": "关于建设机构，而不仅仅是社区",
+    "navigation": {
+      "onThisPage": "本页内容",
+      "items": [
+        { "label": "独立性", "href": "#independence" },
+        { "label": "什么是 AI.SEA", "href": "#what-is-aisea" },
+        { "label": "权威", "href": "#authority" },
+        { "label": "自主性", "href": "#autonomy" },
+        { "label": "价值流动", "href": "#value-flow" },
+        { "label": "跨境", "href": "#cross-border" },
+        { "label": "连续性", "href": "#continuity" },
+        { "label": "问责制", "href": "#accountability" },
+        { "label": "贡献", "href": "#contribution" },
+        { "label": "承诺", "href": "#commitment" }
+      ]
+    },
     "intro": {
       "paragraph1": "东南亚不缺乏人才。它不缺乏雄心。",
       "paragraph2": "它缺乏的是持久性。",
@@ -217,6 +232,20 @@
     "hero": {
       "title": "触达亚太地区 10,000+ 活跃的 AI 建设者",
       "subheading": "停止为低质量线索付费。直接接触真正交付产品并提供真实反馈的建设者。"
+    },
+    "navigation": {
+      "onThisPage": "本页内容",
+      "title": "与 AI.SEA 合作",
+      "items": [
+        { "label": "GTM 挑战", "href": "#traditional-gtm" },
+        { "label": "我们如何帮助", "href": "#aisea-helps" },
+        { "label": "您将获得什么", "href": "#what-you-get" },
+        { "label": "访问", "href": "#access" },
+        { "label": "案例研究", "href": "#case-studies" },
+        { "label": "联系", "href": "#get-in-touch" },
+        { "label": "常见问题", "href": "#faq" }
+      ],
+      "caseStudiesHint": "滑动或使用箭头浏览"
     },
     "traditionalGTM": {
       "title": "传统 GTM 无法按您需要的方式扩展",

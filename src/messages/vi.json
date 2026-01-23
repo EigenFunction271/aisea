@@ -98,6 +98,21 @@
   "manifesto": {
     "title": "Tuyên ngôn AISEA",
     "subtitle": "Về việc xây dựng thể chế, không chỉ là cộng đồng",
+    "navigation": {
+      "onThisPage": "Trên trang này",
+      "items": [
+        { "label": "Độc lập", "href": "#independence" },
+        { "label": "AI.SEA là gì", "href": "#what-is-aisea" },
+        { "label": "Thẩm quyền", "href": "#authority" },
+        { "label": "Tự chủ", "href": "#autonomy" },
+        { "label": "Dòng giá trị", "href": "#value-flow" },
+        { "label": "Xuyên biên giới", "href": "#cross-border" },
+        { "label": "Tính liên tục", "href": "#continuity" },
+        { "label": "Trách nhiệm", "href": "#accountability" },
+        { "label": "Đóng góp", "href": "#contribution" },
+        { "label": "Cam kết", "href": "#commitment" }
+      ]
+    },
     "intro": {
       "paragraph1": "Đông Nam Á không thiếu tài năng. Nó không thiếu tham vọng.",
       "paragraph2": "Điều nó thiếu là tính bền vững.",
@@ -217,6 +232,20 @@
     "hero": {
       "title": "Tiếp cận 10.000+ nhà xây dựng AI hoạt động trên khắp APAC",
       "subheading": "Ngừng trả tiền cho các khách hàng tiềm năng chất lượng thấp. Có được quyền truy cập trực tiếp vào các nhà xây dựng thực sự giao hàng và cung cấp phản hồi thực tế."
+    },
+    "navigation": {
+      "onThisPage": "Trên trang này",
+      "title": "Làm việc với AI.SEA",
+      "items": [
+        { "label": "Thách thức GTM", "href": "#traditional-gtm" },
+        { "label": "Cách chúng tôi giúp đỡ", "href": "#aisea-helps" },
+        { "label": "Những gì bạn nhận được", "href": "#what-you-get" },
+        { "label": "Truy cập", "href": "#access" },
+        { "label": "Nghiên cứu điển hình", "href": "#case-studies" },
+        { "label": "Liên hệ", "href": "#get-in-touch" },
+        { "label": "FAQ", "href": "#faq" }
+      ],
+      "caseStudiesHint": "Vuốt hoặc sử dụng mũi tên để khám phá"
     },
     "traditionalGTM": {
       "title": "GTM truyền thống không mở rộng theo cách bạn cần",

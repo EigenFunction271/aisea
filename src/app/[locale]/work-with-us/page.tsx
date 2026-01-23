@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useMemo } from 'react';
+import { useRef, useMemo, useEffect, useState } from 'react';
 import { Canvas, useFrame, extend } from '@react-three/fiber';
 import { shaderMaterial } from '@react-three/drei';
 import * as THREE from 'three';
@@ -298,6 +298,58 @@ declare module '@react-three/fiber' {
 
 export default function WorkWithUsPage() {
   const t = useTranslations('workWithUs');
+  const [activeSection, setActiveSection] = useState<string>('');
+  const sectionRefs = useRef<{ [key: string]: HTMLElement | null }>({});
+  
+  // Scroll spy to highlight active section
+  useEffect(() => {
+    const observerOptions = {
+      root: null,
+      rootMargin: '-20% 0px -70% 0px',
+      threshold: 0,
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          setActiveSection(entry.target.id);
+        }
+      });
+    }, observerOptions);
+
+    // Observe all sections
+    const navItems = t.raw('navigation.items') as Array<{ href: string; label: string }>;
+    navItems.forEach((item) => {
+      const id = item.href.replace('#', '');
+      const element = document.getElementById(id);
+      if (element) {
+        sectionRefs.current[id] = element;
+        observer.observe(element);
+      }
+    });
+
+    return () => {
+      Object.values(sectionRefs.current).forEach((el) => {
+        if (el) observer.unobserve(el);
+      });
+    };
+  }, [t]);
+
+  // Handle smooth scroll with offset for fixed navbar
+  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    e.preventDefault();
+    const element = document.querySelector(href);
+    if (element) {
+      const offset = 100; // Account for navbar
+      const elementPosition = element.getBoundingClientRect().top;
+      const offsetPosition = elementPosition + window.pageYOffset - offset;
+
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: 'smooth',
+      });
+    }
+  };
   
   return (
     <div className="w-full min-h-screen">
@@ -331,8 +383,44 @@ export default function WorkWithUsPage() {
       {/* Spacer to allow scrolling past hero */}
       <div className="relative z-0 h-screen pointer-events-none" />
 
+      {/* Sticky Page Navigation */}
+      <section className="sticky top-20 z-30 bg-black/95 backdrop-blur-sm text-white py-6 border-b border-white/10">
+        <div className="max-w-6xl mx-auto px-4">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+            <div>
+              <p className="font-[family-name:var(--font-geist-mono)] text-white/70 text-sm tracking-wide uppercase">
+                {t('navigation.onThisPage')}
+              </p>
+              <h2 className="font-[family-name:var(--font-perfectly-nineties)] text-2xl sm:text-3xl font-semibold text-white mt-2">
+                {t('navigation.title')}
+              </h2>
+            </div>
+            <nav className="flex flex-wrap gap-3 text-sm font-[family-name:var(--font-geist-mono)]">
+              {(t.raw('navigation.items') as Array<{ href: string; label: string }>).map((item) => {
+                const sectionId = item.href.replace('#', '');
+                const isActive = activeSection === sectionId;
+                return (
+                  <a
+                    key={item.href}
+                    href={item.href}
+                    onClick={(e) => handleNavClick(e, item.href)}
+                    className={`rounded-full border px-4 py-2 transition-colors ${
+                      isActive
+                        ? 'border-white/40 bg-white/10 text-white'
+                        : 'border-white/20 text-white/80 hover:text-white hover:border-white/40'
+                    }`}
+                  >
+                    {item.label}
+                  </a>
+                );
+              })}
+            </nav>
+          </div>
+        </div>
+      </section>
+
       {/* Traditional GTM Section */}
-      <section className="relative z-20 bg-black text-white py-16 md:py-24">
+      <section id="traditional-gtm" className="relative z-20 bg-black text-white py-16 md:py-24 scroll-mt-24">
         <div className="max-w-6xl mx-auto px-4">
           <div className="flex flex-col lg:flex-row items-center justify-center gap-8 lg:gap-12">
             <div className="flex-1 w-full lg:w-auto order-2 lg:order-1">
@@ -364,7 +452,7 @@ export default function WorkWithUsPage() {
       </section>
 
       {/* AI.SEA helps Section */}
-      <section className="relative z-20 bg-black text-white py-16 md:py-24">
+      <section id="aisea-helps" className="relative z-20 bg-black text-white py-16 md:py-24 scroll-mt-24">
         <div className="max-w-6xl mx-auto px-4">
           <div className="flex flex-col lg:flex-row items-center justify-center gap-8 lg:gap-12">
             <div className="flex-1 space-y-4 text-left">
@@ -391,7 +479,7 @@ export default function WorkWithUsPage() {
       </section>
 
       {/* What AI.SEA gives you Section */}
-      <section className="relative z-20 bg-black text-white py-16 md:py-24">
+      <section id="what-you-get" className="relative z-20 bg-black text-white py-16 md:py-24 scroll-mt-24">
         <div className="max-w-7xl mx-auto px-4">
           <h2 className="font-[family-name:var(--font-perfectly-nineties)] text-4xl sm:text-5xl md:text-6xl font-bold text-white text-center mb-12 md:mb-16">
             {t('whatAISEA.title')}
@@ -450,7 +538,7 @@ export default function WorkWithUsPage() {
       </div>
 
       {/* Get access to Section */}
-      <section className="relative z-20 bg-black text-white py-16 md:py-24">
+      <section id="access" className="relative z-20 bg-black text-white py-16 md:py-24 scroll-mt-24">
         <div className="max-w-6xl mx-auto px-4">
           <h2 className="font-[family-name:var(--font-perfectly-nineties)] text-4xl sm:text-5xl md:text-6xl font-bold text-white text-center mb-12 md:mb-16">
             {t('getAccess.title')}
@@ -490,11 +578,16 @@ export default function WorkWithUsPage() {
       </section>
 
       {/* Case Studies Section */}
-      <section className="relative z-20 bg-black text-white py-16 md:py-24">
+      <section id="case-studies" className="relative z-20 bg-black text-white py-16 md:py-24 scroll-mt-24">
         <div className="max-w-7xl mx-auto px-4">
-          <h2 className="font-[family-name:var(--font-perfectly-nineties)] text-4xl sm:text-5xl md:text-6xl font-bold text-white text-center mb-12 md:mb-16">
-            {t('caseStudies.title')}
-          </h2>
+          <div className="text-center mb-10 md:mb-12">
+            <h2 className="font-[family-name:var(--font-perfectly-nineties)] text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-4">
+              {t('caseStudies.title')}
+            </h2>
+            <p className="font-[family-name:var(--font-geist-mono)] text-white/70 text-sm uppercase tracking-wide">
+              {t('navigation.caseStudiesHint')}
+            </p>
+          </div>
           
           <Carousel
             opts={{
@@ -640,7 +733,7 @@ export default function WorkWithUsPage() {
       </section>
 
       {/* Get in touch Section */}
-      <section className="relative z-20 bg-black text-white py-16 md:py-24">
+      <section id="get-in-touch" className="relative z-20 bg-black text-white py-16 md:py-24 scroll-mt-24">
         <div className="max-w-7xl mx-auto px-4">
           <div className="mb-8">
             <h2 className="font-[family-name:var(--font-geist-mono)] text-2xl md:text-3xl font-semibold text-white text-center mb-4">
@@ -678,7 +771,7 @@ export default function WorkWithUsPage() {
       </section>
 
       {/* FAQ Section */}
-      <section className="relative z-20 bg-black text-white py-16 md:py-24">
+      <section id="faq" className="relative z-20 bg-black text-white py-16 md:py-24 scroll-mt-24">
         <div className="max-w-4xl mx-auto px-4">
           <h2 className="font-[family-name:var(--font-perfectly-nineties)] text-4xl sm:text-5xl md:text-6xl font-bold text-white text-center mb-12 md:mb-16">
             {t('faq.title')}

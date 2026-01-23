@@ -3,11 +3,64 @@
 import { Navbar1 } from "@/components/ui/navbar";
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
+import { useEffect, useState, useRef } from 'react';
 
 const DISCORD_URL = "https://discord.gg/aKsgdBrG";
 
 export default function ManifestoPage() {
   const t = useTranslations('manifesto');
+  const [activeSection, setActiveSection] = useState<string>('');
+  const sectionRefs = useRef<{ [key: string]: HTMLElement | null }>({});
+  
+  // Scroll spy to highlight active section
+  useEffect(() => {
+    const observerOptions = {
+      root: null,
+      rootMargin: '-20% 0px -70% 0px',
+      threshold: 0,
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          setActiveSection(entry.target.id);
+        }
+      });
+    }, observerOptions);
+
+    // Observe all sections
+    const navItems = t.raw('navigation.items') as Array<{ href: string; label: string }>;
+    navItems.forEach((item) => {
+      const id = item.href.replace('#', '');
+      const element = document.getElementById(id);
+      if (element) {
+        sectionRefs.current[id] = element;
+        observer.observe(element);
+      }
+    });
+
+    return () => {
+      Object.values(sectionRefs.current).forEach((el) => {
+        if (el) observer.unobserve(el);
+      });
+    };
+  }, [t]);
+
+  // Handle smooth scroll with offset for fixed navbar
+  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    e.preventDefault();
+    const element = document.querySelector(href);
+    if (element) {
+      const offset = 100; // Account for navbar
+      const elementPosition = element.getBoundingClientRect().top;
+      const offsetPosition = elementPosition + window.pageYOffset - offset;
+
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: 'smooth',
+      });
+    }
+  };
   
   return (
     <main className="min-h-screen bg-black text-white">
@@ -19,6 +72,33 @@ export default function ManifestoPage() {
         <p className="text-xl md:text-2xl font-semibold mb-12 text-white/90 font-[family-name:var(--font-geist-mono)]">
           {t('subtitle')}
         </p>
+        
+        {/* Sticky Navigation */}
+        <div className="sticky top-20 z-10 mb-12 border border-white/10 rounded-2xl bg-white/5 backdrop-blur-sm p-6">
+          <p className="font-[family-name:var(--font-geist-mono)] text-white/70 text-sm uppercase tracking-wide mb-4">
+            {t('navigation.onThisPage')}
+          </p>
+          <div className="flex flex-wrap gap-3 text-sm font-[family-name:var(--font-geist-mono)]">
+            {(t.raw('navigation.items') as Array<{ href: string; label: string }>).map((item) => {
+              const sectionId = item.href.replace('#', '');
+              const isActive = activeSection === sectionId;
+              return (
+                <a
+                  key={item.href}
+                  href={item.href}
+                  onClick={(e) => handleNavClick(e, item.href)}
+                  className={`rounded-full border px-4 py-2 transition-colors ${
+                    isActive
+                      ? 'border-white/40 bg-white/10 text-white'
+                      : 'border-white/20 text-white/80 hover:text-white hover:border-white/40'
+                  }`}
+                >
+                  {item.label}
+                </a>
+              );
+            })}
+          </div>
+        </div>
 
         <div className="prose prose-invert prose-lg max-w-none space-y-8 font-[family-name:var(--font-geist-mono)]">
           <p className="text-white/90 text-lg leading-relaxed">
@@ -51,7 +131,7 @@ export default function ManifestoPage() {
 
           <hr className="border-white/20 my-12" />
 
-          <h2 className="text-3xl md:text-4xl font-semibold text-white mt-12 mb-6">{t('sections.independence.title')}</h2>
+          <h2 id="independence" className="text-3xl md:text-4xl font-semibold text-white mt-12 mb-6 scroll-mt-24">{t('sections.independence.title')}</h2>
 
           <p className="text-white/90 text-lg leading-relaxed">
             {t('sections.independence.paragraph1')}
@@ -71,7 +151,7 @@ export default function ManifestoPage() {
 
           <hr className="border-white/20 my-12" />
 
-          <h2 className="text-3xl md:text-4xl font-semibold text-white mt-12 mb-6">{t('sections.whatAISEA.title')}</h2>
+          <h2 id="what-is-aisea" className="text-3xl md:text-4xl font-semibold text-white mt-12 mb-6 scroll-mt-24">{t('sections.whatAISEA.title')}</h2>
 
           <p className="text-white/90 text-lg leading-relaxed">
             {t('sections.whatAISEA.paragraph1')}
@@ -97,7 +177,7 @@ export default function ManifestoPage() {
 
           <hr className="border-white/20 my-12" />
 
-          <h2 className="text-3xl md:text-4xl font-semibold text-white mt-12 mb-6">{t('sections.authority.title')}</h2>
+          <h2 id="authority" className="text-3xl md:text-4xl font-semibold text-white mt-12 mb-6 scroll-mt-24">{t('sections.authority.title')}</h2>
 
           <p className="text-white/90 text-lg leading-relaxed">
             {t('sections.authority.paragraph1')}
@@ -109,7 +189,7 @@ export default function ManifestoPage() {
 
           <hr className="border-white/20 my-12" />
 
-          <h2 className="text-3xl md:text-4xl font-semibold text-white mt-12 mb-6">{t('sections.autonomy.title')}</h2>
+          <h2 id="autonomy" className="text-3xl md:text-4xl font-semibold text-white mt-12 mb-6 scroll-mt-24">{t('sections.autonomy.title')}</h2>
 
           <p className="text-white/90 text-lg leading-relaxed">
             {t('sections.autonomy.paragraph1')}
@@ -141,7 +221,7 @@ export default function ManifestoPage() {
 
           <hr className="border-white/20 my-12" />
 
-          <h2 className="text-3xl md:text-4xl font-semibold text-white mt-12 mb-6">{t('sections.valueFlow.title')}</h2>
+          <h2 id="value-flow" className="text-3xl md:text-4xl font-semibold text-white mt-12 mb-6 scroll-mt-24">{t('sections.valueFlow.title')}</h2>
 
           <p className="text-white/90 text-lg leading-relaxed">
             {t('sections.valueFlow.paragraph1')}
@@ -167,7 +247,7 @@ export default function ManifestoPage() {
 
           <hr className="border-white/20 my-12" />
 
-          <h2 className="text-3xl md:text-4xl font-semibold text-white mt-12 mb-6">{t('sections.crossBorder.title')}</h2>
+          <h2 id="cross-border" className="text-3xl md:text-4xl font-semibold text-white mt-12 mb-6 scroll-mt-24">{t('sections.crossBorder.title')}</h2>
 
           <p className="text-white/90 text-lg leading-relaxed">
             {t('sections.crossBorder.paragraph1')}
@@ -191,7 +271,7 @@ export default function ManifestoPage() {
 
           <hr className="border-white/20 my-12" />
 
-          <h2 className="text-3xl md:text-4xl font-semibold text-white mt-12 mb-6">{t('sections.continuity.title')}</h2>
+          <h2 id="continuity" className="text-3xl md:text-4xl font-semibold text-white mt-12 mb-6 scroll-mt-24">{t('sections.continuity.title')}</h2>
 
           <p className="text-white/90 text-lg leading-relaxed">
             {t('sections.continuity.paragraph1')}
@@ -213,7 +293,7 @@ export default function ManifestoPage() {
 
           <hr className="border-white/20 my-12" />
 
-          <h2 className="text-3xl md:text-4xl font-semibold text-white mt-12 mb-6">{t('sections.accountability.title')}</h2>
+          <h2 id="accountability" className="text-3xl md:text-4xl font-semibold text-white mt-12 mb-6 scroll-mt-24">{t('sections.accountability.title')}</h2>
 
           <p className="text-white/90 text-lg leading-relaxed">
             {t('sections.accountability.paragraph1')}
@@ -237,7 +317,7 @@ export default function ManifestoPage() {
 
           <hr className="border-white/20 my-12" />
 
-          <h2 className="text-3xl md:text-4xl font-semibold text-white mt-12 mb-6">{t('sections.contribution.title')}</h2>
+          <h2 id="contribution" className="text-3xl md:text-4xl font-semibold text-white mt-12 mb-6 scroll-mt-24">{t('sections.contribution.title')}</h2>
 
           <p className="text-white/90 text-lg leading-relaxed">
             {t('sections.contribution.paragraph1')}
@@ -261,7 +341,7 @@ export default function ManifestoPage() {
 
           <hr className="border-white/20 my-12" />
 
-          <h2 className="text-3xl md:text-4xl font-semibold text-white mt-12 mb-6">{t('sections.commitment.title')}</h2>
+          <h2 id="commitment" className="text-3xl md:text-4xl font-semibold text-white mt-12 mb-6 scroll-mt-24">{t('sections.commitment.title')}</h2>
 
           <p className="text-white/90 text-lg leading-relaxed">
             {t('sections.commitment.paragraph1')}
