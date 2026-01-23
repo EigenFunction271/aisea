@@ -3,16 +3,46 @@
 import { Navbar1 } from "@/components/ui/navbar";
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
+import type { Metadata } from 'next';
 
 const DISCORD_URL = "https://discord.gg/aKsgdBrG";
+const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://aisea.builders';
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const url = locale === 'en' ? `${baseUrl}/manifesto` : `${baseUrl}/${locale}/manifesto`;
+  
+  return {
+    title: 'The AISEA Manifesto | AISEA',
+    description: 'The principles and vision behind Southeast Asia\'s largest grassroots AI builder movement. Learn what drives AISEA.',
+    alternates: {
+      canonical: url,
+    },
+    openGraph: {
+      title: 'The AISEA Manifesto | AISEA',
+      description: 'The principles and vision behind Southeast Asia\'s largest grassroots AI builder movement.',
+      url,
+      type: 'article',
+    },
+    twitter: {
+      card: 'summary',
+      title: 'The AISEA Manifesto | AISEA',
+      description: 'The principles and vision behind Southeast Asia\'s largest grassroots AI builder movement.',
+    },
+  };
+}
 
 export default function ManifestoPage() {
   const t = useTranslations('manifesto');
   
   return (
-    <div className="min-h-screen bg-black text-white">
+    <main className="min-h-screen bg-black text-white">
       <Navbar1 />
-      <div className="max-w-4xl mx-auto px-4 py-16">
+      <article className="max-w-4xl mx-auto px-4 py-16">
         <h1 className="text-5xl md:text-6xl font-bold mb-4 font-[family-name:var(--font-perfectly-nineties)]">
           {t('title')}
         </h1>
@@ -306,7 +336,7 @@ export default function ManifestoPage() {
             </span>
           </a>
         </div>
-      </div>
-    </div>
+      </article>
+    </main>
   );
 }

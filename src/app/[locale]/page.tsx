@@ -43,13 +43,91 @@ const CALENDAR_URL = "https://luma.com/ai-sea?k=c";
 
 export default function Home() {
   const t = useTranslations();
+  
+  // Structured data for SEO
+  const structuredData = {
+    '@context': 'https://schema.org',
+    '@type': 'Event',
+    name: 'AISEA Week 2025',
+    description: "Southeast Asia's largest grassroots AI builder movement",
+    startDate: '2025-11-24',
+    endDate: '2025-11-30',
+    eventStatus: 'https://schema.org/EventScheduled',
+    eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
+    location: {
+      '@type': 'Place',
+      name: 'Southeast Asia',
+      address: {
+        '@type': 'PostalAddress',
+        addressRegion: 'Southeast Asia',
+        addressCountry: ['MY', 'ID', 'SG', 'TH', 'VN', 'PH'],
+      },
+    },
+    organizer: {
+      '@type': 'Organization',
+      name: 'AISEA',
+      url: 'https://aisea.builders',
+      sameAs: [
+        'https://discord.gg/aKsgdBrG',
+        'https://www.instagram.com/aisea.builders/',
+        'https://www.linkedin.com/company/ai-sea-week/',
+        'https://x.com/AI__SEA',
+        'https://www.youtube.com/@AISEABUILDERS',
+      ],
+    },
+    offers: {
+      '@type': 'Offer',
+      url: 'https://luma.com/ai-sea-week',
+      price: '0',
+      priceCurrency: 'USD',
+      availability: 'https://schema.org/InStock',
+    },
+  };
+  
+  const organizationData = {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    name: 'AISEA',
+    url: 'https://aisea.builders',
+    logo: 'https://aisea.builders/web-app-manifest-512x512.png',
+    description: "Southeast Asia's largest grassroots AI builder movement",
+    sameAs: [
+      'https://discord.gg/aKsgdBrG',
+      'https://www.instagram.com/aisea.builders/',
+      'https://www.linkedin.com/company/ai-sea-week/',
+      'https://x.com/AI__SEA',
+      'https://www.youtube.com/@AISEABUILDERS',
+    ],
+    areaServed: {
+      '@type': 'GeoCircle',
+      geoMidpoint: {
+        '@type': 'GeoCoordinates',
+        latitude: 3.1390,
+        longitude: 101.6869,
+      },
+      geoRadius: {
+        '@type': 'Distance',
+        name: 'Southeast Asia',
+      },
+    },
+  };
+  
   return (
-    <div className="w-full min-h-screen">
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationData) }}
+      />
+      <main className="w-full min-h-screen">
       {/* Navbar */}
       <Navbar1 />
       
       {/* Hero Section */}
-      <section className="fixed inset-0 w-screen h-screen bg-black z-10 pointer-events-none">
+      <section aria-label="Hero section" className="fixed inset-0 w-screen h-screen bg-black z-10 pointer-events-none">
         <ShaderBackground />
         <div className="absolute inset-0 flex flex-col items-center justify-center text-center space-y-4 px-4 pointer-events-auto z-10">
           <BlurFade delay={0} duration={0.8} yOffset={20}>
@@ -110,7 +188,7 @@ export default function Home() {
               >
                 <Image
                   src="/assets/icons/Discord-Symbol-Blurple.svg"
-                  alt="Discord"
+                  alt="Join AISEA Discord community"
                   width={32}
                   height={32}
                   className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8"
@@ -125,7 +203,7 @@ export default function Home() {
               >
                 <Image
                   src="/assets/icons/Instagram_logo.svg"
-                  alt="Instagram"
+                  alt="Follow AISEA on Instagram"
                   width={32}
                   height={32}
                   className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8"
@@ -140,7 +218,7 @@ export default function Home() {
               >
                 <Image
                   src="/assets/icons/LinkedIn_logo.svg"
-                  alt="LinkedIn"
+                  alt="Follow AISEA on LinkedIn"
                   width={32}
                   height={32}
                   className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8"
@@ -155,7 +233,7 @@ export default function Home() {
               >
                 <Image
                   src="/assets/icons/X_Twitter_logo.svg"
-                  alt="X (Twitter)"
+                  alt="Follow AISEA on X (Twitter)"
                   width={32}
                   height={32}
                   className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8"
@@ -170,7 +248,7 @@ export default function Home() {
               >
                 <Image
                   src="/assets/icons/YouTube_logo.svg"
-                  alt="YouTube"
+                  alt="Subscribe to AISEA on YouTube"
                   width={32}
                   height={32}
                   className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8"
@@ -191,10 +269,10 @@ export default function Home() {
       </section>
 
       {/* Spacer to allow scrolling past hero */}
-      <div className="relative z-0 h-screen pointer-events-none" />
+      <div className="relative z-0 h-screen pointer-events-none" aria-hidden="true" />
 
       {/* What is AI.SEA Section */}
-      <section className="relative z-20">
+      <section aria-label="What is AI.SEA" className="relative z-20">
         <WhatIsAISEA />
       </section>
 
@@ -240,7 +318,7 @@ export default function Home() {
       </section>
 
       {/* Global Network Section */}
-      <section className="relative z-20 py-32 px-4 bg-black">
+      <section aria-label="Global network" className="relative z-20 py-32 px-4 bg-black">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
             <h2 className="text-4xl md:text-5xl font-semibold text-white mb-4 font-[family-name:var(--font-perfectly-nineties)]">
@@ -322,7 +400,7 @@ export default function Home() {
       </section>
 
       {/* Start a Chapter Section */}
-      <section className="relative z-20 py-32 px-4 bg-black">
+      <section aria-label="Start a chapter" className="relative z-20 py-32 px-4 bg-black">
         <div className="max-w-6xl mx-auto text-center">
           <h2 className="text-4xl md:text-5xl font-semibold text-white mb-6 font-[family-name:var(--font-perfectly-nineties)]">
             {t('startChapter.title')}
@@ -345,6 +423,7 @@ export default function Home() {
           </Button>
         </div>
       </section>
-    </div>
+    </main>
+    </>
   );
 }

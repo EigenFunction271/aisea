@@ -1,8 +1,39 @@
 "use client";
 
 import { useTranslations } from 'next-intl';
+import type { Metadata } from 'next';
 
 import { BlurFade } from "@/components/ui/blur-fade";
+
+const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://aisea.builders';
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const url = locale === 'en' ? `${baseUrl}/residency` : `${baseUrl}/${locale}/residency`;
+  
+  return {
+    title: 'AI.SEA Residency | AISEA',
+    description: 'Join the AI.SEA Residency program for builders who already ship. A focused environment for building at full capacity with no distractions.',
+    alternates: {
+      canonical: url,
+    },
+    openGraph: {
+      title: 'AI.SEA Residency | AISEA',
+      description: 'Join the AI.SEA Residency program for builders who already ship.',
+      url,
+      type: 'website',
+    },
+    twitter: {
+      card: 'summary',
+      title: 'AI.SEA Residency | AISEA',
+      description: 'Join the AI.SEA Residency program for builders who already ship.',
+    },
+  };
+}
 import { Navbar1 } from "@/components/ui/navbar";
 import { Button } from "@/components/ui/button";
 import {

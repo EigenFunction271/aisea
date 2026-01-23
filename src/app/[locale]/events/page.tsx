@@ -2,14 +2,45 @@
 
 import { Navbar1 } from "@/components/ui/navbar";
 import { useTranslations } from 'next-intl';
+import type { Metadata } from 'next';
+
+const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://aisea.builders';
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const url = locale === 'en' ? `${baseUrl}/events` : `${baseUrl}/${locale}/events`;
+  
+  return {
+    title: 'Events | AISEA',
+    description: 'Explore all AI.SEA events, past and upcoming. Join Southeast Asia\'s largest grassroots AI builder movement.',
+    alternates: {
+      canonical: url,
+    },
+    openGraph: {
+      title: 'Events | AISEA',
+      description: 'Explore all AI.SEA events, past and upcoming.',
+      url,
+      type: 'website',
+    },
+    twitter: {
+      card: 'summary',
+      title: 'Events | AISEA',
+      description: 'Explore all AI.SEA events, past and upcoming.',
+    },
+  };
+}
 
 export default function EventsPage() {
   const t = useTranslations('events');
   
   return (
-    <div className="min-h-screen bg-black text-white">
+    <main className="min-h-screen bg-black text-white">
       <Navbar1 />
-      <div className="max-w-6xl mx-auto px-4 py-16">
+      <article className="max-w-6xl mx-auto px-4 py-16">
         <h1 className="text-5xl md:text-6xl font-bold mb-8 font-[family-name:var(--font-perfectly-nineties)]">
           {t('title')}
         </h1>
@@ -63,7 +94,7 @@ export default function EventsPage() {
             title="AI.SEA Events Calendar"
           />
         </div>
-      </div>
-    </div>
+      </article>
+    </main>
   );
 }

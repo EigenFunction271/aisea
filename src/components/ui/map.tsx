@@ -111,8 +111,8 @@ export function WorldMap({
     // Map latitude [-90, 90] to y [0, WORLD_HEIGHT]
     // In SVG, y=0 is at top, so we invert: lat 90° (North) = y 0, lat -90° (South) = y WORLD_HEIGHT
     // Standard formula: y = (90 - lat) * (WORLD_HEIGHT / 180)
-    // Apply vertical shift down by 14.1 viewBox units
-    let y = (90 - clampedLat) * (WORLD_HEIGHT / 180) - 14.1;
+    // Apply vertical shift up by 28.2 viewBox units
+    let y = (90 - clampedLat) * (WORLD_HEIGHT / 180) + 28.2;
     
     return { x, y };
   };

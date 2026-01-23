@@ -7,6 +7,37 @@ import * as THREE from 'three';
 import { useGSAP } from '@gsap/react';
 import gsap from 'gsap';
 import { useTranslations } from 'next-intl';
+import type { Metadata } from 'next';
+
+const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://aisea.builders';
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const url = locale === 'en' ? `${baseUrl}/work-with-us` : `${baseUrl}/${locale}/work-with-us`;
+  
+  return {
+    title: 'Work with Us | AISEA',
+    description: 'Partner with AISEA to reach qualified technical users in Southeast Asia. Direct builder access, trusted distribution, and in-context visibility for your AI products.',
+    alternates: {
+      canonical: url,
+    },
+    openGraph: {
+      title: 'Work with Us | AISEA',
+      description: 'Partner with AISEA to reach qualified technical users in Southeast Asia.',
+      url,
+      type: 'website',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: 'Work with Us | AISEA',
+      description: 'Partner with AISEA to reach qualified technical users in Southeast Asia.',
+    },
+  };
+}
 
 import { BlurFade } from "@/components/ui/blur-fade";
 import { Button } from "@/components/ui/button";

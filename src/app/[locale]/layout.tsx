@@ -25,22 +25,115 @@ const perfectlyNineties = localFont({
   variable: "--font-perfectly-nineties",
 });
 
-export const metadata: Metadata = {
-  title: "AISEA | Southeast Asia's Largest AI Builder Movement",
-  description:
-    "Join AISEA (24-30 Nov 2025) - Southeast Asia's largest grassroots builder movement bringing together builders, startups, corporates, and VCs.",
-  keywords: [
-    "AISEA",
-    "AI",
-    "Southeast Asia",
-    "builder movement",
-    "hackathon",
-    "AI week",
-    "tech event",
-  ],
-  authors: [{ name: "AISEA" }],
-  creator: "AISEA",
-};
+// Base URL - update this to your production domain
+const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://aisea.builders';
+
+// Generate metadata with locale support
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  
+  const localeNames: Record<string, string> = {
+    en: 'English',
+    id: 'Indonesian',
+    zh: 'Chinese',
+    vi: 'Vietnamese',
+  };
+  
+  const localeDescriptions: Record<string, string> = {
+    en: "Join AISEA (24-30 Nov 2025) - Southeast Asia's largest grassroots builder movement bringing together builders, startups, corporates, and VCs.",
+    id: "Bergabunglah dengan AISEA (24-30 Nov 2025) - gerakan builder terbesar di Asia Tenggara yang menghubungkan builder, startup, korporat, dan VC.",
+    zh: "加入 AISEA (2025年11月24-30日) - 东南亚最大的草根建设者运动，汇聚建设者、初创企业、企业和风险投资。",
+    vi: "Tham gia AISEA (24-30 Tháng 11 2025) - phong trào builder lớn nhất Đông Nam Á kết nối các builder, startup, doanh nghiệp và VC.",
+  };
+  
+  const currentUrl = `${baseUrl}/${locale === 'en' ? '' : locale}`;
+  const siteName = 'AISEA';
+  const title = "AISEA | Southeast Asia's Largest AI Builder Movement";
+  const description = localeDescriptions[locale] || localeDescriptions.en;
+  
+  // Generate hreflang alternates
+  const languages: Record<string, string> = {};
+  routing.locales.forEach((loc) => {
+    languages[loc] = loc === 'en' ? baseUrl : `${baseUrl}/${loc}`;
+  });
+  
+  const alternates = {
+    canonical: locale === 'en' ? baseUrl : `${baseUrl}/${locale}`,
+    languages,
+  };
+  
+  return {
+    metadataBase: new URL(baseUrl),
+    title,
+    description,
+    keywords: [
+      "AISEA",
+      "AI",
+      "Southeast Asia",
+      "builder movement",
+      "hackathon",
+      "AI week",
+      "tech event",
+      "Malaysia",
+      "Indonesia",
+      "Singapore",
+      "Vietnam",
+      "Thailand",
+      "Philippines",
+      "artificial intelligence",
+      "startup",
+      "venture capital",
+    ],
+    authors: [{ name: "AISEA" }],
+    creator: "AISEA",
+    publisher: "AISEA",
+    alternates,
+    openGraph: {
+      type: 'website',
+      locale: locale === 'en' ? 'en_US' : locale === 'id' ? 'id_ID' : locale === 'zh' ? 'zh_CN' : 'vi_VN',
+      url: currentUrl,
+      siteName,
+      title,
+      description,
+      images: [
+        {
+          url: `${baseUrl}/web-app-manifest-512x512.png`,
+          width: 512,
+          height: 512,
+          alt: 'AISEA Logo',
+        },
+      ],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: [`${baseUrl}/web-app-manifest-512x512.png`],
+      creator: '@AI__SEA',
+    },
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+        'max-video-preview': -1,
+        'max-image-preview': 'large',
+        'max-snippet': -1,
+      },
+    },
+    // Geo-targeting for Southeast Asia
+    other: {
+      'geo.region': 'ID-MY-SG-TH-VN-PH',
+      'geo.placename': 'Southeast Asia',
+      'ICBM': '3.1390, 101.6869', // Kuala Lumpur coordinates
+    },
+  };
+}
 
 export default async function LocaleLayout({
   children,
