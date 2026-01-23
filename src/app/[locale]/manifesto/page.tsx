@@ -19,6 +19,33 @@ export default function ManifestoPage() {
         <p className="text-xl md:text-2xl font-semibold mb-12 text-white/90 font-[family-name:var(--font-geist-mono)]">
           {t('subtitle')}
         </p>
+        <div className="border border-white/10 rounded-2xl bg-white/5 p-6 mb-12">
+          <p className="font-[family-name:var(--font-geist-mono)] text-white/70 text-sm uppercase tracking-wide mb-4">
+            On this page
+          </p>
+          <div className="flex flex-wrap gap-3 text-sm font-[family-name:var(--font-geist-mono)]">
+            {[
+              { label: "Independence", href: "#independence" },
+              { label: "What is AI.SEA", href: "#what-is-aisea" },
+              { label: "Authority", href: "#authority" },
+              { label: "Autonomy", href: "#autonomy" },
+              { label: "Value Flow", href: "#value-flow" },
+              { label: "Cross-Border", href: "#cross-border" },
+              { label: "Continuity", href: "#continuity" },
+              { label: "Accountability", href: "#accountability" },
+              { label: "Contribution", href: "#contribution" },
+              { label: "Commitment", href: "#commitment" },
+            ].map((item) => (
+              <a
+                key={item.href}
+                href={item.href}
+                className="rounded-full border border-white/20 px-4 py-2 text-white/80 hover:text-white hover:border-white/40 transition-colors"
+              >
+                {item.label}
+              </a>
+            ))}
+          </div>
+        </div>
 
         <div className="prose prose-invert prose-lg max-w-none space-y-8 font-[family-name:var(--font-geist-mono)]">
           <p className="text-white/90 text-lg leading-relaxed">
@@ -51,7 +78,7 @@ export default function ManifestoPage() {
 
           <hr className="border-white/20 my-12" />
 
-          <h2 className="text-3xl md:text-4xl font-semibold text-white mt-12 mb-6">{t('sections.independence.title')}</h2>
+          <h2 id="independence" className="text-3xl md:text-4xl font-semibold text-white mt-12 mb-6">{t('sections.independence.title')}</h2>
 
           <p className="text-white/90 text-lg leading-relaxed">
             {t('sections.independence.paragraph1')}
@@ -71,7 +98,7 @@ export default function ManifestoPage() {
 
           <hr className="border-white/20 my-12" />
 
-          <h2 className="text-3xl md:text-4xl font-semibold text-white mt-12 mb-6">{t('sections.whatAISEA.title')}</h2>
+          <h2 id="what-is-aisea" className="text-3xl md:text-4xl font-semibold text-white mt-12 mb-6">{t('sections.whatAISEA.title')}</h2>
 
           <p className="text-white/90 text-lg leading-relaxed">
             {t('sections.whatAISEA.paragraph1')}
@@ -97,7 +124,7 @@ export default function ManifestoPage() {
 
           <hr className="border-white/20 my-12" />
 
-          <h2 className="text-3xl md:text-4xl font-semibold text-white mt-12 mb-6">{t('sections.authority.title')}</h2>
+          <h2 id="authority" className="text-3xl md:text-4xl font-semibold text-white mt-12 mb-6">{t('sections.authority.title')}</h2>
 
           <p className="text-white/90 text-lg leading-relaxed">
             {t('sections.authority.paragraph1')}
@@ -109,7 +136,7 @@ export default function ManifestoPage() {
 
           <hr className="border-white/20 my-12" />
 
-          <h2 className="text-3xl md:text-4xl font-semibold text-white mt-12 mb-6">{t('sections.autonomy.title')}</h2>
+          <h2 id="autonomy" className="text-3xl md:text-4xl font-semibold text-white mt-12 mb-6">{t('sections.autonomy.title')}</h2>
 
           <p className="text-white/90 text-lg leading-relaxed">
             {t('sections.autonomy.paragraph1')}
@@ -141,7 +168,7 @@ export default function ManifestoPage() {
 
           <hr className="border-white/20 my-12" />
 
-          <h2 className="text-3xl md:text-4xl font-semibold text-white mt-12 mb-6">{t('sections.valueFlow.title')}</h2>
+          <h2 id="value-flow" className="text-3xl md:text-4xl font-semibold text-white mt-12 mb-6">{t('sections.valueFlow.title')}</h2>
 
           <p className="text-white/90 text-lg leading-relaxed">
             {t('sections.valueFlow.paragraph1')}
@@ -167,7 +194,7 @@ export default function ManifestoPage() {
 
           <hr className="border-white/20 my-12" />
 
-          <h2 className="text-3xl md:text-4xl font-semibold text-white mt-12 mb-6">{t('sections.crossBorder.title')}</h2>
+          <h2 id="cross-border" className="text-3xl md:text-4xl font-semibold text-white mt-12 mb-6">{t('sections.crossBorder.title')}</h2>
 
           <p className="text-white/90 text-lg leading-relaxed">
             {t('sections.crossBorder.paragraph1')}
@@ -191,7 +218,7 @@ export default function ManifestoPage() {
 
           <hr className="border-white/20 my-12" />
 
-          <h2 className="text-3xl md:text-4xl font-semibold text-white mt-12 mb-6">{t('sections.continuity.title')}</h2>
+          <h2 id="continuity" className="text-3xl md:text-4xl font-semibold text-white mt-12 mb-6">{t('sections.continuity.title')}</h2>
 
           <p className="text-white/90 text-lg leading-relaxed">
             {t('sections.continuity.paragraph1')}
@@ -213,7 +240,7 @@ export default function ManifestoPage() {
 
           <hr className="border-white/20 my-12" />
 
-          <h2 className="text-3xl md:text-4xl font-semibold text-white mt-12 mb-6">{t('sections.accountability.title')}</h2>
+          <h2 id="accountability" className="text-3xl md:text-4xl font-semibold text-white mt-12 mb-6">{t('sections.accountability.title')}</h2>
 
           <p className="text-white/90 text-lg leading-relaxed">
             {t('sections.accountability.paragraph1')}
@@ -237,7 +264,7 @@ export default function ManifestoPage() {
 
           <hr className="border-white/20 my-12" />
 
-          <h2 className="text-3xl md:text-4xl font-semibold text-white mt-12 mb-6">{t('sections.contribution.title')}</h2>
+          <h2 id="contribution" className="text-3xl md:text-4xl font-semibold text-white mt-12 mb-6">{t('sections.contribution.title')}</h2>
 
           <p className="text-white/90 text-lg leading-relaxed">
             {t('sections.contribution.paragraph1')}
@@ -261,7 +288,7 @@ export default function ManifestoPage() {
 
           <hr className="border-white/20 my-12" />
 
-          <h2 className="text-3xl md:text-4xl font-semibold text-white mt-12 mb-6">{t('sections.commitment.title')}</h2>
+          <h2 id="commitment" className="text-3xl md:text-4xl font-semibold text-white mt-12 mb-6">{t('sections.commitment.title')}</h2>
 
           <p className="text-white/90 text-lg leading-relaxed">
             {t('sections.commitment.paragraph1')}
