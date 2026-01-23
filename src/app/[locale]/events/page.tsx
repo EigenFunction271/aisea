@@ -2,37 +2,6 @@
 
 import { Navbar1 } from "@/components/ui/navbar";
 import { useTranslations } from 'next-intl';
-import type { Metadata } from 'next';
-
-const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://aisea.builders';
-
-export async function generateMetadata({
-  params,
-}: {
-  params: Promise<{ locale: string }>;
-}): Promise<Metadata> {
-  const { locale } = await params;
-  const url = locale === 'en' ? `${baseUrl}/events` : `${baseUrl}/${locale}/events`;
-  
-  return {
-    title: 'Events | AISEA',
-    description: 'Explore all AI.SEA events, past and upcoming. Join Southeast Asia\'s largest grassroots AI builder movement.',
-    alternates: {
-      canonical: url,
-    },
-    openGraph: {
-      title: 'Events | AISEA',
-      description: 'Explore all AI.SEA events, past and upcoming.',
-      url,
-      type: 'website',
-    },
-    twitter: {
-      card: 'summary',
-      title: 'Events | AISEA',
-      description: 'Explore all AI.SEA events, past and upcoming.',
-    },
-  };
-}
 
 export default function EventsPage() {
   const t = useTranslations('events');
