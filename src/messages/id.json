@@ -240,6 +240,7 @@
         { "label": "Tantangan GTM", "href": "#traditional-gtm" },
         { "label": "Cara kami membantu", "href": "#aisea-helps" },
         { "label": "Apa yang Anda dapatkan", "href": "#what-you-get" },
+        { "label": "Cara bekerja", "href": "#ways-to-work" },
         { "label": "Akses", "href": "#access" },
         { "label": "Studi kasus", "href": "#case-studies" },
         { "label": "Kontak", "href": "#get-in-touch" },
@@ -273,6 +274,29 @@
         "description": "Produk Anda muncul di dalam hackathon, sprint, dan sesi co-build di mana alat dipilih di bawah kendala nyata."
       },
       "footer": "Pelajari apa yang berhasil sebelum Anda berkomitmen pada roadmap, headcount, atau pengeluaran GTM regional."
+    },
+    "waysToWork": {
+      "title": "Cara bekerja dengan kami",
+      "bounties": {
+        "title": "Bounties",
+        "description": "Masalah yang jelas dengan kriteria penerimaan yang jelas. Kami membantu mendefinisikan masalah, menetapkan tingkat hadiah, mendistribusikannya ke builder yang tepat, dan menangani pengajuan serta evaluasi.",
+        "bestFor": "Terbaik untuk: eksperimen cepat, tugas yang ditargetkan, validasi teknis awal."
+      },
+      "challenges": {
+        "title": "Tantangan & Aktivasi",
+        "description": "Sprint pembangunan dengan batas waktu (dari 48 jam hingga beberapa minggu) yang berfokus pada tema, produk, atau ruang masalah. Kami menangani rekrutmen builder, onboarding, pemberdayaan alat, dan koordinasi demo. Mitra menyediakan kerangka masalah, kriteria kesuksesan, dan mentor opsional.",
+        "bestFor": "Terbaik untuk: generasi ide, adopsi awal, aktivasi ekosistem, menemukan bakat."
+      },
+      "pilots": {
+        "title": "Pilot Builds",
+        "description": "Pod builder kurasi yang bekerja pada masalah nyata di bawah kendala yang realistis. Tidak seperti tantangan, pilot lebih sempit dan berfokus pada eksekusi. Kami membentuk tim kecil, mendefinisikan metrik kesuksesan di muka, dan bertujuan untuk prototipe yang berorientasi produksi yang secara realistis dapat digunakan atau diperluas secara internal. Setiap pilot berakhir dengan penyerahan teknis dan evaluasi.",
+        "bestFor": "Terbaik untuk: menguji kasus penggunaan nyata, memvalidasi ROI, mengurangi risiko build yang lebih besar."
+      },
+      "infrastructure": {
+        "title": "Infrastruktur & Pemberdayaan",
+        "description": "Dukungan yang membantu builder berhasil dengan alat Anda di seluruh ekosistem. Ini termasuk kredit alat, akses API, dataset, dokumentasi, dan workshop langsung yang dijalankan dengan chapter AI.SEA. Tujuannya: membuat builder menggunakan stack Anda dan terus menggunakannya di luar satu acara.",
+        "bestFor": "Terbaik untuk: adopsi berkelanjutan, pull-through ekosistem, penggunaan jangka panjang."
+      }
     },
     "getAccess": {
       "title": "Dapatkan akses ke",

@@ -106,7 +106,7 @@ export function WorldMap({
     // Standard formula: y = (90 - lat) * (WORLD_HEIGHT / 180)
     // Apply vertical shift to align with DottedMap grid (calibrated using Brisbane as reference)
     // Offset 13.74 puts Brisbane (-27.47°S) exactly on y=79 grid line
-    let y = (90 - clampedLat) * (WORLD_HEIGHT / 180);
+    let y = (90 - clampedLat) * (WORLD_HEIGHT / 180)+3.74;
     
     return { x, y };
   };

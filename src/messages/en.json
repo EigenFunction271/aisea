@@ -240,6 +240,7 @@
         { "label": "GTM challenges", "href": "#traditional-gtm" },
         { "label": "How we help", "href": "#aisea-helps" },
         { "label": "What you get", "href": "#what-you-get" },
+        { "label": "Ways to work", "href": "#ways-to-work" },
         { "label": "Access", "href": "#access" },
         { "label": "Case studies", "href": "#case-studies" },
         { "label": "Contact", "href": "#get-in-touch" },
@@ -273,6 +274,29 @@
         "description": "Your product shows up inside hackathons, sprints, and co-build sessions where tools are chosen under real constraints."
       },
       "footer": "Learn what works before you commit roadmap, headcount, or regional GTM spend."
+    },
+    "waysToWork": {
+      "title": "Ways to work with us",
+      "bounties": {
+        "title": "Bounties",
+        "description": "Well-scoped problems with clear acceptance criteria. We help define the problem, set reward tiers, distribute it to the right builders, and handle submissions and evaluation.",
+        "bestFor": "Best for: rapid experimentation, targeted tasks, early technical validation."
+      },
+      "challenges": {
+        "title": "Challenges & Activations",
+        "description": "Time-boxed build sprints (from 48 hours to a few weeks) focused on a theme, product, or problem space. We handle builder recruitment, onboarding, tooling enablement, and demo coordination. Partners provide the problem framing, success criteria, and optional mentorship.",
+        "bestFor": "Best for: idea generation, early adoption, ecosystem activation, surfacing talent."
+      },
+      "pilots": {
+        "title": "Pilot Builds",
+        "description": "Curated builder pods working on a real problem under realistic constraints. Unlike challenges, pilots are narrower and execution-focused. We form small teams, define success metrics upfront, and aim for production-minded prototypes that could realistically be deployed or extended internally. Each pilot ends with a technical handover and evaluation.",
+        "bestFor": "Best for: testing real use cases, validating ROI, de-risking larger builds."
+      },
+      "infrastructure": {
+        "title": "Infrastructure & Enablement",
+        "description": "Support that helps builders succeed with your tools across the ecosystem. This includes tool credits, API access, datasets, documentation, and hands-on workshops run with AI.SEA chapters. The goal: get builders to ship with your stack and continue using it beyond a single event.",
+        "bestFor": "Best for: sustained adoption, ecosystem pull-through, long-term usage."
+      }
     },
     "getAccess": {
       "title": "Get access to",

@@ -240,6 +240,7 @@
         { "label": "Thách thức GTM", "href": "#traditional-gtm" },
         { "label": "Cách chúng tôi giúp đỡ", "href": "#aisea-helps" },
         { "label": "Những gì bạn nhận được", "href": "#what-you-get" },
+        { "label": "Cách làm việc", "href": "#ways-to-work" },
         { "label": "Truy cập", "href": "#access" },
         { "label": "Nghiên cứu điển hình", "href": "#case-studies" },
         { "label": "Liên hệ", "href": "#get-in-touch" },
@@ -273,6 +274,29 @@
         "description": "Sản phẩm của bạn xuất hiện bên trong hackathon, sprint và các phiên đồng xây dựng nơi các công cụ được chọn dưới các ràng buộc thực tế."
       },
       "footer": "Tìm hiểu những gì hoạt động trước khi bạn cam kết lộ trình, nhân sự hoặc chi tiêu GTM khu vực."
+    },
+    "waysToWork": {
+      "title": "Cách làm việc với chúng tôi",
+      "bounties": {
+        "title": "Bounties",
+        "description": "Các vấn đề được xác định rõ với tiêu chí chấp nhận rõ ràng. Chúng tôi giúp xác định vấn đề, thiết lập các cấp độ phần thưởng, phân phối cho các builder phù hợp và xử lý các bài nộp và đánh giá.",
+        "bestFor": "Tốt nhất cho: thử nghiệm nhanh, nhiệm vụ có mục tiêu, xác thực kỹ thuật sớm."
+      },
+      "challenges": {
+        "title": "Thử thách & Kích hoạt",
+        "description": "Các sprint xây dựng có giới hạn thời gian (từ 48 giờ đến vài tuần) tập trung vào một chủ đề, sản phẩm hoặc không gian vấn đề. Chúng tôi xử lý tuyển dụng builder, onboarding, kích hoạt công cụ và điều phối demo. Đối tác cung cấp khung vấn đề, tiêu chí thành công và cố vấn tùy chọn.",
+        "bestFor": "Tốt nhất cho: tạo ý tưởng, áp dụng sớm, kích hoạt hệ sinh thái, phát hiện tài năng."
+      },
+      "pilots": {
+        "title": "Pilot Builds",
+        "description": "Các nhóm builder được tuyển chọn làm việc trên một vấn đề thực tế dưới các ràng buộc thực tế. Không giống như thử thách, pilot hẹp hơn và tập trung vào thực thi. Chúng tôi hình thành các nhóm nhỏ, xác định các chỉ số thành công ngay từ đầu và nhắm đến các nguyên mẫu hướng sản xuất có thể thực tế được triển khai hoặc mở rộng nội bộ. Mỗi pilot kết thúc với việc bàn giao kỹ thuật và đánh giá.",
+        "bestFor": "Tốt nhất cho: kiểm tra các trường hợp sử dụng thực tế, xác thực ROI, giảm rủi ro cho các build lớn hơn."
+      },
+      "infrastructure": {
+        "title": "Hạ tầng & Kích hoạt",
+        "description": "Hỗ trợ giúp builder thành công với các công cụ của bạn trên toàn hệ sinh thái. Điều này bao gồm tín dụng công cụ, quyền truy cập API, bộ dữ liệu, tài liệu và các hội thảo thực hành được chạy với các chapter AI.SEA. Mục tiêu: giúp builder sử dụng stack của bạn và tiếp tục sử dụng nó ngoài một sự kiện duy nhất.",
+        "bestFor": "Tốt nhất cho: áp dụng bền vững, pull-through hệ sinh thái, sử dụng lâu dài."
+      }
     },
     "getAccess": {
       "title": "Có được quyền truy cập vào",
