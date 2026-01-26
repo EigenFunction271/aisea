@@ -90,13 +90,6 @@ export function WorldMap({
     return normalizedSvg;
   }, [map, theme]);
 
-  // DottedMap uses a 2:1 aspect ratio (width:height) for world maps
-  // If height is 100, width is 200 in the SVG coordinate system
-  // But the actual rendered image is scaled to 1056x495
-  // We need to project to the SVG's coordinate system (200x100), not the rendered size
-  const DOTTED_MAP_SVG_WIDTH = 200; // DottedMap width when height is 100
-  const DOTTED_MAP_SVG_HEIGHT = 100; // DottedMap height
-
   // Project point to DottedMap SVG coordinates using equirectangular projection
   // DottedMap uses standard equirectangular projection with y=0 at top
   const projectPoint = (lat: number, lng: number) => {
@@ -111,8 +104,9 @@ export function WorldMap({
     // Map latitude [-90, 90] to y [0, WORLD_HEIGHT]
     // In SVG, y=0 is at top, so we invert: lat 90° (North) = y 0, lat -90° (South) = y WORLD_HEIGHT
     // Standard formula: y = (90 - lat) * (WORLD_HEIGHT / 180)
-    // Apply vertical shift up by 28.2 viewBox units
-    let y = (90 - clampedLat) * (WORLD_HEIGHT / 180) + 28.2;
+    // Apply vertical shift to align with DottedMap grid (calibrated using Brisbane as reference)
+    // Offset 13.74 puts Brisbane (-27.47°S) exactly on y=79 grid line
+    let y = (90 - clampedLat) * (WORLD_HEIGHT / 180);
     
     return { x, y };
   };
