@@ -546,28 +546,28 @@ export default function WorkWithUsPage() {
                 title: t('waysToWork.bounties.title'),
                 description: `${t('waysToWork.bounties.description')} ${t('waysToWork.bounties.bestFor')}`,
                 imageUrl: '/assets/images_general/wwu1.jpeg',
-                bgColor: 'bg-white/5 border border-white/10',
+                bgColor: 'bg-black border border-white/10',
                 textColor: 'text-white/90'
               },
               {
                 title: t('waysToWork.challenges.title'),
                 description: `${t('waysToWork.challenges.description')} ${t('waysToWork.challenges.bestFor')}`,
                 imageUrl: '/assets/images_general/wwu2.png',
-                bgColor: 'bg-white/5 border border-white/10',
+                bgColor: 'bg-black border border-white/10',
                 textColor: 'text-white/90'
               },
               {
                 title: t('waysToWork.pilots.title'),
                 description: `${t('waysToWork.pilots.description')} ${t('waysToWork.pilots.bestFor')}`,
                 imageUrl: '/assets/images_general/wwu3.png',
-                bgColor: 'bg-white/5 border border-white/10',
+                bgColor: 'bg-black border border-white/10',
                 textColor: 'text-white/90'
               },
               {
                 title: t('waysToWork.infrastructure.title'),
                 description: `${t('waysToWork.infrastructure.description')} ${t('waysToWork.infrastructure.bestFor')}`,
                 imageUrl: '/assets/images_general/wwu4.png',
-                bgColor: 'bg-white/5 border border-white/10',
+                bgColor: 'bg-black border border-white/10',
                 textColor: 'text-white/90'
               },
             ]}
@@ -582,46 +582,6 @@ export default function WorkWithUsPage() {
       <div className="relative z-20 bg-black">
         <LogoScrollingBar scrollSpeed={1.0} direction="right" showTitle={true} />
       </div>
-
-      {/* Get access to Section */}
-      <section id="access" className="relative z-20 bg-black text-white py-16 md:py-24 scroll-mt-24">
-        <div className="max-w-6xl mx-auto px-4">
-          <h2 className="font-[family-name:var(--font-perfectly-nineties)] text-4xl sm:text-5xl md:text-6xl font-bold text-white text-center mb-12 md:mb-16">
-            {t('getAccess.title')}
-          </h2>
-          
-          <div className="bg-white/5 border border-white/10 rounded-2xl p-8 md:p-12">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
-              <div className="text-center">
-                <div className="font-[family-name:var(--font-perfectly-nineties)] text-5xl sm:text-6xl md:text-7xl font-bold text-white mb-4">
-                  {t('getAccess.stat1.number')}
-                </div>
-                <div className="font-[family-name:var(--font-geist-mono)] text-white/90 text-lg md:text-xl">
-                  {t('getAccess.stat1.label')}
-                </div>
-              </div>
-
-              <div className="text-center">
-                <div className="font-[family-name:var(--font-perfectly-nineties)] text-5xl sm:text-6xl md:text-7xl font-bold text-white mb-4">
-                  {t('getAccess.stat2.number')}
-                </div>
-                <div className="font-[family-name:var(--font-geist-mono)] text-white/90 text-lg md:text-xl">
-                  {t('getAccess.stat2.label')}
-                </div>
-              </div>
-
-              <div className="text-center">
-                <div className="font-[family-name:var(--font-perfectly-nineties)] text-5xl sm:text-6xl md:text-7xl font-bold text-white mb-4">
-                  {t('getAccess.stat3.number')}
-                </div>
-                <div className="font-[family-name:var(--font-geist-mono)] text-white/90 text-lg md:text-xl">
-                  {t('getAccess.stat3.label')}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
 
       {/* Case Studies Section */}
       <section id="case-studies" className="relative z-20 bg-black text-white py-16 md:py-24 scroll-mt-24">
@@ -775,6 +735,46 @@ export default function WorkWithUsPage() {
             <CarouselPrevious className="text-white border-white/20 hover:bg-white/10 hover:border-white/40" />
             <CarouselNext className="text-white border-white/20 hover:bg-white/10 hover:border-white/40" />
           </Carousel>
+        </div>
+      </section>
+
+      {/* Get access to Section */}
+      <section id="access" className="relative z-20 bg-black text-white py-16 md:py-24 scroll-mt-24">
+        <div className="max-w-6xl mx-auto px-4">
+          <h2 className="font-[family-name:var(--font-perfectly-nineties)] text-4xl sm:text-5xl md:text-6xl font-bold text-white text-center mb-12 md:mb-16">
+            {t('getAccess.title')}
+          </h2>
+          
+          <div className="bg-white/5 border border-white/10 rounded-2xl p-8 md:p-12">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
+              <div className="text-center">
+                <div className="font-[family-name:var(--font-perfectly-nineties)] text-5xl sm:text-6xl md:text-7xl font-bold text-white mb-4">
+                  {t('getAccess.stat1.number')}
+                </div>
+                <div className="font-[family-name:var(--font-geist-mono)] text-white/90 text-lg md:text-xl">
+                  {t('getAccess.stat1.label')}
+                </div>
+              </div>
+
+              <div className="text-center">
+                <div className="font-[family-name:var(--font-perfectly-nineties)] text-5xl sm:text-6xl md:text-7xl font-bold text-white mb-4">
+                  {t('getAccess.stat2.number')}
+                </div>
+                <div className="font-[family-name:var(--font-geist-mono)] text-white/90 text-lg md:text-xl">
+                  {t('getAccess.stat2.label')}
+                </div>
+              </div>
+
+              <div className="text-center">
+                <div className="font-[family-name:var(--font-perfectly-nineties)] text-5xl sm:text-6xl md:text-7xl font-bold text-white mb-4">
+                  {t('getAccess.stat3.number')}
+                </div>
+                <div className="font-[family-name:var(--font-geist-mono)] text-white/90 text-lg md:text-xl">
+                  {t('getAccess.stat3.label')}
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
