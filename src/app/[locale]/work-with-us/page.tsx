@@ -11,6 +11,7 @@ import { useTranslations } from 'next-intl';
 import { BlurFade } from "@/components/ui/blur-fade";
 import { Button } from "@/components/ui/button";
 import { Navbar1 } from "@/components/ui/navbar";
+import { HeroScrollIndicator } from "@/components/ui/hero-scroll-indicator";
 import { Mail } from "lucide-react";
 import Image from "next/image";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -378,15 +379,16 @@ export default function WorkWithUsPage() {
             </p>
           </BlurFade>
 
+          <HeroScrollIndicator label={t('hero.scrollToExplore')} />
         </div>
       </section>
 
       {/* Spacer to allow scrolling past hero */}
       <div className="relative z-0 h-screen pointer-events-none" />
 
-      {/* Sticky Page Navigation */}
-      <section className="sticky top-20 z-30 bg-black/95 backdrop-blur-sm text-white py-6 border-b border-white/10">
-        <div className="max-w-6xl mx-auto px-4">
+      {/* Sticky Page Navigation — top clears main navbar (including safe-area on notched devices) */}
+      <section className="sticky top-[max(5rem,calc(4rem+env(safe-area-inset-top,0px)))] z-30 bg-black/95 backdrop-blur-sm text-white py-4 md:py-6 border-b border-white/10">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
             <div>
               <p className="font-[family-name:var(--font-geist-mono)] text-white/70 text-sm tracking-wide uppercase">
@@ -559,7 +561,7 @@ export default function WorkWithUsPage() {
               {
                 title: t('waysToWork.pilots.title'),
                 description: `${t('waysToWork.pilots.description')} ${t('waysToWork.pilots.bestFor')}`,
-                imageUrl: '/assets/images_general/wwu3.png',
+                imageUrl: '/assets/images_general/wwu3.jpeg',
                 bgColor: 'bg-black border border-white/10',
                 textColor: 'text-white/90'
               },

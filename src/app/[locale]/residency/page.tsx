@@ -4,6 +4,7 @@ import { useTranslations } from 'next-intl';
 
 import { BlurFade } from "@/components/ui/blur-fade";
 import { Navbar1 } from "@/components/ui/navbar";
+import { HeroScrollIndicator } from "@/components/ui/hero-scroll-indicator";
 import { Button } from "@/components/ui/button";
 import {
   Stepper,
@@ -62,6 +63,8 @@ export default function ResidencyPage() {
               {t('hero.subheading')}
             </p>
           </BlurFade>
+
+          <HeroScrollIndicator label={t('hero.scrollToExplore')} />
         </div>
       </section>
 

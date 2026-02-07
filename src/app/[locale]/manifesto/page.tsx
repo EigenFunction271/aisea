@@ -73,8 +73,8 @@ export default function ManifestoPage() {
           {t('subtitle')}
         </p>
         
-        {/* Sticky Navigation */}
-        <div className="sticky top-20 z-10 mb-12 border border-white/10 rounded-2xl bg-white/5 backdrop-blur-sm p-6">
+        {/* Sticky Navigation — top clears main navbar (including safe-area on notched devices) */}
+        <div className="sticky top-[max(5rem,calc(4rem+env(safe-area-inset-top,0px)))] z-10 mb-12 border border-white/10 rounded-2xl bg-white/5 backdrop-blur-sm p-4 sm:p-6">
           <p className="font-[family-name:var(--font-geist-mono)] text-white/70 text-sm uppercase tracking-wide mb-4">
             {t('navigation.onThisPage')}
           </p>

@@ -13,6 +13,7 @@ import { HowItWorks } from "@/components/HowItWorks";
 import { LogoScrollingBar } from "@/components/LogoScrollingBar";
 import { CityScrollingBar } from "@/components/CityScrollingBar";
 import { Navbar1 } from "@/components/ui/navbar";
+import { HeroScrollIndicator } from "@/components/ui/hero-scroll-indicator";
 import dynamic from 'next/dynamic';
 import { Link } from '@/i18n/routing';
 
@@ -265,6 +266,7 @@ export default function Home() {
               </a>
             </div>
           </BlurFade>
+          <HeroScrollIndicator label={t('hero.scrollToExplore')} />
         </div>
       </section>
 

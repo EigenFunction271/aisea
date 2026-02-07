@@ -11,7 +11,8 @@
     "title": "AISEA",
     "description": "Jadilah bagian dari gerakan pembangun AI terbesar di Asia Tenggara.",
     "joinUs": "Bergabung dengan kami",
-    "workWithUs": "Bekerja dengan kami"
+    "workWithUs": "Bekerja dengan kami",
+    "scrollToExplore": "Gulir untuk menjelajahi"
   },
   "whatIsAISEA": {
     "title": "Apa itu AI.SEA",
@@ -231,7 +232,8 @@
   "workWithUs": {
     "hero": {
       "title": "Jangkau 10.000+ pembangun AI aktif di seluruh APAC",
-      "subheading": "Berhenti membayar untuk prospek berkualitas rendah. Dapatkan akses langsung ke pembangun yang benar-benar mengirimkan produk dan memberikan umpan balik nyata."
+      "subheading": "Berhenti membayar untuk prospek berkualitas rendah. Dapatkan akses langsung ke pembangun yang benar-benar mengirimkan produk dan memberikan umpan balik nyata.",
+      "scrollToExplore": "Gulir untuk menjelajahi"
     },
     "navigation": {
       "onThisPage": "Di halaman ini",
@@ -436,7 +438,8 @@
   "residency": {
     "hero": {
       "title": "AI.SEA Residency",
-      "subheading": "Rumah bagi para pembangun paling ambisius di dunia"
+      "subheading": "Rumah bagi para pembangun paling ambisius di dunia",
+      "scrollToExplore": "Gulir untuk menjelajahi"
     },
     "threeMonths": {
       "title": "Tiga bulan untuk melakukan pekerjaan terbaik Anda.",

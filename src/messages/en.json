@@ -11,7 +11,8 @@
     "title": "AISEA",
     "description": "Be part of Southeast Asia's largest grassroots builder movement.",
     "joinUs": "Join us",
-    "workWithUs": "Work with us"
+    "workWithUs": "Work with us",
+    "scrollToExplore": "Scroll to explore"
   },
   "whatIsAISEA": {
     "title": "What is AI.SEA",
@@ -231,7 +232,8 @@
   "workWithUs": {
     "hero": {
       "title": "Reach 10,000+ active AI builders across APAC",
-      "subheading": "Stop paying for low-signal leads. Get direct access to builders who actually ship and give real feedback."
+      "subheading": "Stop paying for low-signal leads. Get direct access to builders who actually ship and give real feedback.",
+      "scrollToExplore": "Scroll to explore"
     },
     "navigation": {
       "onThisPage": "On this page",
@@ -436,7 +438,8 @@
   "residency": {
     "hero": {
       "title": "AI.SEA Residency",
-      "subheading": "The home for the world's most ambitious builders"
+      "subheading": "The home for the world's most ambitious builders",
+      "scrollToExplore": "Scroll to explore"
     },
     "threeMonths": {
       "title": "Three months to do your best work.",

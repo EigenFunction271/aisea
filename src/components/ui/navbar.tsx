@@ -37,8 +37,8 @@ const Navbar1 = () => {
   ], [t]);
 
   return (
-    <div className="flex justify-center w-full py-2 px-6 fixed top-0 left-0 right-0 z-50 pointer-events-none">
-      <div className="flex items-center justify-between px-8 py-1.5 bg-black/50 backdrop-blur-sm rounded-full border border-white/5 w-full max-w-[calc(100%-3rem)] relative z-50 pointer-events-auto">
+    <div className="flex justify-center w-full py-2 px-4 sm:px-6 pt-[max(0.5rem,env(safe-area-inset-top))] fixed top-0 left-0 right-0 z-50 pointer-events-none">
+      <div className="flex items-center justify-between px-4 sm:px-6 md:px-8 py-1.5 bg-black/50 backdrop-blur-sm rounded-full border border-white/5 w-full max-w-[calc(100%-2rem)] sm:max-w-[calc(100%-3rem)] relative z-50 pointer-events-auto">
         <div className="flex items-center">
           <Link href="/" className="flex items-center">
             <div className="w-7 h-7 mr-5 cursor-pointer relative">
@@ -126,8 +126,8 @@ const Navbar1 = () => {
                 <Menu className="h-5 w-5 text-white/70" />
               </button>
             </SheetTrigger>
-            <SheetContent side="right" className="bg-black/95 backdrop-blur-md border-white/10">
-              <div className="flex flex-col space-y-6 mt-8">
+            <SheetContent side="right" className="bg-black/95 backdrop-blur-md border-white/10 p-6 pt-14">
+              <div className="flex flex-col space-y-6">
                 <Link
                   href="/"
                   className="text-base text-white/80 hover:text-white font-medium"
