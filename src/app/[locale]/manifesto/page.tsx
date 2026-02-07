@@ -5,7 +5,7 @@ import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import { useEffect, useState, useRef } from 'react';
 
-const DISCORD_URL = "https://discord.gg/aKsgdBrG";
+const DISCORD_URL = "https://discord.gg/HJPwPW5zvT";
 
 export default function ManifestoPage() {
   const t = useTranslations('manifesto');

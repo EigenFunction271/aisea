@@ -35,7 +35,7 @@ const ShaderBackground = dynamic(
 );
 
 const LUMA_REGISTER_URL = "https://luma.com/ai-sea-week";
-const DISCORD_URL = "https://discord.gg/aKsgdBrG";
+const DISCORD_URL = "https://discord.gg/HJPwPW5zvT";
 const INSTAGRAM_URL = "https://www.instagram.com/aisea.builders/";
 const LINKEDIN_URL = "https://www.linkedin.com/company/ai-sea-week/";
 const X_TWITTER_URL = "https://x.com/AI__SEA";
@@ -69,7 +69,7 @@ export default function Home() {
       name: 'AISEA',
       url: 'https://aisea.builders',
       sameAs: [
-        'https://discord.gg/aKsgdBrG',
+        'https://discord.gg/HJPwPW5zvT',
         'https://www.instagram.com/aisea.builders/',
         'https://www.linkedin.com/company/ai-sea-week/',
         'https://x.com/AI__SEA',
@@ -93,7 +93,7 @@ export default function Home() {
     logo: 'https://aisea.builders/web-app-manifest-512x512.png',
     description: "Southeast Asia's largest grassroots AI builder movement",
     sameAs: [
-      'https://discord.gg/aKsgdBrG',
+      'https://discord.gg/HJPwPW5zvT',
       'https://www.instagram.com/aisea.builders/',
       'https://www.linkedin.com/company/ai-sea-week/',
       'https://x.com/AI__SEA',
