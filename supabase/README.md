@@ -53,6 +53,18 @@ Ensure these secrets are set for the project (Dashboard → Project Settings →
 
 If you use publishable/secret keys with Edge Functions, you may need to deploy with `--no-verify-jwt` and enforce auth inside the function (see [Supabase API keys](https://supabase.com/docs/guides/api/api-keys)).
 
+## Auth email confirmation redirect
+
+After sign-up, Supabase sends a confirmation email. Configure where that link sends users:
+
+1. **Supabase Dashboard** → Authentication → **URL Configuration**
+2. **Site URL:** your production URL (e.g. `https://aisea.builders`); for local dev you can leave or set to `http://localhost:3000`
+3. **Redirect URLs:** add:
+   - `http://localhost:3000/auth/callback` (local)
+   - `https://yourdomain.com/auth/callback` (production)
+
+The app route `GET /auth/callback` exchanges the `code` query param for a session and redirects to `/`. Without this, users land on `/?code=...` and the session is not created.
+
 ## Schema reference
 
 See [documentation/SCHEMA.md](../documentation/SCHEMA.md) and [documentation/IMPLEMENTATION_PLAN.md](../documentation/IMPLEMENTATION_PLAN.md).

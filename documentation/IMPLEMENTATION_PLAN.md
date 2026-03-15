@@ -5,6 +5,21 @@
 
 ---
 
+## Current state (as of Feb 2026)
+
+| Area | Status |
+|------|--------|
+| **Phase 0** | Done: schema, RLS, Edge Functions `create-builder-profile` + `claim-builder-profile`, seeded `skills` / `tech_stack_options`, Supabase Auth (email). |
+| **Auth UI** | Done: `[locale]/login` (sign up / sign in), auth callback, redirect to dashboard after login; optional `?next=` for return URL. |
+| **Dashboard** | Done: `[locale]/dashboard` (protected); shows profile status; CTAs for “Create profile” and “Claim profile”; stubs at `dashboard/create-profile` and `dashboard/claim-profile` (Discord instructions / coming soon). |
+| **Phase 2 (directory + web profile)** | Not started: no `/builders` or `/builders/[username]` routes; no web form calling Edge Function for create; claim flow (e.g. Discord DM verification) not implemented. |
+| **Phase 1 (Discord bot)** | Separate track; not in this repo. |
+| **Phases 3–4** | Blocked on Phase 2 (and Phase 1 for bot project submit). |
+
+**Next focus:** Phase 2 — directory pages and web profile create/edit. See **Phase 2 (Web) — Implementation todo** below and [TODO.md](../TODO.md) for actionable tasks.
+
+---
+
 ## Prerequisites
 
 - [ ] **Supabase project** — Create project at supabase.com; note project URL and keys from **API Keys** (publishable and secret).
@@ -64,6 +79,28 @@
 
 ---
 
+## Phase 2 (Web) — Implementation todo
+
+Ordered tasks for the Next.js app (v1 English-only for `/builders`). Tick in [TODO.md](../TODO.md) as you go.
+
+| # | Task | Notes |
+|---|------|--------|
+| **2.A** | **Routing** | Decide: `/builders` under `[locale]` (e.g. `app/[locale]/builders/`) vs top-level `app/builders/`. PRD v1 English only; either is fine. Document choice. |
+| **2.B** | **Public directory page** | `builders/page.tsx`: fetch builders + project count (Supabase; anon read). List cards: name, city, skills, bio, project count; link to `/[username]`. No filters in first slice; add city/skills/contribution/project count filters in a follow-up. |
+| **2.C** | **Public profile page** | `builders/[username]/page.tsx`: fetch by `username`, 404 if missing. Show name, city, bio, skills, GitHub handle (link), optional GitHub contribution placeholder; list projects (name, description, stage, links). |
+| **2.D** | **API / Edge Function client** | Typed wrapper to call `create-builder-profile` Edge Function (auth JWT). Validate payload (e.g. Zod): username, name, city, skills[], bio (160), github_handle, optional URLs. Handle errors and log request/response on failure. |
+| **2.E** | **Web profile create** | Replace dashboard create stub: form at `dashboard/create-profile` (or dedicated route) that collects fields, checks username uniqueness (query or Edge Function), calls Edge Function on submit; on success redirect to dashboard or profile. Load `skills` from Supabase for multi-select. |
+| **2.F** | **Web profile edit** | Authenticated page (e.g. `dashboard/edit-profile` or `builders/me/edit`): load current builder via `builder_auth`; form pre-filled; update via Supabase client (RLS allows update own row). Same skills/bio/URL constraints. |
+| **2.G** | **Claim profile (optional v1)** | Either: (1) implement Discord DM verification (bot sends code; user enters code; call `claim-builder-profile` with token), or (2) keep “Claim profile” as stub and document as Phase 2.1. SCHEMA recommends Discord DM verification. |
+| **2.H** | **Directory filters + sort** | Add filters: city (dropdown from distinct), skills (multi from `skills` table), contribution bands, project count. Sort: `github_last_active` desc (nullable last). |
+| **2.I** | **Optional: middleware** | If desired, protect `/[locale]/dashboard` (and nested) in middleware by checking session; else keep current server-side redirect from dashboard page. |
+
+**Clarifications to confirm before coding:**  
+- Locale: is `/builders` under `[locale]` or top-level?  
+- Claim verification: ship lightweight (e.g. claim by handle only, document risk) or wait for Discord DM verification?
+
+---
+
 ## Phase 3: M3 — GitHub integration
 
 **Goal:** Daily cron fetches contribution data for all builders with `github_handle`; updates `github_contributions` and `github_last_active`; profile page can show graph/recency.
@@ -118,8 +155,8 @@ Phase 4 depends on 0, 1, 2; bot project flow depends on 1 (builder exists).
 
 ## Checklist summary
 
-- [ ] Phase 0: Schema, RLS, Supabase Auth, fixed lists, bot env
-- [ ] Phase 1: Discord bot profile create/update, Supabase write, handle uniqueness
-- [ ] Phase 2: Next.js Supabase client, auth UI, builder_auth link, directory + profile pages, filters, web profile create/edit
+- [x] Phase 0: Schema, RLS, Supabase Auth, fixed lists, Edge Functions, seeds (bot env separate)
+- [ ] Phase 1: Discord bot profile create/update, Supabase write, handle uniqueness (separate repo/track)
+- [ ] Phase 2: Directory + profile pages, web profile create/edit, filters — see **Phase 2 (Web) — Implementation todo** and [TODO.md](../TODO.md)
 - [ ] Phase 3: Vercel Cron GitHub job, profile/directory show GitHub data
 - [ ] Phase 4: Bot project submit, /builders/projects, project count filter, profile projects list
