@@ -9,6 +9,19 @@
     "login": "Log in",
     "dashboard": "Dashboard"
   },
+  "dashboard": {
+    "title": "Dashboard",
+    "yourProfile": "Your builder profile",
+    "viewPublicProfile": "View public profile",
+    "editProfile": "Edit profile",
+    "browseDirectory": "Browse directory",
+    "noProfileTitle": "You don't have a builder profile yet",
+    "noProfileDescription": "Create a profile to appear in the AI.SEA builder directory, or claim one you created via Discord.",
+    "createProfile": "Create your profile",
+    "claimExistingProfile": "Claim existing profile",
+    "orUseDiscord": "Or use the Discord bot: type /profile create in any channel to create your profile there.",
+    "projectCount": "{count} project(s)"
+  },
   "auth": {
     "loginTitle": "Log in",
     "signUpTitle": "Sign up",

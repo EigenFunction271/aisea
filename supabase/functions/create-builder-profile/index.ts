@@ -14,6 +14,8 @@ interface CreateBuilderProfilePayload {
   skills?: string[];
   github_handle?: string;
   linkedin_url?: string;
+  instagram_url?: string;
+  twitter_url?: string;
   personal_url?: string;
 }
 
@@ -49,7 +51,7 @@ Deno.serve(async (req) => {
     return jsonResponse({ error: "Invalid JSON body" }, 400);
   }
 
-  const { username, name, city, bio, skills = [], github_handle, linkedin_url, personal_url } = body;
+  const { username, name, city, bio, skills = [], github_handle, linkedin_url, instagram_url, twitter_url, personal_url } = body;
   if (!username?.trim() || !name?.trim() || !city?.trim()) {
     return jsonResponse(
       { error: "username, name, and city are required" },
@@ -99,6 +101,8 @@ Deno.serve(async (req) => {
     skills: skills,
     github_handle: github_handle?.trim() || null,
     linkedin_url: linkedin_url?.trim() || null,
+    instagram_url: instagram_url?.trim() || null,
+    twitter_url: twitter_url?.trim() || null,
     personal_url: personal_url?.trim() || null,
   };
 

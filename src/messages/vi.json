@@ -9,6 +9,19 @@
     "login": "Đăng nhập",
     "dashboard": "Bảng điều khiển"
   },
+  "dashboard": {
+    "title": "Bảng điều khiển",
+    "yourProfile": "Hồ sơ builder của bạn",
+    "viewPublicProfile": "Xem hồ sơ công khai",
+    "editProfile": "Chỉnh sửa hồ sơ",
+    "browseDirectory": "Duyệt thư mục",
+    "noProfileTitle": "Bạn chưa có hồ sơ builder",
+    "noProfileDescription": "Tạo hồ sơ để xuất hiện trong thư mục builder AI.SEA, hoặc nhận hồ sơ bạn đã tạo qua Discord.",
+    "createProfile": "Tạo hồ sơ của bạn",
+    "claimExistingProfile": "Nhận hồ sơ đã có",
+    "orUseDiscord": "Hoặc dùng bot Discord: gõ /profile create trong bất kỳ kênh nào để tạo hồ sơ ở đó.",
+    "projectCount": "{count} dự án"
+  },
   "auth": {
     "loginTitle": "Đăng nhập",
     "signUpTitle": "Đăng ký",

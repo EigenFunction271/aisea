@@ -9,6 +9,19 @@
     "login": "登录",
     "dashboard": "仪表盘"
   },
+  "dashboard": {
+    "title": "仪表盘",
+    "yourProfile": "您的 builder 档案",
+    "viewPublicProfile": "查看公开档案",
+    "editProfile": "编辑档案",
+    "browseDirectory": "浏览目录",
+    "noProfileTitle": "您还没有 builder 档案",
+    "noProfileDescription": "创建档案以出现在 AI.SEA builder 目录中，或认领您通过 Discord 创建的档案。",
+    "createProfile": "创建您的档案",
+    "claimExistingProfile": "认领已有档案",
+    "orUseDiscord": "或使用 Discord 机器人：在任何频道输入 /profile create 即可在那里创建档案。",
+    "projectCount": "{count} 个项目"
+  },
   "auth": {
     "loginTitle": "登录",
     "signUpTitle": "注册",

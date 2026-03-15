@@ -48,6 +48,8 @@
 | `skills` | `text[]` | NO | Default `'{}'`; **slugs** from `skills` table |
 | `github_handle` | `text` | YES | |
 | `linkedin_url` | `text` | YES | |
+| `instagram_url` | `text` | YES | |
+| `twitter_url` | `text` | YES | |
 | `personal_url` | `text` | YES | |
 | `github_contributions` | `integer` | YES | Filled by cron; null until first sync |
 | `github_last_active` | `date` | YES | Filled by cron |

@@ -9,6 +9,19 @@
     "login": "Masuk",
     "dashboard": "Dashboard"
   },
+  "dashboard": {
+    "title": "Dashboard",
+    "yourProfile": "Profil builder Anda",
+    "viewPublicProfile": "Lihat profil publik",
+    "editProfile": "Edit profil",
+    "browseDirectory": "Jelajahi direktori",
+    "noProfileTitle": "Anda belum punya profil builder",
+    "noProfileDescription": "Buat profil untuk tampil di direktori builder AI.SEA, atau klaim profil yang Anda buat lewat Discord.",
+    "createProfile": "Buat profil Anda",
+    "claimExistingProfile": "Klaim profil yang sudah ada",
+    "orUseDiscord": "Atau gunakan bot Discord: ketik /profile create di channel mana pun untuk membuat profil di sana.",
+    "projectCount": "{count} proyek"
+  },
   "auth": {
     "loginTitle": "Masuk",
     "signUpTitle": "Daftar",
