@@ -6,7 +6,8 @@
     "manifesto": "Manifesto",
     "workWithUs": "Work with us",
     "residency": "Residency",
-    "login": "Log in"
+    "login": "Log in",
+    "dashboard": "Dashboard"
   },
   "auth": {
     "loginTitle": "Log in",

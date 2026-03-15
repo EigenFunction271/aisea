@@ -6,7 +6,8 @@
     "manifesto": "Manifesto",
     "workWithUs": "Bekerja dengan kami",
     "residency": "Residensi",
-    "login": "Masuk"
+    "login": "Masuk",
+    "dashboard": "Dashboard"
   },
   "auth": {
     "loginTitle": "Masuk",

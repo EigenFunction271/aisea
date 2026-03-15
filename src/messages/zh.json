@@ -6,7 +6,8 @@
     "manifesto": "宣言",
     "workWithUs": "与我们合作",
     "residency": "驻地",
-    "login": "登录"
+    "login": "登录",
+    "dashboard": "仪表盘"
   },
   "auth": {
     "loginTitle": "登录",

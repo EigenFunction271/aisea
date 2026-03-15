@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/routing";
 import { createClient } from "@/lib/supabase/client";
@@ -13,6 +14,9 @@ import { Navbar1 } from "@/components/ui/navbar";
 export default function LoginPage() {
   const t = useTranslations("auth");
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const nextParam = searchParams.get("next");
+  const next = nextParam?.startsWith("/") ? nextParam : "/dashboard";
   const [mode, setMode] = useState<"login" | "signup">("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -39,7 +43,7 @@ export default function LoginPage() {
           setLoading(false);
           return;
         }
-        router.replace("/");
+        router.replace(next);
         return;
       }
 

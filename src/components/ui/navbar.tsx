@@ -1,11 +1,12 @@
-"use client" 
+"use client"
 
 import * as React from "react"
-import { useMemo } from "react"
+import { useMemo, useState, useEffect } from "react"
 import Image from "next/image"
 import { Menu } from "lucide-react"
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/routing';
+import { createClient } from "@/lib/supabase/client";
 import {
   NavigationMenu,
   NavigationMenuList,
@@ -25,8 +26,18 @@ import { cn } from "@/lib/utils"
 
 const Navbar1 = () => {
   const t = useTranslations('nav');
-  
-  // Memoize navigation items to avoid recreation on every render
+  const [session, setSession] = useState<{ user: unknown } | null>(null);
+
+  useEffect(() => {
+    const supabase = createClient();
+    supabase.auth.getSession().then(({ data: { session: s } }) => setSession(s));
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, s) => setSession(s));
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const authLink = session ? "/dashboard" : "/login";
+  const authLabel = session ? t("dashboard") : t("login");
+
   const dropdownItems = useMemo(() => [
     { label: t('events'), href: "/events" },
     { label: t('manifesto'), href: "/manifesto" },
@@ -106,7 +117,7 @@ const Navbar1 = () => {
             </NavigationMenuList>
           </NavigationMenu>
           <Button asChild variant="outline" size="sm" className="rounded-full border-white/20 text-white hover:bg-white/10 hover:border-white/40 font-medium">
-            <Link href="/login">{t('login')}</Link>
+            <Link href={authLink}>{authLabel}</Link>
           </Button>
           <LanguageSwitcher />
         </div>
@@ -147,10 +158,10 @@ const Navbar1 = () => {
                   </Link>
                 ))}
                 <Link
-                  href="/login"
+                  href={authLink}
                   className="text-base text-white/80 hover:text-white font-medium mt-4 pt-4 border-t border-white/10"
                 >
-                  {t('login')}
+                  {authLabel}
                 </Link>
               </div>
             </SheetContent>

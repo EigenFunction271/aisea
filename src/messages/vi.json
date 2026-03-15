@@ -6,7 +6,8 @@
     "manifesto": "Tuyên ngôn",
     "workWithUs": "Làm việc với chúng tôi",
     "residency": "Residency",
-    "login": "Đăng nhập"
+    "login": "Đăng nhập",
+    "dashboard": "Bảng điều khiển"
   },
   "auth": {
     "loginTitle": "Đăng nhập",
