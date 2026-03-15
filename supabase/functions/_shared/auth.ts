@@ -1,0 +1,38 @@
+import { createClient } from "npm:@supabase/supabase-js@2";
+
+/**
+ * Returns the authenticated user's id (auth.uid()) from the request JWT.
+ * Throws if missing or invalid; returns string (uuid).
+ */
+export async function getUserIdFromRequest(req: Request): Promise<string> {
+  const authHeader = req.headers.get("Authorization");
+  if (!authHeader?.startsWith("Bearer ")) {
+    throw new Error("Missing or invalid Authorization header");
+  }
+  const token = authHeader.replace("Bearer ", "").trim();
+  const url = Deno.env.get("SUPABASE_URL");
+  const publishableKey = Deno.env.get("SUPABASE_PUBLISHABLE_KEY");
+  if (!url || !publishableKey) {
+    throw new Error("Missing SUPABASE_URL or SUPABASE_PUBLISHABLE_KEY");
+  }
+  const supabase = createClient(url, publishableKey);
+  const { data, error } = await supabase.auth.getClaims(token);
+  const userId = data?.claims?.sub;
+  if (error || !userId) {
+    throw new Error(error?.message ?? "Invalid JWT");
+  }
+  return userId as string;
+}
+
+export function createAdminClient() {
+  const url = Deno.env.get("SUPABASE_URL");
+  const secretKey = Deno.env.get("SUPABASE_SECRET_KEY");
+  if (!url || !secretKey) {
+    throw new Error(
+      "Missing SUPABASE_URL or SUPABASE_SECRET_KEY in Edge Function env"
+    );
+  }
+  return createClient(url, secretKey, {
+    auth: { autoRefreshToken: false, persistSession: false },
+  });
+}

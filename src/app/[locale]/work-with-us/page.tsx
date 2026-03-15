@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useMemo, useEffect, useState } from 'react';
+import { useRef, useMemo } from 'react';
 import { Canvas, useFrame, extend } from '@react-three/fiber';
 import { shaderMaterial } from '@react-three/drei';
 import * as THREE from 'three';
@@ -300,58 +300,6 @@ declare module '@react-three/fiber' {
 
 export default function WorkWithUsPage() {
   const t = useTranslations('workWithUs');
-  const [activeSection, setActiveSection] = useState<string>('');
-  const sectionRefs = useRef<{ [key: string]: HTMLElement | null }>({});
-  
-  // Scroll spy to highlight active section
-  useEffect(() => {
-    const observerOptions = {
-      root: null,
-      rootMargin: '-20% 0px -70% 0px',
-      threshold: 0,
-    };
-
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          setActiveSection(entry.target.id);
-        }
-      });
-    }, observerOptions);
-
-    // Observe all sections
-    const navItems = t.raw('navigation.items') as Array<{ href: string; label: string }>;
-    navItems.forEach((item) => {
-      const id = item.href.replace('#', '');
-      const element = document.getElementById(id);
-      if (element) {
-        sectionRefs.current[id] = element;
-        observer.observe(element);
-      }
-    });
-
-    return () => {
-      Object.values(sectionRefs.current).forEach((el) => {
-        if (el) observer.unobserve(el);
-      });
-    };
-  }, [t]);
-
-  // Handle smooth scroll with offset for fixed navbar
-  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
-    e.preventDefault();
-    const element = document.querySelector(href);
-    if (element) {
-      const offset = 100; // Account for navbar
-      const elementPosition = element.getBoundingClientRect().top;
-      const offsetPosition = elementPosition + window.pageYOffset - offset;
-
-      window.scrollTo({
-        top: offsetPosition,
-        behavior: 'smooth',
-      });
-    }
-  };
   
   return (
     <div className="w-full min-h-screen">
@@ -385,42 +333,6 @@ export default function WorkWithUsPage() {
 
       {/* Spacer to allow scrolling past hero */}
       <div className="relative z-0 h-screen pointer-events-none" />
-
-      {/* Sticky Page Navigation — top clears main navbar (including safe-area on notched devices) */}
-      <section className="sticky top-[max(5rem,calc(4rem+env(safe-area-inset-top,0px)))] z-30 bg-black/95 backdrop-blur-sm text-white py-4 md:py-6 border-b border-white/10">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6">
-          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
-            <div>
-              <p className="font-[family-name:var(--font-geist-mono)] text-white/70 text-sm tracking-wide uppercase">
-                {t('navigation.onThisPage')}
-              </p>
-              <h2 className="font-[family-name:var(--font-perfectly-nineties)] text-2xl sm:text-3xl font-semibold text-white mt-2">
-                {t('navigation.title')}
-              </h2>
-            </div>
-            <nav className="flex flex-wrap gap-3 text-sm font-[family-name:var(--font-geist-mono)]">
-              {(t.raw('navigation.items') as Array<{ href: string; label: string }>).map((item) => {
-                const sectionId = item.href.replace('#', '');
-                const isActive = activeSection === sectionId;
-                return (
-                  <a
-                    key={item.href}
-                    href={item.href}
-                    onClick={(e) => handleNavClick(e, item.href)}
-                    className={`rounded-full border px-4 py-2 transition-colors ${
-                      isActive
-                        ? 'border-white/40 bg-white/10 text-white'
-                        : 'border-white/20 text-white/80 hover:text-white hover:border-white/40'
-                    }`}
-                  >
-                    {item.label}
-                  </a>
-                );
-              })}
-            </nav>
-          </div>
-        </div>
-      </section>
 
       {/* Traditional GTM Section */}
       <section id="traditional-gtm" className="relative z-20 bg-black text-white py-16 md:py-24 scroll-mt-24">

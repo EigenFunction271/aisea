@@ -5,7 +5,20 @@
     "events": "Sự kiện",
     "manifesto": "Tuyên ngôn",
     "workWithUs": "Làm việc với chúng tôi",
-    "residency": "Residency"
+    "residency": "Residency",
+    "login": "Đăng nhập"
+  },
+  "auth": {
+    "loginTitle": "Đăng nhập",
+    "signUpTitle": "Đăng ký",
+    "email": "Email",
+    "password": "Mật khẩu",
+    "submitLogin": "Đăng nhập",
+    "submitSignUp": "Tạo tài khoản",
+    "switchToSignUp": "Chưa có tài khoản? Đăng ký",
+    "switchToLogin": "Đã có tài khoản? Đăng nhập",
+    "checkEmail": "Kiểm tra email để lấy liên kết xác nhận.",
+    "error": "Đã xảy ra lỗi. Thử lại."
   },
   "hero": {
     "title": "AISEA",

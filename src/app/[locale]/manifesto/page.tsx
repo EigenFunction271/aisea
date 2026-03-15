@@ -3,64 +3,11 @@
 import { Navbar1 } from "@/components/ui/navbar";
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
-import { useEffect, useState, useRef } from 'react';
 
 const DISCORD_URL = "https://discord.gg/HJPwPW5zvT";
 
 export default function ManifestoPage() {
   const t = useTranslations('manifesto');
-  const [activeSection, setActiveSection] = useState<string>('');
-  const sectionRefs = useRef<{ [key: string]: HTMLElement | null }>({});
-  
-  // Scroll spy to highlight active section
-  useEffect(() => {
-    const observerOptions = {
-      root: null,
-      rootMargin: '-20% 0px -70% 0px',
-      threshold: 0,
-    };
-
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          setActiveSection(entry.target.id);
-        }
-      });
-    }, observerOptions);
-
-    // Observe all sections
-    const navItems = t.raw('navigation.items') as Array<{ href: string; label: string }>;
-    navItems.forEach((item) => {
-      const id = item.href.replace('#', '');
-      const element = document.getElementById(id);
-      if (element) {
-        sectionRefs.current[id] = element;
-        observer.observe(element);
-      }
-    });
-
-    return () => {
-      Object.values(sectionRefs.current).forEach((el) => {
-        if (el) observer.unobserve(el);
-      });
-    };
-  }, [t]);
-
-  // Handle smooth scroll with offset for fixed navbar
-  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
-    e.preventDefault();
-    const element = document.querySelector(href);
-    if (element) {
-      const offset = 100; // Account for navbar
-      const elementPosition = element.getBoundingClientRect().top;
-      const offsetPosition = elementPosition + window.pageYOffset - offset;
-
-      window.scrollTo({
-        top: offsetPosition,
-        behavior: 'smooth',
-      });
-    }
-  };
   
   return (
     <main className="min-h-screen bg-black text-white">
@@ -73,33 +20,6 @@ export default function ManifestoPage() {
           {t('subtitle')}
         </p>
         
-        {/* Sticky Navigation — top clears main navbar (including safe-area on notched devices) */}
-        <div className="sticky top-[max(5rem,calc(4rem+env(safe-area-inset-top,0px)))] z-10 mb-12 border border-white/10 rounded-2xl bg-white/5 backdrop-blur-sm p-4 sm:p-6">
-          <p className="font-[family-name:var(--font-geist-mono)] text-white/70 text-sm uppercase tracking-wide mb-4">
-            {t('navigation.onThisPage')}
-          </p>
-          <div className="flex flex-wrap gap-3 text-sm font-[family-name:var(--font-geist-mono)]">
-            {(t.raw('navigation.items') as Array<{ href: string; label: string }>).map((item) => {
-              const sectionId = item.href.replace('#', '');
-              const isActive = activeSection === sectionId;
-              return (
-                <a
-                  key={item.href}
-                  href={item.href}
-                  onClick={(e) => handleNavClick(e, item.href)}
-                  className={`rounded-full border px-4 py-2 transition-colors ${
-                    isActive
-                      ? 'border-white/40 bg-white/10 text-white'
-                      : 'border-white/20 text-white/80 hover:text-white hover:border-white/40'
-                  }`}
-                >
-                  {item.label}
-                </a>
-              );
-            })}
-          </div>
-        </div>
-
         <div className="prose prose-invert prose-lg max-w-none space-y-8 font-[family-name:var(--font-geist-mono)]">
           <p className="text-white/90 text-lg leading-relaxed">
             {t('intro.paragraph1')}

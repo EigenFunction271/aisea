@@ -5,7 +5,20 @@
     "events": "Events",
     "manifesto": "Manifesto",
     "workWithUs": "Work with us",
-    "residency": "Residency"
+    "residency": "Residency",
+    "login": "Log in"
+  },
+  "auth": {
+    "loginTitle": "Log in",
+    "signUpTitle": "Sign up",
+    "email": "Email",
+    "password": "Password",
+    "submitLogin": "Log in",
+    "submitSignUp": "Create account",
+    "switchToSignUp": "Don't have an account? Sign up",
+    "switchToLogin": "Already have an account? Log in",
+    "checkEmail": "Check your email for the confirmation link.",
+    "error": "Something went wrong. Try again."
   },
   "hero": {
     "title": "AISEA",

@@ -5,7 +5,20 @@
     "events": "Acara",
     "manifesto": "Manifesto",
     "workWithUs": "Bekerja dengan kami",
-    "residency": "Residensi"
+    "residency": "Residensi",
+    "login": "Masuk"
+  },
+  "auth": {
+    "loginTitle": "Masuk",
+    "signUpTitle": "Daftar",
+    "email": "Email",
+    "password": "Kata sandi",
+    "submitLogin": "Masuk",
+    "submitSignUp": "Buat akun",
+    "switchToSignUp": "Belum punya akun? Daftar",
+    "switchToLogin": "Sudah punya akun? Masuk",
+    "checkEmail": "Periksa email Anda untuk tautan konfirmasi.",
+    "error": "Terjadi kesalahan. Coba lagi."
   },
   "hero": {
     "title": "AISEA",

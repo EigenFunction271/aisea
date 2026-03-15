@@ -5,7 +5,20 @@
     "events": "活动",
     "manifesto": "宣言",
     "workWithUs": "与我们合作",
-    "residency": "驻地"
+    "residency": "驻地",
+    "login": "登录"
+  },
+  "auth": {
+    "loginTitle": "登录",
+    "signUpTitle": "注册",
+    "email": "邮箱",
+    "password": "密码",
+    "submitLogin": "登录",
+    "submitSignUp": "创建账户",
+    "switchToSignUp": "没有账户？注册",
+    "switchToLogin": "已有账户？登录",
+    "checkEmail": "请查收邮件中的确认链接。",
+    "error": "出错了，请重试。"
   },
   "hero": {
     "title": "AISEA",

@@ -19,6 +19,7 @@ import {
   SheetContent,
   SheetTrigger,
 } from "@/components/ui/sheet"
+import { Button } from "@/components/ui/button"
 import { LanguageSwitcher } from "@/components/ui/language-switcher"
 import { cn } from "@/lib/utils"
 
@@ -57,27 +58,17 @@ const Navbar1 = () => {
         <div className="hidden md:flex items-center gap-6">
           <NavigationMenu>
             <NavigationMenuList className="gap-6">
-              {/* Home Button */}
+              {/* Home with dropdown (events, manifesto) */}
               <NavigationMenuItem>
-                <Link href="/" legacyBehavior passHref>
-                  <NavigationMenuLink
-                    className={cn(
-                      "text-sm text-white/70 hover:text-white/90 transition-colors font-medium"
-                    )}
-                  >
-                    {t('home')}
-                  </NavigationMenuLink>
-                </Link>
-              </NavigationMenuItem>
-              
-              {/* About with Dropdown */}
-              <NavigationMenuItem>
-                <NavigationMenuTrigger 
+                <NavigationMenuTrigger
+                  asChild
                   className={cn(
-                    "text-sm text-white/70 hover:text-white/90 transition-colors font-medium bg-transparent border-none data-[state=open]:bg-transparent data-[state=open]:text-white/90"
+                    "bg-transparent border-none px-0 text-sm text-white/70 hover:text-white/90 transition-colors font-medium data-[state=open]:bg-transparent data-[state=open]:text-white/90"
                   )}
                 >
-                  {t('about')}
+                  <Link href="/" className="flex items-center">
+                    {t('home')}
+                  </Link>
                 </NavigationMenuTrigger>
                 <NavigationMenuContent>
                   <ul className="grid w-[200px] gap-1 p-2">
@@ -114,6 +105,9 @@ const Navbar1 = () => {
               ))}
             </NavigationMenuList>
           </NavigationMenu>
+          <Button asChild variant="outline" size="sm" className="rounded-full border-white/20 text-white hover:bg-white/10 hover:border-white/40 font-medium">
+            <Link href="/login">{t('login')}</Link>
+          </Button>
           <LanguageSwitcher />
         </div>
 
@@ -134,9 +128,6 @@ const Navbar1 = () => {
                 >
                   {t('home')}
                 </Link>
-                <div className="text-base text-white/80 hover:text-white font-medium">
-                  {t('about')}
-                </div>
                 {dropdownItems.map((item) => (
                   <Link
                     key={item.href}
@@ -155,6 +146,12 @@ const Navbar1 = () => {
                     {item.label}
                   </Link>
                 ))}
+                <Link
+                  href="/login"
+                  className="text-base text-white/80 hover:text-white font-medium mt-4 pt-4 border-t border-white/10"
+                >
+                  {t('login')}
+                </Link>
               </div>
             </SheetContent>
           </Sheet>
