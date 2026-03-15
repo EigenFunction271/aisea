@@ -2,6 +2,10 @@ import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { getUserIdFromRequest, createAdminClient } from "../_shared/auth.ts";
 import { corsHeaders } from "../_shared/cors.ts";
 
+declare const Deno: {
+  serve: (handler: (req: Request) => Response | Promise<Response>) => void;
+};
+
 const BUILDERS_TABLE = "builders";
 const BUILDER_AUTH_TABLE = "builder_auth";
 const SKILLS_TABLE = "skills";
