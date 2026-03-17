@@ -11,11 +11,11 @@ export async function getUserIdFromRequest(req: Request): Promise<string> {
   }
   const token = authHeader.replace("Bearer ", "").trim();
   const url = Deno.env.get("SUPABASE_URL");
-  const publishableKey = Deno.env.get("SUPABASE_PUBLISHABLE_KEY");
-  if (!url || !publishableKey) {
-    throw new Error("Missing SUPABASE_URL or SUPABASE_PUBLISHABLE_KEY");
+  const anonKey = Deno.env.get("SUPABASE_ANON_KEY");
+  if (!url || !anonKey) {
+    throw new Error("Missing SUPABASE_URL or SUPABASE_ANON_KEY");
   }
-  const supabase = createClient(url, publishableKey);
+  const supabase = createClient(url, anonKey);
   const { data, error } = await supabase.auth.getClaims(token);
   const userId = data?.claims?.sub;
   if (error || !userId) {
@@ -26,13 +26,13 @@ export async function getUserIdFromRequest(req: Request): Promise<string> {
 
 export function createAdminClient() {
   const url = Deno.env.get("SUPABASE_URL");
-  const secretKey = Deno.env.get("SUPABASE_SECRET_KEY");
-  if (!url || !secretKey) {
+  const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+  if (!url || !serviceRoleKey) {
     throw new Error(
-      "Missing SUPABASE_URL or SUPABASE_SECRET_KEY in Edge Function env"
+      "Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY in Edge Function env"
     );
   }
-  return createClient(url, secretKey, {
+  return createClient(url, serviceRoleKey, {
     auth: { autoRefreshToken: false, persistSession: false },
   });
 }
