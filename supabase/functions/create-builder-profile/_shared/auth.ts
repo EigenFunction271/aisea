@@ -11,12 +11,17 @@ export async function getUserIdFromRequest(req: Request): Promise<string> {
   if (!authHeader?.startsWith("Bearer ")) {
     throw new Error("Missing or invalid Authorization header");
   }
+
   const url = Deno.env.get("SUPABASE_URL");
   const publicKey =
-    Deno.env.get("SUPABASE_ANON_KEY") ?? Deno.env.get("SUPABASE_PUBLISHABLE_KEY");
+    Deno.env.get("SUPABASE_ANON_KEY") ??
+    Deno.env.get("SUPABASE_PUBLISHABLE_KEY");
+
   if (!url || !publicKey) {
     throw new Error("Missing SUPABASE_URL or SUPABASE_ANON_KEY");
   }
+
+  // Use getUser() with forwarded Authorization — reliable in Edge; getClaims() often fails here.
   const supabase = createClient(url, publicKey, {
     global: { headers: { Authorization: authHeader } },
   });
@@ -30,13 +35,17 @@ export async function getUserIdFromRequest(req: Request): Promise<string> {
 export function createAdminClient() {
   const url = Deno.env.get("SUPABASE_URL");
   const secretKey =
-    Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? Deno.env.get("SUPABASE_SECRET_KEY");
+    Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ??
+    Deno.env.get("SUPABASE_SECRET_KEY");
+
   if (!url || !secretKey) {
     throw new Error(
       "Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY in Edge Function env"
     );
   }
+
   return createClient(url, secretKey, {
     auth: { autoRefreshToken: false, persistSession: false },
   });
 }
+

@@ -1,6 +1,6 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
-import { getUserIdFromRequest, createAdminClient } from "../_shared/auth.ts";
-import { corsHeaders } from "../_shared/cors.ts";
+import { getUserIdFromRequest, createAdminClient } from "./_shared/auth.ts";
+import { corsHeaders } from "./_shared/cors.ts";
 
 declare const Deno: {
   serve: (handler: (req: Request) => Response | Promise<Response>) => void;
@@ -42,6 +42,9 @@ Deno.serve(async (req) => {
   try {
     userId = await getUserIdFromRequest(req);
   } catch (e) {
+    console.error("[create-builder-profile] auth error", {
+      message: e instanceof Error ? e.message : String(e),
+    });
     return jsonResponse(
       { error: e instanceof Error ? e.message : "Unauthorized" },
       401
