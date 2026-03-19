@@ -4,6 +4,7 @@ import { createClient } from "npm:@supabase/supabase-js@2";
 
 /**
  * Returns the authenticated user's id (auth.uid()) from the request JWT.
+ * Uses getClaims() for local verification (no Auth server call).
  * Throws if missing or invalid; returns string (uuid).
  */
 export async function getUserIdFromRequest(req: Request): Promise<string> {
@@ -11,20 +12,24 @@ export async function getUserIdFromRequest(req: Request): Promise<string> {
   if (!authHeader?.startsWith("Bearer ")) {
     throw new Error("Missing or invalid Authorization header");
   }
+  const token = authHeader.replace("Bearer ", "").trim();
+
   const url = Deno.env.get("SUPABASE_URL");
   const publicKey =
-    Deno.env.get("SUPABASE_ANON_KEY") ?? Deno.env.get("SUPABASE_PUBLISHABLE_KEY");
+    Deno.env.get("SUPABASE_ANON_KEY") ??
+    Deno.env.get("SUPABASE_PUBLISHABLE_KEY");
+
   if (!url || !publicKey) {
     throw new Error("Missing SUPABASE_URL or SUPABASE_ANON_KEY");
   }
-  const supabase = createClient(url, publicKey, {
-    global: { headers: { Authorization: authHeader } },
-  });
-  const { data: { user }, error } = await supabase.auth.getUser();
-  if (error || !user?.id) {
+
+  const supabase = createClient(url, publicKey);
+  const { data, error } = await supabase.auth.getClaims(token);
+  const userId = data?.claims?.sub;
+  if (error || !userId) {
     throw new Error(error?.message ?? "Invalid JWT");
   }
-  return user.id;
+  return userId;
 }
 
 export function createAdminClient() {
