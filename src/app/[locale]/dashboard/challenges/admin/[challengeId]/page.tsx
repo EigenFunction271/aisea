@@ -43,7 +43,9 @@ export default async function EditChallengePage({
     "rejected",
     "withdrawn",
   ]);
-  const statusFilter = status && allowedStatuses.has(status) ? status : "all";
+  const statusFilter = (
+    status && allowedStatuses.has(status) ? status : "all"
+  ) as "all" | SubmissionStatus;
   const currentPage = Math.max(1, Number.parseInt(page ?? "1", 10) || 1);
   const pageSize = 8;
   const from = (currentPage - 1) * pageSize;
