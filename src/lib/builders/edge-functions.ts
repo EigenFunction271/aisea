@@ -47,8 +47,22 @@ export async function createBuilderProfile(
     personal_url: cleanUrl(body.personal_url),
   };
 
+  const {
+    data: { session },
+    error: sessionError,
+  } = await supabase.auth.getSession();
+  if (sessionError) {
+    throw new Error(sessionError.message ?? "Failed to read auth session");
+  }
+  if (!session?.access_token) {
+    throw new Error("You are not signed in. Please log in and try again.");
+  }
+
   const { data, error } = await supabase.functions.invoke("create-builder-profile", {
     body: clean,
+    headers: {
+      Authorization: `Bearer ${session.access_token}`,
+    },
   });
 
   if (error) {
@@ -73,8 +87,23 @@ export async function claimBuilderProfile(
   payload: unknown
 ): Promise<{ builder: { id: string; username: string } }> {
   const body = claimPayloadSchema.parse(payload);
+
+  const {
+    data: { session },
+    error: sessionError,
+  } = await supabase.auth.getSession();
+  if (sessionError) {
+    throw new Error(sessionError.message ?? "Failed to read auth session");
+  }
+  if (!session?.access_token) {
+    throw new Error("You are not signed in. Please log in and try again.");
+  }
+
   const { data, error } = await supabase.functions.invoke("claim-builder-profile", {
     body: { username: body.username.trim().toLowerCase() },
+    headers: {
+      Authorization: `Bearer ${session.access_token}`,
+    },
   });
 
   if (error) {
