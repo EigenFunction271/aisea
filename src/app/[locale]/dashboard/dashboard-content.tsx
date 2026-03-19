@@ -100,6 +100,12 @@ export function DashboardContent({
                   {t("claimExistingProfile")}
                 </Link>
               </Button>
+              <Button asChild variant="outline" size="default" className="rounded-full border-white/20 text-white/90 hover:bg-white/10">
+                <Link href="/dashboard/challenges">
+                  <Trophy className="mr-2 h-4 w-4" />
+                  Challenges
+                </Link>
+              </Button>
             </div>
             <p className="mt-4 text-xs text-white/50">
               {t("orUseDiscord")}

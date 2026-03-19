@@ -15,4 +15,5 @@ export type ChallengeCard = {
 export type UserChallengeAccess = {
   isAuthenticated: boolean;
   isProfileComplete: boolean;
+  isAdmin: boolean;
 };

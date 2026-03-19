@@ -5,18 +5,19 @@
 
 ---
 
-## Current state (as of Feb 2026)
+## Current state (as of March 2026)
 
 | Area | Status |
 |------|--------|
 | **Phase 0** | Done: schema, RLS, Edge Functions `create-builder-profile` + `claim-builder-profile`, seeded `skills` / `tech_stack_options`, Supabase Auth (email). |
 | **Auth UI** | Done: `[locale]/login` (sign up / sign in), auth callback, redirect to dashboard after login; optional `?next=` for return URL. |
-| **Dashboard** | Done: `[locale]/dashboard` (protected); shows profile status; CTAs for “Create profile” and “Claim profile”; stubs at `dashboard/create-profile` and `dashboard/claim-profile` (Discord instructions / coming soon). |
+| **Dashboard** | Done: `[locale]/dashboard` (protected); shows profile status; CTAs for "Create profile", "Claim profile", and "Challenges". |
+| **Challenges (dashboard feature)** | Slices 1-4 done. See [CHALLENGES_IMPLEMENTATION_PLAN.md](./CHALLENGES_IMPLEMENTATION_PLAN.md) and [CHALLENGES_IMPLEMENTATION_GUIDE.md](./CHALLENGES_IMPLEMENTATION_GUIDE.md). Slice 5 (notifications, analytics, hardening) pending. |
 | **Phase 2 (directory + web profile)** | Not started: no `/builders` or `/builders/[username]` routes; no web form calling Edge Function for create; claim flow (e.g. Discord DM verification) not implemented. |
 | **Phase 1 (Discord bot)** | Separate track; not in this repo. |
-| **Phases 3–4** | Blocked on Phase 2 (and Phase 1 for bot project submit). |
+| **Phases 3-4** | Blocked on Phase 2 (and Phase 1 for bot project submit). |
 
-**Next focus:** Phase 2 — directory pages and web profile create/edit. See **Phase 2 (Web) — Implementation todo** below and [TODO.md](../TODO.md) for actionable tasks.
+**Next focus:** Phase 2 -- directory pages and web profile create/edit. See **Phase 2 (Web) -- Implementation todo** below and [TODO.md](../TODO.md) for actionable tasks.
 
 ---
 

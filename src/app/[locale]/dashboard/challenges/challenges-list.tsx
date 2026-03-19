@@ -81,6 +81,13 @@ export function ChallengesList({
 
   return (
     <div className="mt-8">
+      {access.isAdmin ? (
+        <div className="mb-4">
+          <Button asChild className="rounded-full">
+            <Link href="/dashboard/challenges/admin">Open Admin Console</Link>
+          </Button>
+        </div>
+      ) : null}
       <Tabs defaultValue="active">
         <TabsList className="bg-white/10 text-white/70">
           <TabsTrigger value="active" className="data-[state=active]:bg-white data-[state=active]:text-black">

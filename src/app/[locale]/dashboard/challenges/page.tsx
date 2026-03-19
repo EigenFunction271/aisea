@@ -13,6 +13,16 @@ async function getProfileCompleteState(userId: string): Promise<boolean> {
   return data === true;
 }
 
+async function getUserRole(userId: string): Promise<"member" | "admin" | "super_admin"> {
+  const admin = createAdminClient();
+  const { data, error } = await admin.rpc("get_profile_role", {
+    target_user_id: userId,
+  });
+  if (error) return "member";
+  if (data === "admin" || data === "super_admin") return data;
+  return "member";
+}
+
 function deriveEnrollmentState(
   challenge: { status: "published" | "archived"; end_at: string },
   enrollmentExists: boolean,
@@ -39,6 +49,7 @@ export default async function DashboardChallengesPage({
 
   const isAuthenticated = Boolean(user);
   const isProfileComplete = user ? await getProfileCompleteState(user.id) : false;
+  const role = user ? await getUserRole(user.id) : "member";
 
   const { data: challenges } = await admin
     .from("challenges")
@@ -93,7 +104,7 @@ export default async function DashboardChallengesPage({
         <ChallengesList
           active={active}
           archived={archived}
-          access={{ isAuthenticated, isProfileComplete }}
+          access={{ isAuthenticated, isProfileComplete, isAdmin: role === "admin" || role === "super_admin" }}
           locale={locale}
         />
       </div>
