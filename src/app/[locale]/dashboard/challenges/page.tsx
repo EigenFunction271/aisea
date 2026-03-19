@@ -52,7 +52,7 @@ export default async function DashboardChallengesPage({
 
   const { data: challenges } = await admin
     .from("challenges")
-    .select("id, title, subtitle, hero_image_url, reward_text, host_name, org_name, tags, status, start_at, end_at")
+    .select("id, title, subtitle, hero_image_url, reward_text, host_name, org_name, tags, status, start_at, end_at, difficulty")
     .in("status", ["published", "archived"])
     .order("created_at", { ascending: false });
 
@@ -84,6 +84,7 @@ export default async function DashboardChallengesPage({
     ...challenge,
     tags: challenge.tags ?? [],
     start_at: challenge.start_at,
+    difficulty: (challenge.difficulty ?? null) as ChallengeCard["difficulty"],
     enrollment_count: enrollmentCounts[challenge.id] ?? 0,
     enrollment_state: deriveEnrollmentState(
       challenge,

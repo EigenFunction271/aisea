@@ -1,3 +1,5 @@
+export type DifficultyLevel = "starter" | "builder" | "hardcore";
+
 export type ChallengeCard = {
   id: string;
   title: string;
@@ -10,6 +12,7 @@ export type ChallengeCard = {
   status: "published" | "archived";
   start_at: string;
   end_at: string;
+  difficulty: DifficultyLevel | null;
   enrollment_state: "not_enrolled" | "enrolled" | "submitted" | "closed" | "archived";
   enrollment_count: number;
 };

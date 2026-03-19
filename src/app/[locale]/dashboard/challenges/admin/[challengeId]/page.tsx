@@ -119,6 +119,7 @@ export default async function EditChallengePage({
             attachments: challenge.attachments ?? [],
             eligibility: challenge.eligibility,
             judging_rubric: challenge.judging_rubric,
+            difficulty: (challenge.difficulty ?? null) as "starter" | "builder" | "hardcore" | null,
             winners: challenge.winners ?? [],
           }}
         />

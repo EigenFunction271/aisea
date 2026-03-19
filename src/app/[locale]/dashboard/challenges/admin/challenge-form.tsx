@@ -26,6 +26,7 @@ type ChallengeRecord = {
   attachments: Array<{ label: string; url: string }>;
   eligibility: string;
   judging_rubric: string;
+  difficulty: "starter" | "builder" | "hardcore" | null;
   winners: Array<{ user_id: string; placement: string; decision_text: string }>;
 };
 
@@ -80,6 +81,9 @@ export function ChallengeForm({
   );
   const [eligibility, setEligibility] = useState(initial?.eligibility ?? "");
   const [judgingRubric, setJudgingRubric] = useState(initial?.judging_rubric ?? "");
+  const [difficulty, setDifficulty] = useState<"starter" | "builder" | "hardcore" | "">(
+    initial?.difficulty ?? ""
+  );
   const [winnersRows, setWinnersRows] = useState<WinnerRow[]>(
     initial?.winners?.length
       ? initial.winners
@@ -117,6 +121,7 @@ export function ChallengeForm({
         }),
       eligibility: eligibility.trim(),
       judging_rubric: judgingRubric.trim(),
+      difficulty: (difficulty || null) as "starter" | "builder" | "hardcore" | null,
     };
   }
 
@@ -219,6 +224,7 @@ export function ChallengeForm({
       attachments,
       eligibility,
       judgingRubric,
+      difficulty,
       winnersRows: JSON.stringify(winnersRows),
     };
     window.localStorage.setItem(storageKey, JSON.stringify(snapshot));
@@ -249,6 +255,7 @@ export function ChallengeForm({
       setAttachments(snapshot.attachments ?? "");
       setEligibility(snapshot.eligibility ?? "");
       setJudgingRubric(snapshot.judgingRubric ?? "");
+      setDifficulty((snapshot.difficulty as "starter" | "builder" | "hardcore" | "") ?? "");
       try {
         const parsed = snapshot.winnersRows ? (JSON.parse(snapshot.winnersRows) as WinnerRow[]) : [];
         setWinnersRows(parsed.length ? parsed : [{ user_id: "", placement: "1st Place", decision_text: "" }]);
@@ -397,6 +404,19 @@ export function ChallengeForm({
             <Textarea placeholder="Reward text" value={rewardText} onChange={(e) => setRewardText(e.target.value)} className="border-white/20 bg-white/5 text-white" />
             <Input placeholder="External link" value={externalLink} onChange={(e) => setExternalLink(e.target.value)} className="border-white/20 bg-white/5 text-white" />
             <Input placeholder="Tags (comma-separated)" value={tags} onChange={(e) => setTags(e.target.value)} className="border-white/20 bg-white/5 text-white" />
+            <div>
+              <label className="mb-1 block text-xs text-white/60">Difficulty (optional)</label>
+              <select
+                value={difficulty}
+                onChange={(e) => setDifficulty(e.target.value as "starter" | "builder" | "hardcore" | "")}
+                className="w-full rounded-md border border-white/20 bg-white/5 px-3 py-2 text-sm text-white"
+              >
+                <option value="">— No difficulty set —</option>
+                <option value="starter">Starter</option>
+                <option value="builder">Builder</option>
+                <option value="hardcore">Hardcore</option>
+              </select>
+            </div>
             <Textarea placeholder={"Attachments (one per line):\nLabel|https://..."} value={attachments} onChange={(e) => setAttachments(e.target.value)} className="border-white/20 bg-white/5 text-white" />
             <Textarea placeholder="Eligibility" value={eligibility} onChange={(e) => setEligibility(e.target.value)} className="border-white/20 bg-white/5 text-white" />
             <Textarea placeholder="Judging rubric" value={judgingRubric} onChange={(e) => setJudgingRubric(e.target.value)} className="border-white/20 bg-white/5 text-white" />

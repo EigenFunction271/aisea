@@ -1,10 +1,46 @@
 import { notFound } from "next/navigation";
 import { Link } from "@/i18n/routing";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { SubmissionPanel } from "./submission-panel";
+import { RightPanel } from "./right-panel";
+
+async function getProfileCompleteState(userId: string): Promise<boolean> {
+  const admin = createAdminClient();
+  const { data, error } = await admin.rpc("is_profile_complete_for_challenges", {
+    target_user_id: userId,
+  });
+  if (error) return false;
+  return data === true;
+}
+
+const MONO: React.CSSProperties = {
+  fontFamily: "var(--font-dm-mono), monospace",
+};
+
+const SYNE: React.CSSProperties = {
+  fontFamily: "var(--font-syne), sans-serif",
+};
+
+const SECTION_LABEL: React.CSSProperties = {
+  ...MONO,
+  fontSize: 10,
+  letterSpacing: "0.12em",
+  textTransform: "uppercase",
+  color: "var(--ds-text-muted)",
+  marginBottom: 10,
+};
+
+const DIVIDER: React.CSSProperties = {
+  borderTop: "1px solid var(--ds-border)",
+  margin: "28px 0",
+};
+
+const DIFFICULTY_COLORS: Record<string, { color: string; border: string }> = {
+  starter: { color: "#4ade80", border: "rgba(74,222,128,0.35)" },
+  builder: { color: "#fb923c", border: "rgba(251,146,60,0.35)" },
+  hardcore: { color: "#f87171", border: "rgba(248,113,113,0.35)" },
+};
 
 export default async function ChallengeDetailPage({
   params,
@@ -13,22 +49,13 @@ export default async function ChallengeDetailPage({
 }) {
   const { locale, challengeId } = await params;
   const supabase = await createClient();
-  // Admin client is needed only for the challenges table which has no per-user RLS for public reads.
   const admin = createAdminClient();
 
   const {
     data: { user },
   } = await supabase.auth.getUser();
   const isAuthenticated = Boolean(user);
-
-  // is_profile_complete_for_challenges is SECURITY DEFINER — callable from the user client.
-  let isProfileComplete = false;
-  if (user) {
-    const { data } = await supabase.rpc("is_profile_complete_for_challenges", {
-      target_user_id: user.id,
-    });
-    isProfileComplete = data === true;
-  }
+  const isProfileComplete = user ? await getProfileCompleteState(user.id) : false;
   const isLocked = !(isAuthenticated && isProfileComplete);
 
   const { data: challenge } = await admin
@@ -48,101 +75,510 @@ export default async function ChallengeDetailPage({
     submission_files?: Array<{ path: string; mime_type: string; size_bytes: number }>;
   } | null = null;
 
-  if (user) {
-    // Use the user-scoped client (RLS filters to auth.uid()) rather than the admin
-    // client — principle of least privilege. Admin access is only needed above for the
-    // challenge row itself (no per-user RLS on public challenges table).
-    const [{ data: enrollment }, { data: submissionRow }] = await Promise.all([
-      supabase
-        .from("challenge_enrollments")
-        .select("id")
-        .eq("challenge_id", challenge.id)
-        .maybeSingle(),
-      supabase
-        .from("challenge_submissions")
-        .select("status, submission_url, submission_text, submission_files")
-        .eq("challenge_id", challenge.id)
-        .maybeSingle(),
-    ]);
+  let participantCount = 0;
+  let gallerySubmissions: Array<{
+    id: string;
+    submission_url: string | null;
+    submission_text: string | null;
+    status: string;
+    submitted_at: string | null;
+  }> = [];
 
-    enrollmentExists = Boolean(enrollment);
-    submission = submissionRow ?? null;
-  }
+  const isClosed = challenge.status === "archived";
+
+  const [enrollCountRes, ...rest] = await Promise.all([
+    admin
+      .from("challenge_enrollments")
+      .select("id", { count: "exact", head: true })
+      .eq("challenge_id", challenge.id),
+    user
+      ? admin
+          .from("challenge_enrollments")
+          .select("id")
+          .eq("challenge_id", challenge.id)
+          .eq("user_id", user.id)
+          .maybeSingle()
+      : Promise.resolve({ data: null }),
+    user
+      ? supabase
+          .from("challenge_submissions")
+          .select("status, submission_url, submission_text, submission_files")
+          .eq("challenge_id", challenge.id)
+          .maybeSingle()
+      : Promise.resolve({ data: null }),
+    isClosed
+      ? admin
+          .from("challenge_submissions")
+          .select("id, submission_url, submission_text, status, submitted_at")
+          .eq("challenge_id", challenge.id)
+          .in("status", ["submitted", "under_review", "accepted"])
+          .order("submitted_at", { ascending: false })
+          .limit(20)
+      : Promise.resolve({ data: [] }),
+  ]);
+
+  participantCount = enrollCountRes.count ?? 0;
+  const [enrollRes, submissionRes, galleryRes] = rest as [
+    { data: { id: string } | null },
+    { data: typeof submission },
+    { data: typeof gallerySubmissions | null },
+  ];
+
+  enrollmentExists = Boolean(enrollRes.data);
+  submission = submissionRes.data ?? null;
+  gallerySubmissions = galleryRes.data ?? [];
 
   const canSubmit = challenge.status === "published";
   const loginHref = `/${locale}/login?next=/${locale}/dashboard/challenges/${challengeId}`;
-  const unlockHref = isAuthenticated ? "/dashboard/create-profile" : loginHref;
+  const unlockHref = isAuthenticated ? `/${locale}/dashboard/profile` : loginHref;
+
+  const diffColors = challenge.difficulty ? DIFFICULTY_COLORS[challenge.difficulty] : null;
 
   return (
-    <div className="mx-auto max-w-4xl px-6 py-8">
-        <div className="mb-4">
-          <Button asChild variant="ghost" className="rounded-full text-white/70 hover:bg-white/10 hover:text-white">
-            <Link href="/dashboard/challenges">← Back to challenges</Link>
-          </Button>
-        </div>
-        <div className="rounded-xl border border-white/10 bg-white/5 p-6">
-          <div className={`h-44 w-full rounded-lg bg-white/10 ${isLocked ? "blur-md" : ""}`} />
-          <h1 className={`mt-4 text-2xl font-semibold text-white ${isLocked ? "blur-sm" : ""}`}>{challenge.title}</h1>
-          <p className={`mt-2 text-white/70 ${isLocked ? "blur-sm" : ""}`}>{challenge.subtitle}</p>
+    <div style={{ maxWidth: 1100, margin: "0 auto", padding: "32px 24px" }}>
+      {/* Back */}
+      <Link
+        href="/dashboard/challenges"
+        style={{
+          ...MONO,
+          fontSize: 12,
+          color: "var(--ds-text-muted)",
+          textDecoration: "none",
+          display: "inline-flex",
+          alignItems: "center",
+          gap: 6,
+          marginBottom: 28,
+        }}
+      >
+        ← Back to challenges
+      </Link>
 
-          <div className="mt-3 flex flex-wrap gap-2">
-            <Badge variant="secondary">{challenge.status}</Badge>
-            <Badge variant="outline" className="border-white/20 text-white/80">
-              Ends {new Date(challenge.end_at).toLocaleString()}
-            </Badge>
-            <Badge variant="outline" className="border-white/20 text-white/80">
-              Reward: {challenge.reward_text}
-            </Badge>
-            {challenge.status !== "published" ? (
-              <Badge variant="outline" className="border-amber-400/40 text-amber-300">
-                Submissions closed
-              </Badge>
-            ) : null}
-          </div>
-
-          <div className={`mt-4 whitespace-pre-wrap text-sm text-white/80 ${isLocked ? "blur-sm" : ""}`}>
-            {challenge.description}
-          </div>
-
-          {!isLocked ? (
-            <div className="mt-6 space-y-4">
-              <section className="rounded-lg border border-white/10 p-4">
-                <h2 className="text-sm font-medium text-white">Eligibility</h2>
-                <p className="mt-2 whitespace-pre-wrap text-sm text-white/70">{challenge.eligibility}</p>
-              </section>
-              <section className="rounded-lg border border-white/10 p-4">
-                <h2 className="text-sm font-medium text-white">Judging rubric</h2>
-                <p className="mt-2 whitespace-pre-wrap text-sm text-white/70">{challenge.judging_rubric}</p>
-              </section>
+      {/* Two-column grid */}
+      <div
+        style={{
+          display: "grid",
+          gap: 32,
+          alignItems: "start",
+        }}
+        className="[grid-template-columns:1fr] lg:[grid-template-columns:1fr_300px]"
+      >
+        {/* ── LEFT column ───────────────────────────────────── */}
+        <div>
+          {/* Hero image */}
+          {challenge.hero_image_url ? (
+            <div
+              style={{
+                width: "100%",
+                height: 200,
+                borderRadius: 8,
+                overflow: "hidden",
+                marginBottom: 24,
+                filter: isLocked ? "blur(8px)" : "none",
+              }}
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={challenge.hero_image_url}
+                alt={challenge.title}
+                style={{ width: "100%", height: "100%", objectFit: "cover" }}
+              />
             </div>
-          ) : null}
+          ) : (
+            <div
+              style={{
+                width: "100%",
+                height: 160,
+                borderRadius: 8,
+                background: "var(--ds-bg-surface)",
+                border: "1px solid var(--ds-border)",
+                marginBottom: 24,
+                filter: isLocked ? "blur(8px)" : "none",
+              }}
+            />
+          )}
+
+          {/* Status badge row */}
+          <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
+            <span
+              style={{
+                ...MONO,
+                fontSize: 10,
+                letterSpacing: "0.10em",
+                textTransform: "uppercase",
+                padding: "3px 9px",
+                borderRadius: 4,
+                fontWeight: 600,
+                background:
+                  challenge.status === "published"
+                    ? "rgba(74,222,128,0.12)"
+                    : "rgba(255,255,255,0.06)",
+                color:
+                  challenge.status === "published" ? "#4ade80" : "var(--ds-text-muted)",
+                border: `1px solid ${
+                  challenge.status === "published"
+                    ? "rgba(74,222,128,0.30)"
+                    : "var(--ds-border)"
+                }`,
+              }}
+            >
+              {challenge.status === "published" ? "Live" : "Closed"}
+            </span>
+
+            {diffColors && challenge.difficulty && (
+              <span
+                style={{
+                  ...MONO,
+                  fontSize: 10,
+                  letterSpacing: "0.10em",
+                  textTransform: "uppercase",
+                  padding: "3px 9px",
+                  borderRadius: 4,
+                  color: diffColors.color,
+                  border: `1px solid ${diffColors.border}`,
+                  background: "transparent",
+                }}
+              >
+                {challenge.difficulty}
+              </span>
+            )}
+
+            {challenge.tags?.slice(0, 3).map((tag: string) => (
+              <span
+                key={tag}
+                style={{
+                  ...MONO,
+                  fontSize: 10,
+                  letterSpacing: "0.08em",
+                  textTransform: "uppercase",
+                  padding: "3px 8px",
+                  borderRadius: 4,
+                  color: "var(--ds-text-muted)",
+                  border: "1px solid var(--ds-border)",
+                }}
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
+
+          {/* Title */}
+          <h1
+            style={{
+              ...SYNE,
+              fontSize: 28,
+              fontWeight: 700,
+              color: "var(--ds-text-primary)",
+              marginTop: 16,
+              lineHeight: 1.25,
+              filter: isLocked ? "blur(5px)" : "none",
+              userSelect: isLocked ? "none" : "auto",
+            }}
+          >
+            {challenge.title}
+          </h1>
+
+          {/* Subtitle */}
+          <p
+            style={{
+              fontSize: 15,
+              color: "var(--ds-text-secondary)",
+              marginTop: 8,
+              lineHeight: 1.6,
+              filter: isLocked ? "blur(4px)" : "none",
+              userSelect: isLocked ? "none" : "auto",
+            }}
+          >
+            {challenge.subtitle}
+          </p>
+
+          {/* Meta row */}
+          <div
+            style={{
+              ...MONO,
+              fontSize: 11,
+              color: "var(--ds-text-muted)",
+              marginTop: 14,
+              display: "flex",
+              gap: 18,
+              flexWrap: "wrap",
+            }}
+          >
+            {challenge.host_name && (
+              <span>
+                Host:{" "}
+                <span style={{ color: "var(--ds-text-secondary)" }}>{challenge.host_name}</span>
+              </span>
+            )}
+            {challenge.org_name && (
+              <span>
+                Org:{" "}
+                <span style={{ color: "var(--ds-text-secondary)" }}>{challenge.org_name}</span>
+              </span>
+            )}
+            {challenge.reward_text && (
+              <span>
+                Reward:{" "}
+                <span style={{ color: "var(--ds-accent)" }}>{challenge.reward_text}</span>
+              </span>
+            )}
+          </div>
+
+          <div style={DIVIDER} />
+
+          {/* THE BRIEF */}
+          <section>
+            <p style={SECTION_LABEL}>The Brief</p>
+            <div
+              style={{
+                fontSize: 14,
+                color: "var(--ds-text-secondary)",
+                lineHeight: 1.75,
+                whiteSpace: "pre-wrap",
+                filter: isLocked ? "blur(4px)" : "none",
+                userSelect: isLocked ? "none" : "auto",
+              }}
+            >
+              {challenge.description}
+            </div>
+          </section>
+
+          {!isLocked && (
+            <>
+              {challenge.eligibility && (
+                <>
+                  <div style={DIVIDER} />
+                  <section>
+                    <p style={SECTION_LABEL}>Eligibility</p>
+                    <div
+                      style={{
+                        fontSize: 14,
+                        color: "var(--ds-text-secondary)",
+                        lineHeight: 1.75,
+                        whiteSpace: "pre-wrap",
+                      }}
+                    >
+                      {challenge.eligibility}
+                    </div>
+                  </section>
+                </>
+              )}
+
+              {challenge.judging_rubric && (
+                <>
+                  <div style={DIVIDER} />
+                  <section>
+                    <p style={SECTION_LABEL}>Judging Criteria</p>
+                    <div
+                      style={{
+                        fontSize: 14,
+                        color: "var(--ds-text-secondary)",
+                        lineHeight: 1.75,
+                        whiteSpace: "pre-wrap",
+                      }}
+                    >
+                      {challenge.judging_rubric}
+                    </div>
+                  </section>
+                </>
+              )}
+
+              {/* External link */}
+              {challenge.external_link && (
+                <>
+                  <div style={DIVIDER} />
+                  <a
+                    href={challenge.external_link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{
+                      ...MONO,
+                      fontSize: 12,
+                      color: "var(--ds-accent)",
+                      textDecoration: "none",
+                    }}
+                  >
+                    Challenge resources ↗
+                  </a>
+                </>
+              )}
+
+              {/* Submissions Gallery (post-close) */}
+              {isClosed && gallerySubmissions.length > 0 && (
+                <>
+                  <div style={DIVIDER} />
+                  <section>
+                    <p style={SECTION_LABEL}>Submissions Gallery</p>
+                    <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                      {gallerySubmissions.map((sub) => (
+                        <div
+                          key={sub.id}
+                          style={{
+                            border: "1px solid var(--ds-border)",
+                            borderRadius: 6,
+                            padding: "12px 14px",
+                            background: "var(--ds-bg-surface)",
+                          }}
+                        >
+                          <div
+                            style={{
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "space-between",
+                              gap: 12,
+                            }}
+                          >
+                            {sub.submission_url ? (
+                              <a
+                                href={sub.submission_url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                style={{
+                                  ...MONO,
+                                  fontSize: 12,
+                                  color: "var(--ds-accent)",
+                                  textDecoration: "none",
+                                  overflow: "hidden",
+                                  textOverflow: "ellipsis",
+                                  whiteSpace: "nowrap",
+                                  flex: 1,
+                                }}
+                              >
+                                {sub.submission_url}
+                              </a>
+                            ) : (
+                              <span
+                                style={{
+                                  ...MONO,
+                                  fontSize: 11,
+                                  color: "var(--ds-text-muted)",
+                                  flex: 1,
+                                }}
+                              >
+                                No URL provided
+                              </span>
+                            )}
+                            <span
+                              style={{
+                                ...MONO,
+                                fontSize: 10,
+                                letterSpacing: "0.08em",
+                                textTransform: "uppercase",
+                                padding: "2px 7px",
+                                borderRadius: 4,
+                                color:
+                                  sub.status === "accepted"
+                                    ? "#4ade80"
+                                    : "var(--ds-text-muted)",
+                                border: `1px solid ${
+                                  sub.status === "accepted"
+                                    ? "rgba(74,222,128,0.30)"
+                                    : "var(--ds-border)"
+                                }`,
+                                flexShrink: 0,
+                              }}
+                            >
+                              {sub.status}
+                            </span>
+                          </div>
+                          {sub.submission_text && (
+                            <p
+                              style={{
+                                fontSize: 13,
+                                color: "var(--ds-text-muted)",
+                                marginTop: 6,
+                                overflow: "hidden",
+                                display: "-webkit-box",
+                                WebkitLineClamp: 2,
+                                WebkitBoxOrient: "vertical",
+                                lineHeight: 1.5,
+                              }}
+                            >
+                              {sub.submission_text}
+                            </p>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </section>
+                </>
+              )}
+
+              {/* Submission panel anchor */}
+              <div id="submission" style={{ scrollMarginTop: 90 }}>
+                <div style={DIVIDER} />
+                {challenge.status !== "published" ? (
+                  <p
+                    style={{
+                      ...MONO,
+                      fontSize: 12,
+                      color: "#fbbf24",
+                      background: "rgba(251,191,36,0.08)",
+                      border: "1px solid rgba(251,191,36,0.25)",
+                      borderRadius: 6,
+                      padding: "8px 12px",
+                      marginBottom: 16,
+                    }}
+                  >
+                    This challenge is closed. You can still view your submission below.
+                  </p>
+                ) : null}
+                <SubmissionPanel
+                  challengeId={challenge.id}
+                  isLocked={isLocked}
+                  isEnrolled={enrollmentExists}
+                  canSubmit={canSubmit}
+                  initialSubmission={submission}
+                />
+              </div>
+            </>
+          )}
+
+          {/* Lock gate */}
+          {isLocked && (
+            <div
+              style={{
+                marginTop: 32,
+                border: "1px solid var(--ds-border)",
+                borderRadius: 8,
+                background: "var(--ds-bg-surface)",
+                padding: "20px 18px",
+              }}
+            >
+              <p style={{ fontSize: 14, color: "var(--ds-text-secondary)", marginBottom: 14 }}>
+                Sign in and complete your builder profile to see full details and submit.
+              </p>
+              <a
+                href={unlockHref}
+                style={{
+                  ...MONO,
+                  fontSize: 12,
+                  fontWeight: 600,
+                  padding: "8px 18px",
+                  borderRadius: 5,
+                  background: "var(--ds-accent)",
+                  color: "#0a0a0a",
+                  textDecoration: "none",
+                  display: "inline-block",
+                }}
+              >
+                {isAuthenticated ? "Complete profile" : "Sign in →"}
+              </a>
+            </div>
+          )}
         </div>
 
-        {isLocked ? (
-          <div className="mt-5 rounded-xl border border-white/10 bg-white/5 p-4">
-            <p className="text-sm text-white/70">
-              Challenge details are visible in preview mode. Sign in and complete your profile to enroll and submit.
-            </p>
-            <Button asChild className="mt-3 rounded-full">
-              <Link href={unlockHref}>{isAuthenticated ? "Complete profile" : "Sign in"}</Link>
-            </Button>
-          </div>
-        ) : (
-          <div className="mt-5">
-            {challenge.status !== "published" ? (
-              <p className="mb-3 rounded-lg border border-amber-400/30 bg-amber-400/10 px-3 py-2 text-sm text-amber-200">
-                This challenge is closed for submissions. You can still view your submission history.
-              </p>
-            ) : null}
-            <SubmissionPanel
-              challengeId={challenge.id}
-              isLocked={isLocked}
-              isEnrolled={enrollmentExists}
-              canSubmit={canSubmit}
-              initialSubmission={submission}
-            />
-          </div>
-        )}
+        {/* ── RIGHT sticky panel ────────────────────────────── */}
+        <RightPanel
+          challengeId={challenge.id}
+          endAt={challenge.end_at}
+          participantCount={participantCount}
+          isLocked={isLocked}
+          isEnrolled={enrollmentExists}
+          hasSubmission={Boolean(submission)}
+          canSubmit={canSubmit}
+          locale={locale}
+        />
+      </div>
     </div>
   );
 }

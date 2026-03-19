@@ -187,8 +187,8 @@ function ChallengeCardItem({
         {challenge.subtitle}
       </p>
 
-      {/* Tags */}
-      {visibleTags.length > 0 && (
+      {/* Tags + difficulty */}
+      {(visibleTags.length > 0 || challenge.difficulty) && (
         <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginTop: 12 }}>
           {visibleTags.map((tag) => (
             <span
@@ -207,6 +207,33 @@ function ChallengeCardItem({
               {tag}
             </span>
           ))}
+          {challenge.difficulty && (
+            <span
+              style={{
+                fontFamily: "var(--font-dm-mono), monospace",
+                fontSize: 10,
+                letterSpacing: "0.08em",
+                textTransform: "uppercase",
+                color:
+                  challenge.difficulty === "hardcore"
+                    ? "#f87171"
+                    : challenge.difficulty === "builder"
+                      ? "#fb923c"
+                      : "#4ade80",
+                border: `1px solid ${
+                  challenge.difficulty === "hardcore"
+                    ? "rgba(248,113,113,0.35)"
+                    : challenge.difficulty === "builder"
+                      ? "rgba(251,146,60,0.35)"
+                      : "rgba(74,222,128,0.35)"
+                }`,
+                borderRadius: 4,
+                padding: "2px 7px",
+              }}
+            >
+              {challenge.difficulty}
+            </span>
+          )}
         </div>
       )}
 
