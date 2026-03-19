@@ -3,7 +3,7 @@
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/routing";
 import { Button } from "@/components/ui/button";
-import { ExternalLink, UserPlus, Users } from "lucide-react";
+import { ExternalLink, Trophy, UserPlus, Users } from "lucide-react";
 
 type BuilderProfile = {
   id: string;
@@ -68,6 +68,12 @@ export function DashboardContent({
                 <Link href="/builders">
                   <Users className="mr-2 h-4 w-4" />
                   {t("browseDirectory")}
+                </Link>
+              </Button>
+              <Button asChild variant="outline" size="sm" className="rounded-full border-white/20 text-white/90 hover:bg-white/10">
+                <Link href="/dashboard/challenges">
+                  <Trophy className="mr-2 h-4 w-4" />
+                  Challenges
                 </Link>
               </Button>
             </div>
