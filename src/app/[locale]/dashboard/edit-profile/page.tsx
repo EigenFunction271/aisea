@@ -1,4 +1,3 @@
-import { Navbar1 } from "@/components/ui/navbar";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { EditProfileForm } from "./edit-profile-form";
@@ -42,23 +41,23 @@ export default async function EditProfilePage({
     .order("sort_order", { ascending: true, nullsFirst: false });
 
   return (
-    <main className="min-h-screen bg-black">
-      <Navbar1 />
-      <div className="mx-auto max-w-2xl px-4 pt-24 pb-16">
-        <h1 className="font-[family-name:var(--font-geist-mono)] text-2xl font-medium text-white">
-          Edit your builder profile
-        </h1>
-        <p className="mt-2 text-white/60">
-          @{builder.username}
-        </p>
-        <EditProfileForm
-          builder={{
-            ...builder,
-            skills: (builder.skills ?? []) as string[],
-          }}
-          skills={skills ?? []}
-        />
-      </div>
-    </main>
+    <div className="mx-auto max-w-2xl px-6 py-8">
+      <h1
+        className="text-2xl font-bold"
+        style={{ fontFamily: "var(--font-syne), sans-serif", color: "var(--ds-text-primary)" }}
+      >
+        Edit profile
+      </h1>
+      <p className="mt-1 text-sm" style={{ fontFamily: "var(--font-dm-mono), monospace", color: "var(--ds-text-muted)" }}>
+        @{builder.username}
+      </p>
+      <EditProfileForm
+        builder={{
+          ...builder,
+          skills: (builder.skills ?? []) as string[],
+        }}
+        skills={skills ?? []}
+      />
+    </div>
   );
 }

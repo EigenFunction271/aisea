@@ -1,6 +1,5 @@
 import { redirect } from "next/navigation";
 import { Link } from "@/i18n/routing";
-import { Navbar1 } from "@/components/ui/navbar";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -34,9 +33,7 @@ export default async function AdminChallengesPage({
   const { data: challenges } = await query;
 
   return (
-    <main className="min-h-screen bg-black">
-      <Navbar1 />
-      <div className="mx-auto max-w-5xl px-4 pb-16 pt-24">
+    <div className="mx-auto max-w-5xl px-6 py-8">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
             <h1 className="text-2xl font-semibold text-white">Challenge Admin</h1>
@@ -83,7 +80,6 @@ export default async function AdminChallengesPage({
             </div>
           ) : null}
         </div>
-      </div>
-    </main>
+    </div>
   );
 }

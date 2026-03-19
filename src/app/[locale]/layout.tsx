@@ -5,7 +5,7 @@ export const viewport: Viewport = {
   initialScale: 1,
   viewportFit: "cover",
 };
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Syne, DM_Mono } from "next/font/google";
 import localFont from "next/font/local";
 import "../globals.css";
 import { Analytics } from "@vercel/analytics/next";
@@ -24,6 +24,18 @@ const geistSans = Geist({
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+});
+
+const syne = Syne({
+  variable: "--font-syne",
+  subsets: ["latin"],
+  weight: ["400", "500", "700", "800"],
+});
+
+const dmMono = DM_Mono({
+  variable: "--font-dm-mono",
+  subsets: ["latin"],
+  weight: ["400", "500"],
 });
 
 const perfectlyNineties = localFont({
@@ -174,7 +186,7 @@ export default async function LocaleLayout({
   return (
     <html lang={locale} suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${perfectlyNineties.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} ${perfectlyNineties.variable} ${syne.variable} ${dmMono.variable} antialiased`}
       >
         <ErrorBoundary>
           <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>

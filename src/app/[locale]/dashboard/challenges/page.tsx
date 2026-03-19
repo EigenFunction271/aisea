@@ -1,4 +1,3 @@
-import { Navbar1 } from "@/components/ui/navbar";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { ChallengesList } from "./challenges-list";
@@ -94,20 +93,22 @@ export default async function DashboardChallengesPage({
   const archived = cards.filter((c) => c.status === "archived");
 
   return (
-    <main className="min-h-screen bg-black">
-      <Navbar1 />
-      <div className="mx-auto max-w-7xl px-4 pb-16 pt-24">
-        <h1 className="font-[family-name:var(--font-geist-mono)] text-2xl font-medium text-white">Challenges</h1>
-        <p className="mt-2 text-sm text-white/70">
-          Join active challenges, submit your build, and track judging outcomes from your dashboard.
-        </p>
-        <ChallengesList
-          active={active}
-          archived={archived}
-          access={{ isAuthenticated, isProfileComplete, isAdmin: role === "admin" || role === "super_admin" }}
-          locale={locale}
-        />
-      </div>
-    </main>
+    <div className="mx-auto max-w-7xl px-6 py-8">
+      <h1
+        className="text-2xl font-bold"
+        style={{ fontFamily: "var(--font-syne), sans-serif", color: "var(--ds-text-primary)" }}
+      >
+        Challenges
+      </h1>
+      <p className="mt-2 text-sm" style={{ color: "var(--ds-text-secondary)" }}>
+        Join active challenges, submit your build, and track judging outcomes.
+      </p>
+      <ChallengesList
+        active={active}
+        archived={archived}
+        access={{ isAuthenticated, isProfileComplete, isAdmin: role === "admin" || role === "super_admin" }}
+        locale={locale}
+      />
+    </div>
   );
 }

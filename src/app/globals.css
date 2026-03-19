@@ -116,6 +116,29 @@
   --sidebar-ring: oklch(0.556 0 0);
 }
 
+/* ── Dashboard design tokens ── */
+:root {
+  --ds-bg-base: #0a0a0a;
+  --ds-bg-surface: #111111;
+  --ds-bg-raised: #1a1a1a;
+  --ds-border: #222222;
+  --ds-border-subtle: #1a1a1a;
+  --ds-text-primary: #f0f0f0;
+  --ds-text-secondary: #888888;
+  --ds-text-muted: #555555;
+  --ds-accent: #e8ff47;
+  --ds-accent-dim: #c8df30;
+  --ds-destructive: #ff4444;
+  /* city node colours */
+  --ds-city-kl: #00c2ff;
+  --ds-city-sg: #ff6b35;
+  --ds-city-jkt: #7c3aed;
+  --ds-city-mnl: #f59e0b;
+  --ds-city-hcmc: #10b981;
+  --ds-city-bkk: #ec4899;
+  --ds-city-other: #888888;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;

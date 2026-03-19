@@ -30,7 +30,7 @@ export function DashboardContent({
   const defaultTab = searchParams.get("tab") === "challenges" ? "challenges" : "overview";
 
   return (
-    <div className="mx-auto max-w-2xl px-4 pt-24 pb-16">
+    <div className="mx-auto max-w-2xl px-6 py-8">
       <h1 className="font-[family-name:var(--font-geist-mono)] text-2xl font-medium text-white">
         {t("title")}
       </h1>

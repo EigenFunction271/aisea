@@ -1,6 +1,5 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { Navbar1 } from "@/components/ui/navbar";
 import { DashboardContent } from "./dashboard-content";
 import { routing } from "@/i18n/routing";
 
@@ -60,10 +59,5 @@ export default async function DashboardPage({
     }
   }
 
-  return (
-    <main className="min-h-screen bg-black">
-      <Navbar1 />
-      <DashboardContent builder={builder} userEmail={user.email ?? undefined} />
-    </main>
-  );
+  return <DashboardContent builder={builder} userEmail={user.email ?? undefined} />;
 }

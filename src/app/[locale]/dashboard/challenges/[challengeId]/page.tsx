@@ -1,6 +1,5 @@
 import { notFound } from "next/navigation";
 import { Link } from "@/i18n/routing";
-import { Navbar1 } from "@/components/ui/navbar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/server";
@@ -74,9 +73,7 @@ export default async function ChallengeDetailPage({
   const unlockHref = isAuthenticated ? "/dashboard/create-profile" : loginHref;
 
   return (
-    <main className="min-h-screen bg-black">
-      <Navbar1 />
-      <div className="mx-auto max-w-4xl px-4 pb-16 pt-24">
+    <div className="mx-auto max-w-4xl px-6 py-8">
         <div className="mb-4">
           <Button asChild variant="ghost" className="rounded-full text-white/70 hover:bg-white/10 hover:text-white">
             <Link href="/dashboard/challenges">← Back to challenges</Link>
@@ -145,7 +142,6 @@ export default async function ChallengeDetailPage({
             />
           </div>
         )}
-      </div>
-    </main>
+    </div>
   );
 }
