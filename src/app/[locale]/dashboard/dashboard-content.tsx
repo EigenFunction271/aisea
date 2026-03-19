@@ -1,11 +1,208 @@
 "use client";
 
-import { useTranslations } from "next-intl";
-import { useSearchParams } from "next/navigation";
 import { Link } from "@/i18n/routing";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { ExternalLink, Trophy, UserPlus, Users, ArrowRight } from "lucide-react";
+import { UserPlus } from "lucide-react";
+import type { LiveChallenge, ActivityItem } from "./dashboard-types";
+
+// ── Helpers ──────────────────────────────────────────────────────────────────
+
+const CITY_COLORS: Record<string, string> = {
+  "kuala lumpur": "var(--ds-city-kl)",
+  kl: "var(--ds-city-kl)",
+  singapore: "var(--ds-city-sg)",
+  jakarta: "var(--ds-city-jkt)",
+  manila: "var(--ds-city-mnl)",
+  "ho chi minh": "var(--ds-city-hcmc)",
+  hcmc: "var(--ds-city-hcmc)",
+  bangkok: "var(--ds-city-bkk)",
+};
+
+function cityColor(city: string | null): string {
+  if (!city) return "var(--ds-city-other)";
+  const key = city.toLowerCase();
+  for (const [k, v] of Object.entries(CITY_COLORS)) {
+    if (key.includes(k)) return v;
+  }
+  return "var(--ds-city-other)";
+}
+
+function getGreeting(): string {
+  const hour = new Date().getHours();
+  if (hour < 12) return "Good morning";
+  if (hour < 17) return "Good afternoon";
+  return "Good evening";
+}
+
+function formatMemberSince(iso: string): string {
+  return new Date(iso).toLocaleDateString("en-US", { month: "long", year: "numeric" });
+}
+
+function daysLeft(endAt: string): number {
+  return Math.ceil((new Date(endAt).getTime() - Date.now()) / 86_400_000);
+}
+
+function relativeTime(iso: string): string {
+  const days = Math.floor((Date.now() - new Date(iso).getTime()) / 86_400_000);
+  if (days === 0) return "today";
+  if (days === 1) return "1d ago";
+  if (days < 7) return `${days}d ago`;
+  if (days < 30) return `${Math.floor(days / 7)}w ago`;
+  return `${Math.floor(days / 30)}mo ago`;
+}
+
+// ── Sub-components ────────────────────────────────────────────────────────────
+
+function ChallengeStripCard({ challenge }: { challenge: LiveChallenge }) {
+  const remaining = daysLeft(challenge.end_at);
+
+  const ctaLabel =
+    challenge.enrollment_state === "submitted"
+      ? "View Submission"
+      : challenge.enrollment_state === "enrolled"
+      ? "Continue →"
+      : "Take the Challenge →";
+
+  const ctaStyle =
+    challenge.enrollment_state === "submitted"
+      ? { background: "transparent", border: "1px solid var(--ds-border)", color: "var(--ds-text-secondary)" }
+      : challenge.enrollment_state === "enrolled"
+      ? { background: "transparent", border: "1px solid var(--ds-border)", color: "var(--ds-text-primary)" }
+      : { background: "var(--ds-accent)", border: "none", color: "#0a0a0a" };
+
+  return (
+    <div
+      style={{
+        border: "1px solid var(--ds-border)",
+        background: "var(--ds-bg-surface)",
+        borderRadius: 6,
+        padding: 20,
+        display: "flex",
+        flexDirection: "column",
+        gap: 0,
+      }}
+    >
+      {/* Status + days left */}
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+        <span
+          style={{
+            background: "var(--ds-accent)",
+            color: "#0a0a0a",
+            padding: "2px 8px",
+            borderRadius: 4,
+            fontSize: 11,
+            fontFamily: "var(--font-dm-mono), monospace",
+            fontWeight: 500,
+            letterSpacing: "0.08em",
+          }}
+        >
+          LIVE
+        </span>
+        {remaining > 0 && (
+          <span
+            style={{
+              fontFamily: "var(--font-dm-mono), monospace",
+              fontSize: 11,
+              color: "var(--ds-text-muted)",
+            }}
+          >
+            {remaining}d left
+          </span>
+        )}
+      </div>
+
+      {/* Title */}
+      <h3
+        style={{
+          fontFamily: "var(--font-syne), sans-serif",
+          fontSize: 18,
+          fontWeight: 700,
+          color: "var(--ds-text-primary)",
+          marginTop: 12,
+          lineHeight: 1.3,
+          display: "-webkit-box",
+          WebkitLineClamp: 2,
+          WebkitBoxOrient: "vertical",
+          overflow: "hidden",
+        }}
+      >
+        {challenge.title}
+      </h3>
+
+      {/* Subtitle */}
+      <p
+        style={{
+          fontSize: 14,
+          color: "var(--ds-text-secondary)",
+          marginTop: 6,
+          lineHeight: 1.5,
+          display: "-webkit-box",
+          WebkitLineClamp: 2,
+          WebkitBoxOrient: "vertical",
+          overflow: "hidden",
+        }}
+      >
+        {challenge.subtitle}
+      </p>
+
+      {/* Builder count + CTA */}
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          marginTop: 16,
+        }}
+      >
+        <span
+          style={{
+            fontFamily: "var(--font-dm-mono), monospace",
+            fontSize: 11,
+            color: "var(--ds-text-muted)",
+          }}
+        >
+          {challenge.enrollment_count} builder{challenge.enrollment_count !== 1 ? "s" : ""}
+        </span>
+        <Link href={`/dashboard/challenges/${challenge.id}`}>
+          <button
+            style={{
+              ...ctaStyle,
+              padding: "6px 14px",
+              borderRadius: 4,
+              fontSize: 12,
+              fontFamily: "var(--font-dm-mono), monospace",
+              fontWeight: 500,
+              cursor: "pointer",
+              letterSpacing: "0.02em",
+            }}
+          >
+            {ctaLabel}
+          </button>
+        </Link>
+      </div>
+    </div>
+  );
+}
+
+function SectionLabel({ children }: { children: React.ReactNode }) {
+  return (
+    <p
+      style={{
+        fontFamily: "var(--font-dm-mono), monospace",
+        fontSize: 11,
+        fontWeight: 500,
+        letterSpacing: "0.12em",
+        textTransform: "uppercase",
+        color: "var(--ds-text-muted)",
+        marginBottom: 16,
+      }}
+    >
+      {children}
+    </p>
+  );
+}
+
+// ── Main component ────────────────────────────────────────────────────────────
 
 type BuilderProfile = {
   id: string;
@@ -21,157 +218,248 @@ type BuilderProfile = {
 export function DashboardContent({
   builder,
   userEmail,
+  memberSince,
+  locale,
+  liveChallenges,
+  activityItems,
 }: {
   builder: BuilderProfile | null;
-  userEmail?: string;
+  userEmail: string | null;
+  memberSince: string;
+  locale: string;
+  liveChallenges: LiveChallenge[];
+  activityItems: ActivityItem[];
 }) {
-  const t = useTranslations("dashboard");
-  const searchParams = useSearchParams();
-  const defaultTab = searchParams.get("tab") === "challenges" ? "challenges" : "overview";
+  const displayName = builder?.name ?? userEmail?.split("@")[0] ?? "Builder";
+  const city = builder?.city ?? null;
+  const greeting = getGreeting();
 
   return (
-    <div className="mx-auto max-w-2xl px-6 py-8">
-      <h1 className="font-[family-name:var(--font-geist-mono)] text-2xl font-medium text-white">
-        {t("title")}
-      </h1>
-      {userEmail && (
-        <p className="mt-1 text-sm text-white/60">{userEmail}</p>
+    <div className="mx-auto max-w-[760px] px-6 py-10">
+
+      {/* ── Welcome header ─────────────────────────────────────────────── */}
+      <header>
+        <h1
+          style={{
+            fontFamily: "var(--font-syne), sans-serif",
+            fontSize: "clamp(24px, 4vw, 32px)",
+            fontWeight: 800,
+            color: "var(--ds-text-primary)",
+            lineHeight: 1.2,
+          }}
+        >
+          {greeting}, {displayName}.
+        </h1>
+
+        <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: 10, flexWrap: "wrap" }}>
+          {city && (
+            <span
+              style={{
+                border: `1px solid ${cityColor(city)}44`,
+                background: `${cityColor(city)}11`,
+                color: cityColor(city),
+                fontFamily: "var(--font-dm-mono), monospace",
+                fontSize: 11,
+                fontWeight: 500,
+                letterSpacing: "0.1em",
+                textTransform: "uppercase",
+                padding: "3px 10px",
+                borderRadius: 4,
+              }}
+            >
+              {city}
+            </span>
+          )}
+          <span
+            style={{
+              fontFamily: "var(--font-dm-mono), monospace",
+              fontSize: 11,
+              color: "var(--ds-text-muted)",
+            }}
+          >
+            Member since {formatMemberSince(memberSince)}
+          </span>
+        </div>
+      </header>
+
+      {/* ── Profile setup prompt (no profile yet) ─────────────────────── */}
+      {!builder && (
+        <div
+          style={{
+            marginTop: 32,
+            border: "1px solid var(--ds-border)",
+            background: "var(--ds-bg-surface)",
+            borderRadius: 6,
+            padding: 20,
+          }}
+        >
+          <p
+            style={{
+              fontFamily: "var(--font-dm-mono), monospace",
+              fontSize: 11,
+              fontWeight: 500,
+              letterSpacing: "0.1em",
+              textTransform: "uppercase",
+              color: "var(--ds-accent)",
+              marginBottom: 8,
+            }}
+          >
+            Action required
+          </p>
+          <p style={{ fontSize: 14, color: "var(--ds-text-secondary)", lineHeight: 1.6 }}>
+            Create your builder profile to unlock challenges, track submissions, and appear in the AI.SEA directory.
+          </p>
+          <div style={{ marginTop: 16, display: "flex", gap: 10, flexWrap: "wrap" }}>
+            <Button
+              asChild
+              style={{ background: "var(--ds-accent)", color: "#0a0a0a", border: "none" }}
+              className="rounded font-medium"
+            >
+              <Link href="/dashboard/create-profile" locale={locale as "en" | "id" | "zh" | "vi"}>
+                <UserPlus className="mr-2 h-4 w-4" />
+                Create profile
+              </Link>
+            </Button>
+            <Button
+              asChild
+              variant="outline"
+              style={{ border: "1px solid var(--ds-border)", color: "var(--ds-text-secondary)", background: "transparent" }}
+              className="rounded"
+            >
+              <Link href="/dashboard/claim-profile" locale={locale as "en" | "id" | "zh" | "vi"}>
+                Claim existing profile
+              </Link>
+            </Button>
+          </div>
+        </div>
       )}
 
-      <Tabs defaultValue={defaultTab} className="mt-8">
-        <TabsList className="bg-white/5 border border-white/10 rounded-full px-1 h-10 w-fit gap-1">
-          <TabsTrigger
-            value="overview"
-            className="rounded-full px-4 text-white/60 data-[state=active]:bg-white data-[state=active]:text-black data-[state=active]:shadow-none"
-          >
-            Overview
-          </TabsTrigger>
-          <TabsTrigger
-            value="challenges"
-            className="rounded-full px-4 text-white/60 data-[state=active]:bg-white data-[state=active]:text-black data-[state=active]:shadow-none"
-          >
-            <Trophy className="mr-1.5 h-3.5 w-3.5" />
-            Challenges
-          </TabsTrigger>
-        </TabsList>
+      {/* ── Active challenges strip ────────────────────────────────────── */}
+      <section style={{ marginTop: 48 }}>
+        <SectionLabel>
+          <span style={{ color: "var(--ds-accent)" }}>⬤</span>&nbsp; Live now
+        </SectionLabel>
 
-        {/* ── Overview tab ── */}
-        <TabsContent value="overview" className="mt-6">
-          {builder ? (
-            <section className="rounded-xl border border-white/10 bg-white/5 p-6">
-              <h2 className="font-[family-name:var(--font-geist-mono)] text-lg font-medium text-white">
-                {t("yourProfile")}
-              </h2>
-              <p className="mt-2 text-white/80">
-                {builder.name} · {builder.city}
-              </p>
-              {builder.bio && (
-                <p className="mt-1 text-sm text-white/60">{builder.bio}</p>
-              )}
-              <p className="mt-2 text-sm text-white/50">
-                @{builder.username}
-                {builder.project_count > 0 && (
-                  <> · {t("projectCount", { count: builder.project_count })}</>
-                )}
-              </p>
-              <div className="mt-4 flex flex-wrap gap-2">
-                <Button asChild variant="secondary" size="sm" className="rounded-full">
-                  <Link href={`/builders/${builder.username}`}>
-                    <ExternalLink className="mr-2 h-4 w-4" />
-                    {t("viewPublicProfile")}
-                  </Link>
-                </Button>
-                <Button asChild variant="outline" size="sm" className="rounded-full border-white/20 text-white/90 hover:bg-white/10">
-                  <Link href="/dashboard/edit-profile">
-                    {t("editProfile")}
-                  </Link>
-                </Button>
-                <Button asChild variant="outline" size="sm" className="rounded-full border-white/20 text-white/90 hover:bg-white/10">
-                  <Link href="/builders">
-                    <Users className="mr-2 h-4 w-4" />
-                    {t("browseDirectory")}
-                  </Link>
-                </Button>
-              </div>
-            </section>
-          ) : (
-            <section className="rounded-xl border border-white/10 bg-white/5 p-6">
-              <h2 className="font-[family-name:var(--font-geist-mono)] text-lg font-medium text-white">
-                {t("noProfileTitle")}
-              </h2>
-              <p className="mt-2 text-sm text-white/70">
-                {t("noProfileDescription")}
-              </p>
-              <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-                <Button asChild className="rounded-full font-[family-name:var(--font-geist-mono)] bg-white text-black hover:bg-white/90">
-                  <Link href="/dashboard/create-profile">
-                    <UserPlus className="mr-2 h-4 w-4" />
-                    {t("createProfile")}
-                  </Link>
-                </Button>
-                <Button asChild variant="outline" size="default" className="rounded-full border-white/20 text-white/90 hover:bg-white/10">
-                  <Link href="/dashboard/claim-profile">
-                    {t("claimExistingProfile")}
-                  </Link>
-                </Button>
-              </div>
-              <p className="mt-4 text-xs text-white/50">
-                {t("orUseDiscord")}
-              </p>
-            </section>
-          )}
-          <p className="mt-4 text-center">
-            <Link href="/builders" className="text-sm text-white/60 hover:text-white/80">
-              {t("browseDirectory")} →
+        {liveChallenges.length === 0 ? (
+          <p style={{ fontSize: 14, color: "var(--ds-text-muted)", lineHeight: 1.6 }}>
+            Nothing live right now — check back soon.
+          </p>
+        ) : (
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))",
+              gap: 16,
+            }}
+          >
+            {liveChallenges.map((c) => (
+              <ChallengeStripCard key={c.id} challenge={c} />
+            ))}
+          </div>
+        )}
+
+        <div style={{ marginTop: 16 }}>
+          <Link
+            href="/dashboard/challenges"
+            locale={locale as "en" | "id" | "zh" | "vi"}
+            style={{
+              fontFamily: "var(--font-dm-mono), monospace",
+              fontSize: 12,
+              color: "var(--ds-text-muted)",
+              letterSpacing: "0.04em",
+            }}
+          >
+            Browse all challenges →
+          </Link>
+        </div>
+      </section>
+
+      {/* ── Your activity ─────────────────────────────────────────────── */}
+      <section style={{ marginTop: 48 }}>
+        <SectionLabel>Your activity</SectionLabel>
+
+        {activityItems.length === 0 ? (
+          <p style={{ fontSize: 14, color: "var(--ds-text-muted)" }}>
+            No activity yet.{" "}
+            <Link
+              href="/dashboard/challenges"
+              locale={locale as "en" | "id" | "zh" | "vi"}
+              style={{ color: "var(--ds-accent)" }}
+            >
+              Take your first challenge →
             </Link>
           </p>
-        </TabsContent>
+        ) : (
+          <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
+            {activityItems.map((item) => (
+              <li
+                key={item.id}
+                style={{
+                  display: "flex",
+                  gap: 20,
+                  alignItems: "baseline",
+                  padding: "6px 0",
+                  borderBottom: "1px solid var(--ds-border-subtle)",
+                }}
+              >
+                <span
+                  style={{
+                    fontFamily: "var(--font-dm-mono), monospace",
+                    fontSize: 12,
+                    color: "var(--ds-text-muted)",
+                    whiteSpace: "nowrap",
+                    minWidth: 52,
+                  }}
+                >
+                  {relativeTime(item.timestamp)}
+                </span>
+                <span
+                  style={{
+                    fontFamily: "var(--font-dm-mono), monospace",
+                    fontSize: 13,
+                    color: "var(--ds-text-secondary)",
+                  }}
+                >
+                  {item.type === "enrolled" ? "Enrolled in " : "Submitted to "}
+                  <Link
+                    href={`/dashboard/challenges/${item.challengeId}`}
+                    style={{ color: "var(--ds-text-primary)" }}
+                  >
+                    {item.challengeTitle}
+                  </Link>
+                </span>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
 
-        {/* ── Challenges tab ── */}
-        <TabsContent value="challenges" className="mt-6 space-y-4">
-          <section className="rounded-xl border border-white/10 bg-white/5 p-6">
-            <div className="flex items-start justify-between gap-4">
-              <div>
-                <h2 className="font-[family-name:var(--font-geist-mono)] text-lg font-medium text-white">
-                  Challenges
-                </h2>
-                <p className="mt-1 text-sm text-white/60">
-                  Browse open challenges, enroll, and submit your work before the deadline.
-                </p>
-              </div>
-              <Trophy className="mt-0.5 h-6 w-6 shrink-0 text-white/30" />
-            </div>
+      {/* ── Divider ────────────────────────────────────────────────────── */}
+      <div style={{ marginTop: 48, borderTop: "1px solid var(--ds-border)" }} />
 
-            <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2">
-              <div className="rounded-lg border border-white/10 bg-white/5 p-4">
-                <p className="text-xs font-medium uppercase tracking-widest text-white/40">
-                  Active
-                </p>
-                <p className="mt-1 text-sm text-white/80">
-                  View all open challenges and enroll.
-                </p>
-              </div>
-              <div className="rounded-lg border border-white/10 bg-white/5 p-4">
-                <p className="text-xs font-medium uppercase tracking-widest text-white/40">
-                  Submissions
-                </p>
-                <p className="mt-1 text-sm text-white/80">
-                  Track and update your submissions up to the deadline.
-                </p>
-              </div>
-            </div>
-
-            <div className="mt-6">
-              <Button asChild className="rounded-full bg-white text-black hover:bg-white/90">
-                <Link href="/dashboard/challenges">
-                  Browse challenges
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Link>
-              </Button>
-            </div>
-          </section>
-        </TabsContent>
-      </Tabs>
+      {/* ── Quick links ────────────────────────────────────────────────── */}
+      <nav style={{ marginTop: 20, display: "flex", gap: 20, flexWrap: "wrap" }}>
+        {[
+          builder ? { label: "Edit profile", href: "/dashboard/edit-profile" } : null,
+          { label: "All challenges", href: "/dashboard/challenges" },
+          { label: "Builder directory", href: "/builders" },
+        ]
+          .filter(Boolean)
+          .map((item) => (
+            <Link
+              key={item!.href}
+              href={item!.href as Parameters<typeof Link>[0]["href"]}
+              style={{
+                fontFamily: "var(--font-dm-mono), monospace",
+                fontSize: 12,
+                color: "var(--ds-text-muted)",
+                letterSpacing: "0.04em",
+              }}
+            >
+              {item!.label} →
+            </Link>
+          ))}
+      </nav>
     </div>
   );
 }
