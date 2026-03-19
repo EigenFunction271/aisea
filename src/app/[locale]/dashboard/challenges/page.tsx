@@ -52,7 +52,7 @@ export default async function DashboardChallengesPage({
 
   const { data: challenges } = await admin
     .from("challenges")
-    .select("id, title, subtitle, hero_image_url, reward_text, host_name, org_name, tags, status, end_at")
+    .select("id, title, subtitle, hero_image_url, reward_text, host_name, org_name, tags, status, start_at, end_at")
     .in("status", ["published", "archived"])
     .order("created_at", { ascending: false });
 
@@ -60,28 +60,31 @@ export default async function DashboardChallengesPage({
 
   let enrollmentSet = new Set<string>();
   let submittedSet = new Set<string>();
+  const enrollmentCounts: Record<string, number> = {};
 
-  if (user && challengeIds.length > 0) {
-    const [{ data: enrollments }, { data: submissions }] = await Promise.all([
-      admin
-        .from("challenge_enrollments")
-        .select("challenge_id")
-        .eq("user_id", user.id)
-        .in("challenge_id", challengeIds),
-      admin
-        .from("challenge_submissions")
-        .select("challenge_id")
-        .eq("user_id", user.id)
-        .in("challenge_id", challengeIds),
+  if (challengeIds.length > 0) {
+    const [userEnrollRes, userSubmitRes, allEnrollRes] = await Promise.all([
+      user
+        ? admin.from("challenge_enrollments").select("challenge_id").eq("user_id", user.id).in("challenge_id", challengeIds)
+        : Promise.resolve({ data: [] }),
+      user
+        ? admin.from("challenge_submissions").select("challenge_id").eq("user_id", user.id).in("challenge_id", challengeIds)
+        : Promise.resolve({ data: [] }),
+      admin.from("challenge_enrollments").select("challenge_id").in("challenge_id", challengeIds),
     ]);
 
-    enrollmentSet = new Set((enrollments ?? []).map((e) => e.challenge_id));
-    submittedSet = new Set((submissions ?? []).map((s) => s.challenge_id));
+    enrollmentSet = new Set((userEnrollRes.data ?? []).map((e) => e.challenge_id));
+    submittedSet = new Set((userSubmitRes.data ?? []).map((s) => s.challenge_id));
+    for (const id of challengeIds) {
+      enrollmentCounts[id] = (allEnrollRes.data ?? []).filter((e) => e.challenge_id === id).length;
+    }
   }
 
   const cards: ChallengeCard[] = (challenges ?? []).map((challenge) => ({
     ...challenge,
     tags: challenge.tags ?? [],
+    start_at: challenge.start_at,
+    enrollment_count: enrollmentCounts[challenge.id] ?? 0,
     enrollment_state: deriveEnrollmentState(
       challenge,
       enrollmentSet.has(challenge.id),

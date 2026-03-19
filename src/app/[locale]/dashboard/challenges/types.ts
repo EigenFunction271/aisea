@@ -8,8 +8,10 @@ export type ChallengeCard = {
   org_name: string;
   tags: string[];
   status: "published" | "archived";
+  start_at: string;
   end_at: string;
   enrollment_state: "not_enrolled" | "enrolled" | "submitted" | "closed" | "archived";
+  enrollment_count: number;
 };
 
 export type UserChallengeAccess = {
