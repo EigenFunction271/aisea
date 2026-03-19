@@ -1,6 +1,7 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
+import { z } from "npm:zod@3.23.8";
 import { getUserIdFromRequest, createAdminClient } from "../_shared/auth.ts";
-import { corsHeaders } from "./_shared/cors.ts";
+import { getCorsHeaders } from "./_shared/cors.ts";
 
 declare const Deno: {
   serve: (handler: (req: Request) => Response | Promise<Response>) => void;
@@ -10,18 +11,26 @@ const BUILDERS_TABLE = "builders";
 const BUILDER_AUTH_TABLE = "builder_auth";
 const SKILLS_TABLE = "skills";
 
-interface CreateBuilderProfilePayload {
-  username: string;
-  name: string;
-  city: string;
-  bio?: string;
-  skills?: string[];
-  github_handle?: string;
-  linkedin_url?: string;
-  instagram_url?: string;
-  twitter_url?: string;
-  personal_url?: string;
-}
+const URL_MAX = 500;
+
+const createProfileSchema = z.object({
+  username: z
+    .string()
+    .min(1, "username is required")
+    .max(50, "username must be 50 characters or fewer")
+    .regex(/^[a-zA-Z0-9_-]+$/, "username may only contain letters, numbers, hyphens, and underscores"),
+  name: z.string().min(1, "name is required").max(100, "name must be 100 characters or fewer"),
+  city: z.string().min(1, "city is required").max(100, "city must be 100 characters or fewer"),
+  bio: z.string().max(160, "bio must be 160 characters or fewer").optional(),
+  skills: z.array(z.string().max(100)).max(20, "maximum 20 skills").default([]),
+  github_handle: z.string().max(100).optional().nullable(),
+  linkedin_url: z.string().url("invalid LinkedIn URL").max(URL_MAX).optional().nullable(),
+  instagram_url: z.string().url("invalid Instagram URL").max(URL_MAX).optional().nullable(),
+  twitter_url: z.string().url("invalid Twitter URL").max(URL_MAX).optional().nullable(),
+  personal_url: z.string().url("invalid personal URL").max(URL_MAX).optional().nullable(),
+});
+
+type CreateBuilderProfilePayload = z.infer<typeof createProfileSchema>;
 
 function jsonResponse(body: unknown, status: number) {
   return new Response(JSON.stringify(body), {
@@ -31,6 +40,8 @@ function jsonResponse(body: unknown, status: number) {
 }
 
 Deno.serve(async (req) => {
+  const corsHeaders = getCorsHeaders(req.headers.get("origin"));
+
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
@@ -53,18 +64,17 @@ Deno.serve(async (req) => {
 
   let body: CreateBuilderProfilePayload;
   try {
-    body = await req.json();
-  } catch {
-    return jsonResponse({ error: "Invalid JSON body" }, 400);
+    const raw = await req.json();
+    body = createProfileSchema.parse(raw);
+  } catch (e) {
+    const message =
+      e instanceof z.ZodError
+        ? e.errors.map((err) => `${err.path.join(".")}: ${err.message}`).join("; ")
+        : "Invalid JSON body";
+    return jsonResponse({ error: message }, 400);
   }
 
-  const { username, name, city, bio, skills = [], github_handle, linkedin_url, instagram_url, twitter_url, personal_url } = body;
-  if (!username?.trim() || !name?.trim() || !city?.trim()) {
-    return jsonResponse(
-      { error: "username, name, and city are required" },
-      400
-    );
-  }
+  const { username, name, city, bio, skills, github_handle, linkedin_url, instagram_url, twitter_url, personal_url } = body;
 
   const slug = username.trim().toLowerCase().replace(/[^a-z0-9_-]/g, "-");
   if (!slug) {

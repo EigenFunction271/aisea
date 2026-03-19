@@ -1,6 +1,7 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
+import { z } from "npm:zod@3.23.8";
 import { getUserIdFromRequest, createAdminClient } from "../_shared/auth.ts";
-import { corsHeaders } from "./_shared/cors.ts";
+import { getCorsHeaders } from "./_shared/cors.ts";
 
 declare const Deno: {
   serve: (handler: (req: Request) => Response | Promise<Response>) => void;
@@ -12,12 +13,17 @@ const BUILDER_AUTH_TABLE = "builder_auth";
 /**
  * Claim an existing builder profile (created via Discord) and link it to the authenticated user.
  * Verification (e.g. one-time code sent to Discord DM) is TBD — see documentation/SCHEMA.md.
- * For now we require a verification_token; implement Discord DM verification in a later iteration.
+ * The endpoint is blocked until the verification flow is implemented (returns 501).
  */
-interface ClaimPayload {
-  username: string;
-  verification_token?: string;
-}
+const claimSchema = z.object({
+  username: z
+    .string()
+    .min(1, "username is required")
+    .max(50, "username must be 50 characters or fewer"),
+  verification_token: z.string().optional(),
+});
+
+type ClaimPayload = z.infer<typeof claimSchema>;
 
 function jsonResponse(body: unknown, status: number) {
   return new Response(JSON.stringify(body), {
@@ -27,6 +33,8 @@ function jsonResponse(body: unknown, status: number) {
 }
 
 Deno.serve(async (req) => {
+  const corsHeaders = getCorsHeaders(req.headers.get("origin"));
+
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
@@ -49,15 +57,17 @@ Deno.serve(async (req) => {
 
   let body: ClaimPayload;
   try {
-    body = await req.json();
-  } catch {
-    return jsonResponse({ error: "Invalid JSON body" }, 400);
+    const raw = await req.json();
+    body = claimSchema.parse(raw);
+  } catch (e) {
+    const message =
+      e instanceof z.ZodError
+        ? e.errors.map((err) => `${err.path.join(".")}: ${err.message}`).join("; ")
+        : "Invalid JSON body";
+    return jsonResponse({ error: message }, 400);
   }
 
   const { username } = body;
-  if (!username?.trim()) {
-    return jsonResponse({ error: "username is required" }, 400);
-  }
 
   const slug = username.trim().toLowerCase();
 
@@ -87,18 +97,19 @@ Deno.serve(async (req) => {
     return jsonResponse({ error: "Builder profile not found" }, 404);
   }
 
-  // TODO: Verify verification_token (e.g. against pending_claims table or Discord DM code).
-  // For lighter-trust v1 we could skip verification and allow claim by username only (document risk).
-  if (!body.verification_token) {
-    return jsonResponse(
-      {
-        error:
-          "Verification required. Claim flow (e.g. Discord DM code) not yet implemented — see documentation/SCHEMA.md",
-      },
-      501
-    );
-  }
+  // Profile claiming requires a verified token (e.g. Discord DM code) tied to a pending_claims
+  // row. This flow is not yet implemented — block all claims unconditionally until it is.
+  // Any non-empty verification_token was previously accepted without validation, which is a
+  // security hole; this block closes it.
+  return jsonResponse(
+    {
+      error:
+        "Profile claiming is not yet available. Contact support on Discord.",
+    },
+    501
+  );
 
+  // eslint-disable-next-line no-unreachable
   const { error: linkError } = await admin.from(BUILDER_AUTH_TABLE).insert({
     user_id: userId,
     builder_id: builder.id,

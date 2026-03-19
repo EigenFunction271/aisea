@@ -1,6 +1,11 @@
-// @ts-nocheck
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
-import { createClient } from "npm:@supabase/supabase-js@2";
+import { createClient, SupabaseClient } from "npm:@supabase/supabase-js@2";
+
+// Deno global is available in Supabase Edge Function runtime but not in TypeScript's lib.
+// We declare only the subset we use to avoid @ts-nocheck on this security-critical module.
+declare const Deno: {
+  env: { get(key: string): string | undefined };
+};
 
 /**
  * Returns the authenticated user's id (auth.uid()) from the request JWT.
@@ -24,7 +29,18 @@ export async function getUserIdFromRequest(req: Request): Promise<string> {
   }
 
   const supabase = createClient(url, publicKey);
-  const { data, error } = await supabase.auth.getClaims(token);
+  // getClaims() performs local JWT verification without a network round-trip.
+  // The method exists in @supabase/supabase-js@2 but is not yet included in the public
+  // type declarations — cast through unknown to avoid a suppression comment on the whole file.
+  const { data, error } = await (
+    supabase.auth as unknown as {
+      getClaims(token: string): Promise<{
+        data: { claims: { sub: string } } | null;
+        error: { message: string } | null;
+      }>;
+    }
+  ).getClaims(token);
+
   const userId = data?.claims?.sub;
   if (error || !userId) {
     throw new Error(error?.message ?? "Invalid JWT");
@@ -32,7 +48,7 @@ export async function getUserIdFromRequest(req: Request): Promise<string> {
   return userId;
 }
 
-export function createAdminClient() {
+export function createAdminClient(): SupabaseClient {
   const url = Deno.env.get("SUPABASE_URL");
   const secretKey =
     Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? Deno.env.get("SUPABASE_SECRET_KEY");

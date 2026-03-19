@@ -1,7 +1,7 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { z } from "npm:zod@3.23.8";
 import { getUserIdFromRequest, createAdminClient } from "../_shared/auth.ts";
-import { corsHeaders } from "../_shared/cors.ts";
+import { getCorsHeaders } from "../_shared/cors.ts";
 import {
   canManageChallenge,
   getChallengeById,
@@ -87,6 +87,7 @@ const actionSchema = z.union([
 ]);
 
 Deno.serve(async (req) => {
+  const corsHeaders = getCorsHeaders(req.headers.get("origin"));
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
   if (req.method !== "POST") {
     return jsonResponse({ error: "Method not allowed" }, 405, corsHeaders);

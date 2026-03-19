@@ -6,15 +6,6 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { SubmissionPanel } from "./submission-panel";
 
-async function getProfileCompleteState(userId: string): Promise<boolean> {
-  const admin = createAdminClient();
-  const { data, error } = await admin.rpc("is_profile_complete_for_challenges", {
-    target_user_id: userId,
-  });
-  if (error) return false;
-  return data === true;
-}
-
 export default async function ChallengeDetailPage({
   params,
 }: {
@@ -22,13 +13,22 @@ export default async function ChallengeDetailPage({
 }) {
   const { locale, challengeId } = await params;
   const supabase = await createClient();
+  // Admin client is needed only for the challenges table which has no per-user RLS for public reads.
   const admin = createAdminClient();
 
   const {
     data: { user },
   } = await supabase.auth.getUser();
   const isAuthenticated = Boolean(user);
-  const isProfileComplete = user ? await getProfileCompleteState(user.id) : false;
+
+  // is_profile_complete_for_challenges is SECURITY DEFINER — callable from the user client.
+  let isProfileComplete = false;
+  if (user) {
+    const { data } = await supabase.rpc("is_profile_complete_for_challenges", {
+      target_user_id: user.id,
+    });
+    isProfileComplete = data === true;
+  }
   const isLocked = !(isAuthenticated && isProfileComplete);
 
   const { data: challenge } = await admin
@@ -49,18 +49,19 @@ export default async function ChallengeDetailPage({
   } | null = null;
 
   if (user) {
+    // Use the user-scoped client (RLS filters to auth.uid()) rather than the admin
+    // client — principle of least privilege. Admin access is only needed above for the
+    // challenge row itself (no per-user RLS on public challenges table).
     const [{ data: enrollment }, { data: submissionRow }] = await Promise.all([
-      admin
+      supabase
         .from("challenge_enrollments")
         .select("id")
         .eq("challenge_id", challenge.id)
-        .eq("user_id", user.id)
         .maybeSingle(),
-      admin
+      supabase
         .from("challenge_submissions")
         .select("status, submission_url, submission_text, submission_files")
         .eq("challenge_id", challenge.id)
-        .eq("user_id", user.id)
         .maybeSingle(),
     ]);
 
