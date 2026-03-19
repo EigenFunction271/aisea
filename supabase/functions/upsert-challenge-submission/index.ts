@@ -29,8 +29,10 @@ const submissionFileSchema = z.object({
 const payloadSchema = z.object({
   challenge_id: z.string().uuid(),
   status: z.enum(["draft", "submitted", "withdrawn"]),
+  project_name: z.string().max(200).optional().nullable(),
   submission_url: z.string().url().optional().nullable(),
   submission_text: z.string().max(20000).optional().nullable(),
+  repo_link: z.string().url().optional().nullable(),
   submission_files: z.array(submissionFileSchema).max(5).default([]),
 });
 
@@ -169,8 +171,10 @@ Deno.serve(async (req) => {
       .from("challenge_submissions")
       .update({
         status: nextStatus,
+        project_name: payload.project_name ?? null,
         submission_url: payload.submission_url ?? null,
         submission_text: payload.submission_text ?? null,
+        repo_link: payload.repo_link ?? null,
         submission_files: payload.submission_files,
         submitted_at: nextStatus === "submitted" ? existing.submitted_at ?? nowIso : existing.submitted_at,
       })
@@ -205,8 +209,10 @@ Deno.serve(async (req) => {
       challenge_id: payload.challenge_id,
       user_id: userId,
       status: nextStatus,
+      project_name: payload.project_name ?? null,
       submission_url: payload.submission_url ?? null,
       submission_text: payload.submission_text ?? null,
+      repo_link: payload.repo_link ?? null,
       submission_files: payload.submission_files,
       submitted_at: nextStatus === "submitted" ? nowIso : null,
     })

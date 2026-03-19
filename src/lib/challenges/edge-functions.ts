@@ -67,8 +67,10 @@ const reviewSubmissionResponseSchema = z.object({ submission: challengeSubmissio
 const upsertSubmissionPayloadSchema = z.object({
   challenge_id: z.string().uuid(),
   status: z.enum(["draft", "submitted", "withdrawn"]),
+  project_name: z.string().max(200).optional().nullable(),
   submission_url: z.string().url().optional().nullable(),
   submission_text: z.string().max(20000).optional().nullable(),
+  repo_link: z.string().url().optional().nullable(),
   submission_files: z
     .array(
       z.object({

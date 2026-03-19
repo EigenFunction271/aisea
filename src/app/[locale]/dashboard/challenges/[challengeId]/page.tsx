@@ -2,8 +2,7 @@ import { notFound } from "next/navigation";
 import { Link } from "@/i18n/routing";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { SubmissionPanel } from "./submission-panel";
-import { RightPanel } from "./right-panel";
+import { DetailActions } from "./detail-actions";
 
 async function getProfileCompleteState(userId: string): Promise<boolean> {
   const admin = createAdminClient();
@@ -70,9 +69,11 @@ export default async function ChallengeDetailPage({
   let enrollmentExists = false;
   let submission: {
     status: "draft" | "submitted" | "under_review" | "accepted" | "rejected" | "withdrawn";
+    project_name: string | null;
     submission_url: string | null;
     submission_text: string | null;
-    submission_files?: Array<{ path: string; mime_type: string; size_bytes: number }>;
+    repo_link: string | null;
+    submission_files: Array<{ path: string; mime_type: string; size_bytes: number }>;
   } | null = null;
 
   let participantCount = 0;
@@ -102,7 +103,7 @@ export default async function ChallengeDetailPage({
     user
       ? supabase
           .from("challenge_submissions")
-          .select("status, submission_url, submission_text, submission_files")
+          .select("status, project_name, submission_url, submission_text, repo_link, submission_files")
           .eq("challenge_id", challenge.id)
           .maybeSingle()
       : Promise.resolve({ data: null }),
@@ -503,33 +504,17 @@ export default async function ChallengeDetailPage({
                 </>
               )}
 
-              {/* Submission panel anchor */}
-              <div id="submission" style={{ scrollMarginTop: 90 }}>
-                <div style={DIVIDER} />
-                {challenge.status !== "published" ? (
-                  <p
-                    style={{
-                      ...MONO,
-                      fontSize: 12,
-                      color: "#fbbf24",
-                      background: "rgba(251,191,36,0.08)",
-                      border: "1px solid rgba(251,191,36,0.25)",
-                      borderRadius: 6,
-                      padding: "8px 12px",
-                      marginBottom: 16,
-                    }}
-                  >
-                    This challenge is closed. You can still view your submission below.
+              {/* Submission CTA note */}
+              {(enrollmentExists || Boolean(submission)) && (
+                <div>
+                  <div style={DIVIDER} />
+                  <p style={{ ...MONO, fontSize: 12, color: "var(--ds-text-muted)" }}>
+                    {canSubmit
+                      ? "Use the panel on the right to submit or edit your entry."
+                      : "Submissions are closed. Use the panel on the right to view your entry."}
                   </p>
-                ) : null}
-                <SubmissionPanel
-                  challengeId={challenge.id}
-                  isLocked={isLocked}
-                  isEnrolled={enrollmentExists}
-                  canSubmit={canSubmit}
-                  initialSubmission={submission}
-                />
-              </div>
+                </div>
+              )}
             </>
           )}
 
@@ -567,9 +552,10 @@ export default async function ChallengeDetailPage({
           )}
         </div>
 
-        {/* ── RIGHT sticky panel ────────────────────────────── */}
-        <RightPanel
+        {/* ── RIGHT sticky panel + submission modal ─────────── */}
+        <DetailActions
           challengeId={challenge.id}
+          challengeTitle={challenge.title}
           endAt={challenge.end_at}
           participantCount={participantCount}
           isLocked={isLocked}
@@ -577,6 +563,21 @@ export default async function ChallengeDetailPage({
           hasSubmission={Boolean(submission)}
           canSubmit={canSubmit}
           locale={locale}
+          initialSubmission={
+            submission
+              ? (() => {
+                  const s = submission as unknown as Record<string, unknown>;
+                  return {
+                    project_name: (s.project_name as string | null) ?? null,
+                    submission_url: (s.submission_url as string | null) ?? null,
+                    submission_text: (s.submission_text as string | null) ?? null,
+                    repo_link: (s.repo_link as string | null) ?? null,
+                    status: s.status as string,
+                    submission_files: (s.submission_files as Array<{ path: string; mime_type: string; size_bytes: number }>) ?? [],
+                  };
+                })()
+              : null
+          }
         />
       </div>
     </div>

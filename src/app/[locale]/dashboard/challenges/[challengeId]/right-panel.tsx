@@ -13,6 +13,7 @@ type Props = {
   hasSubmission: boolean;
   canSubmit: boolean;
   locale: string;
+  onOpenSubmit?: () => void;
 };
 
 function formatCountdown(endAt: string): { text: string; urgent: boolean } {
@@ -51,6 +52,7 @@ export function RightPanel({
   hasSubmission,
   canSubmit,
   locale,
+  onOpenSubmit,
 }: Props) {
   const [countdown, setCountdown] = useState(() => formatCountdown(endAt));
   const [enrolledLocal, setEnrolledLocal] = useState(isEnrolled);
@@ -115,8 +117,8 @@ export function RightPanel({
   } else if (isClosed || !canSubmit) {
     if (hasSubmission || enrolledLocal) {
       cta = (
-        <a
-          href="#submission"
+        <button
+          onClick={onOpenSubmit}
           style={{
             ...btnBase,
             background: "transparent",
@@ -125,7 +127,7 @@ export function RightPanel({
           }}
         >
           View Submission
-        </a>
+        </button>
       );
     } else {
       cta = (
@@ -144,8 +146,8 @@ export function RightPanel({
     }
   } else if (hasSubmission) {
     cta = (
-      <a
-        href="#submission"
+      <button
+        onClick={onOpenSubmit}
         style={{
           ...btnBase,
           background: "transparent",
@@ -154,16 +156,16 @@ export function RightPanel({
         }}
       >
         Edit Submission →
-      </a>
+      </button>
     );
   } else if (enrolledLocal) {
     cta = (
-      <a
-        href="#submission"
+      <button
+        onClick={onOpenSubmit}
         style={{ ...btnBase, background: "var(--ds-accent)", color: "#0a0a0a", border: "none" }}
       >
         Submit Now →
-      </a>
+      </button>
     );
   } else {
     cta = (

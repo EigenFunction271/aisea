@@ -9,7 +9,7 @@ type NavItem = { label: string; href: string };
 const NAV_ITEMS: NavItem[] = [
   { label: "HOME", href: "/dashboard" },
   { label: "CHALLENGES", href: "/dashboard/challenges" },
-  { label: "PROFILE", href: "/dashboard/edit-profile" },
+  { label: "PROFILE", href: "/dashboard/profile" },
 ];
 
 const BOTTOM_ITEMS: NavItem[] = [
@@ -38,6 +38,9 @@ function cityColor(city: string | null): string {
 
 function isActive(pathname: string, href: string): boolean {
   if (href === "/dashboard") return /\/dashboard$/.test(pathname);
+  if (href === "/dashboard/profile") {
+    return pathname.includes("/dashboard/profile") || pathname.includes("/dashboard/u/");
+  }
   return pathname.includes(href.replace("/dashboard", ""));
 }
 
