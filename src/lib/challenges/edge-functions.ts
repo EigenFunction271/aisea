@@ -105,7 +105,8 @@ async function invokeWithAuth<T>(
 ): Promise<T> {
   const token = await getSessionToken(supabase);
   const { data, error } = await supabase.functions.invoke(functionName, {
-    body,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    body: body as any,
     headers: { Authorization: `Bearer ${token}` },
   });
 
