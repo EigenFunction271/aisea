@@ -20,8 +20,8 @@ const createChallengePayloadSchema = z.object({
   hero_image_url: z.string().url().optional().nullable(),
   host_name: z.string().min(1).max(200),
   org_name: z.string().min(1).max(200),
-  start_at: z.string(),
-  end_at: z.string(),
+  start_at: z.string().min(1, "Start date is required"),
+  end_at: z.string().min(1, "End date is required"),
   timezone: z.string().min(1).max(80),
   reward_text: z.string().min(1).max(3000),
   external_link: z.string().url().optional().nullable(),
@@ -29,6 +29,7 @@ const createChallengePayloadSchema = z.object({
   attachments: z.array(challengeAttachmentSchema).default([]),
   eligibility: z.string().min(1).max(10000),
   judging_rubric: z.string().min(1).max(10000),
+  difficulty: z.enum(["starter", "builder", "hardcore"]).nullable().optional(),
   status: z.enum(["draft", "published"]).default("draft"),
 });
 
@@ -40,8 +41,8 @@ const updateChallengePayloadSchema = z
     hero_image_url: z.string().url().optional().nullable(),
     host_name: z.string().min(1).max(200).optional(),
     org_name: z.string().min(1).max(200).optional(),
-    start_at: z.string().optional(),
-    end_at: z.string().optional(),
+    start_at: z.string().min(1).optional(),
+    end_at: z.string().min(1).optional(),
     timezone: z.string().min(1).max(80).optional(),
     reward_text: z.string().min(1).max(3000).optional(),
     external_link: z.string().url().optional().nullable(),
@@ -49,6 +50,7 @@ const updateChallengePayloadSchema = z
     attachments: z.array(challengeAttachmentSchema).optional(),
     eligibility: z.string().min(1).max(10000).optional(),
     judging_rubric: z.string().min(1).max(10000).optional(),
+    difficulty: z.enum(["starter", "builder", "hardcore"]).nullable().optional(),
   })
   .refine((v) => Object.keys(v).length > 0, "At least one field must be provided");
 
@@ -90,11 +92,15 @@ const reviewSubmissionPayloadSchema = z.object({
 });
 
 async function getSessionToken(supabase: SupabaseClient): Promise<string> {
+  // getUser() re-validates the session against the Supabase Auth server, which is
+  // more correct than getSession() which only reads the locally cached token.
+  // We still need the raw access_token for the Authorization header, so we call
+  // getSession() after confirming the user is authenticated, but only to extract it.
+  const { error: userError } = await supabase.auth.getUser();
+  if (userError) throw new Error(userError.message ?? "Failed to verify auth session");
   const {
     data: { session },
-    error,
   } = await supabase.auth.getSession();
-  if (error) throw new Error(error.message ?? "Failed to read auth session");
   if (!session?.access_token) throw new Error("You are not signed in. Please log in and try again.");
   return session.access_token;
 }

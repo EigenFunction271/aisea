@@ -45,9 +45,12 @@ function toLocalDatetimeValue(iso: string) {
   return new Date(date.getTime() - tzOffset).toISOString().slice(0, 16);
 }
 
-function fromLocalDatetimeValue(local: string) {
-  if (!local) return "";
-  return new Date(local).toISOString();
+// Returns null for empty inputs so Zod's .min(1) can surface a clear error rather
+// than passing an empty string through to the server and getting a cryptic datetime error.
+function fromLocalDatetimeValue(local: string): string | null {
+  if (!local) return null;
+  const iso = new Date(local).toISOString();
+  return Number.isNaN(new Date(local).getTime()) ? null : iso;
 }
 
 export function ChallengeForm({
@@ -94,6 +97,19 @@ export function ChallengeForm({
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
+  function parseAttachments() {
+    return attachments
+      .split("\n")
+      .map((line) => line.trim())
+      .filter(Boolean)
+      .map((line) => {
+        const pipeIdx = line.indexOf("|");
+        const label = pipeIdx !== -1 ? line.slice(0, pipeIdx).trim() : line.trim();
+        const url = pipeIdx !== -1 ? line.slice(pipeIdx + 1).trim() : "";
+        return { label, url, _raw: line };
+      });
+  }
+
   function buildPayload() {
     return {
       title: title.trim(),
@@ -111,18 +127,36 @@ export function ChallengeForm({
         .split(",")
         .map((s) => s.trim())
         .filter(Boolean),
-      attachments: attachments
-        .split("\n")
-        .map((line) => line.trim())
-        .filter(Boolean)
-        .map((line) => {
-          const [label, url] = line.split("|").map((s) => s.trim());
-          return { label, url };
-        }),
+      attachments: parseAttachments().map(({ label, url }) => ({ label, url })),
       eligibility: eligibility.trim(),
       judging_rubric: judgingRubric.trim(),
       difficulty: (difficulty || null) as "starter" | "builder" | "hardcore" | null,
     };
+  }
+
+  function validate(): string | null {
+    if (!title.trim()) return "Title is required.";
+    if (!subtitle.trim()) return "Subtitle is required.";
+    if (!description.trim()) return "Description is required.";
+    if (!hostName.trim()) return "Host name is required.";
+    if (!orgName.trim()) return "Organization name is required.";
+    if (!startAt) return "Start date is required.";
+    if (!endAt) return "End date is required.";
+    const startMs = new Date(startAt).getTime();
+    const endMs = new Date(endAt).getTime();
+    if (Number.isNaN(startMs)) return "Start date is not a valid date.";
+    if (Number.isNaN(endMs)) return "End date is not a valid date.";
+    if (endMs <= startMs) return "End date must be after start date.";
+    if (!rewardText.trim()) return "Reward text is required.";
+    if (!eligibility.trim()) return "Eligibility is required.";
+    if (!judgingRubric.trim()) return "Judging rubric is required.";
+
+    const badAttachment = parseAttachments().find((a) => !a.url);
+    if (badAttachment) {
+      return `Attachment line "${badAttachment._raw}" is missing a URL. Format: Label|https://...`;
+    }
+
+    return null;
   }
 
   function parseWinnersRows() {
@@ -272,6 +306,17 @@ export function ChallengeForm({
   function runAction(action: "save" | "publish" | "unpublish" | "close" | "archive" | "winners") {
     setError(null);
     setSuccess(null);
+
+    // Validate all fields before touching the network. Status transitions (unpublish,
+    // close, archive) don't change content so skip the content check for those.
+    if (action === "save" || action === "publish") {
+      const validationError = validate();
+      if (validationError) {
+        setError(validationError);
+        return;
+      }
+    }
+
     startTransition(async () => {
       try {
         const supabase = createClient();
@@ -309,8 +354,12 @@ export function ChallengeForm({
     });
   }
 
+  const inputCls = "border-white/20 bg-white/5 text-white placeholder:text-white/30";
+  const labelCls = "mb-1 block text-xs font-medium text-white/60";
+
   return (
     <div className="mt-6 space-y-4">
+      {/* Action bar */}
       <div className="flex flex-wrap items-center gap-2">
         <Button
           type="button"
@@ -343,21 +392,21 @@ export function ChallengeForm({
           </>
         ) : null}
         <Button type="button" variant="outline" className="rounded-full border-white/20 text-white hover:bg-white/10" onClick={handleAutosave}>
-          Autosave Local Draft
+          Autosave
         </Button>
         <Button type="button" variant="outline" className="rounded-full border-white/20 text-white hover:bg-white/10" onClick={restoreAutosave}>
-          Restore Draft
+          Restore
         </Button>
         <Button type="button" variant="outline" className="rounded-full border-white/20 text-white hover:bg-white/10" onClick={() => setPreview((p) => !p)}>
-          {preview ? "Edit Mode" : "Preview"}
+          {preview ? "Edit" : "Preview"}
         </Button>
         <Button asChild type="button" variant="ghost" className="rounded-full text-white/70 hover:bg-white/10 hover:text-white">
           <Link href="/dashboard/challenges/admin">Back</Link>
         </Button>
       </div>
 
-      {error ? <p className="text-sm text-red-400">{error}</p> : null}
-      {success ? <p className="text-sm text-emerald-400">{success}</p> : null}
+      {error ? <p className="rounded-lg border border-red-500/30 bg-red-500/10 px-3 py-2 text-sm text-red-400">{error}</p> : null}
+      {success ? <p className="rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-3 py-2 text-sm text-emerald-400">{success}</p> : null}
 
       {preview ? (
         <div className="rounded-xl border border-white/10 bg-white/5 p-5">
@@ -378,104 +427,189 @@ export function ChallengeForm({
           <p className="mt-4 whitespace-pre-wrap text-sm text-white/80">{description || "Description preview"}</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-          <div className="space-y-4 rounded-xl border border-white/10 bg-white/5 p-4">
-            <Input placeholder="Title" value={title} onChange={(e) => setTitle(e.target.value)} className="border-white/20 bg-white/5 text-white" />
-            <Input placeholder="Subtitle" value={subtitle} onChange={(e) => setSubtitle(e.target.value)} className="border-white/20 bg-white/5 text-white" />
-            <Textarea placeholder="Description" value={description} onChange={(e) => setDescription(e.target.value)} className="border-white/20 bg-white/5 text-white" />
-            <Input placeholder="Hero image URL" value={heroImageUrl} onChange={(e) => setHeroImageUrl(e.target.value)} className="border-white/20 bg-white/5 text-white" />
-            <div>
-              <Input
-                type="file"
-                accept="image/*"
-                onChange={(e) => void handleHeroUpload(e.target.files)}
-                className="border-white/20 bg-white/5 text-white"
-                disabled={uploadingHero}
-              />
-              {uploadingHero ? <p className="mt-1 text-xs text-white/60">Uploading hero image...</p> : null}
+        <div className="space-y-4">
+
+          {/* Row 1: Title + Subtitle */}
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+            <div className="rounded-xl border border-white/10 bg-white/5 p-4">
+              <label className={labelCls}>Title *</label>
+              <Input placeholder="Challenge title" value={title} onChange={(e) => setTitle(e.target.value)} className={inputCls} />
             </div>
-            <Input placeholder="Host name" value={hostName} onChange={(e) => setHostName(e.target.value)} className="border-white/20 bg-white/5 text-white" />
-            <Input placeholder="Organization name" value={orgName} onChange={(e) => setOrgName(e.target.value)} className="border-white/20 bg-white/5 text-white" />
-            <Input type="datetime-local" value={startAt} onChange={(e) => setStartAt(e.target.value)} className="border-white/20 bg-white/5 text-white" />
-            <Input type="datetime-local" value={endAt} onChange={(e) => setEndAt(e.target.value)} className="border-white/20 bg-white/5 text-white" />
-            <Input placeholder="Timezone (e.g. Asia/Singapore)" value={timezone} onChange={(e) => setTimezone(e.target.value)} className="border-white/20 bg-white/5 text-white" />
+            <div className="rounded-xl border border-white/10 bg-white/5 p-4">
+              <label className={labelCls}>Subtitle *</label>
+              <Input placeholder="One-line summary" value={subtitle} onChange={(e) => setSubtitle(e.target.value)} className={inputCls} />
+            </div>
           </div>
-          <div className="space-y-4 rounded-xl border border-white/10 bg-white/5 p-4">
-            <Textarea placeholder="Reward text" value={rewardText} onChange={(e) => setRewardText(e.target.value)} className="border-white/20 bg-white/5 text-white" />
-            <Input placeholder="External link" value={externalLink} onChange={(e) => setExternalLink(e.target.value)} className="border-white/20 bg-white/5 text-white" />
-            <Input placeholder="Tags (comma-separated)" value={tags} onChange={(e) => setTags(e.target.value)} className="border-white/20 bg-white/5 text-white" />
-            <div>
-              <label className="mb-1 block text-xs text-white/60">Difficulty (optional)</label>
-              <select
-                value={difficulty}
-                onChange={(e) => setDifficulty(e.target.value as "starter" | "builder" | "hardcore" | "")}
-                className="w-full rounded-md border border-white/20 bg-white/5 px-3 py-2 text-sm text-white"
-              >
-                <option value="">— No difficulty set —</option>
-                <option value="starter">Starter</option>
-                <option value="builder">Builder</option>
-                <option value="hardcore">Hardcore</option>
-              </select>
+
+          {/* Row 2: Description — full width, tall */}
+          <div className="rounded-xl border border-white/10 bg-white/5 p-4">
+            <label className={labelCls}>Description *</label>
+            <Textarea
+              placeholder="Full challenge description, rules, and context…"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              className={`${inputCls} min-h-[240px] resize-y`}
+            />
+          </div>
+
+          {/* Row 3: Two-column metadata */}
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+            {/* Left col: organiser + dates */}
+            <div className="space-y-4 rounded-xl border border-white/10 bg-white/5 p-4">
+              <div>
+                <label className={labelCls}>Host name *</label>
+                <Input placeholder="e.g. Jane Doe" value={hostName} onChange={(e) => setHostName(e.target.value)} className={inputCls} />
+              </div>
+              <div>
+                <label className={labelCls}>Organization *</label>
+                <Input placeholder="e.g. Acme Corp" value={orgName} onChange={(e) => setOrgName(e.target.value)} className={inputCls} />
+              </div>
+              <div>
+                <label className={labelCls}>Start date &amp; time *</label>
+                <Input type="datetime-local" value={startAt} onChange={(e) => setStartAt(e.target.value)} className={inputCls} />
+              </div>
+              <div>
+                <label className={labelCls}>End date &amp; time *</label>
+                <Input type="datetime-local" value={endAt} onChange={(e) => setEndAt(e.target.value)} className={inputCls} />
+              </div>
+              <div>
+                <label className={labelCls}>Timezone</label>
+                <Input placeholder="e.g. Asia/Singapore" value={timezone} onChange={(e) => setTimezone(e.target.value)} className={inputCls} />
+              </div>
             </div>
-            <Textarea placeholder={"Attachments (one per line):\nLabel|https://..."} value={attachments} onChange={(e) => setAttachments(e.target.value)} className="border-white/20 bg-white/5 text-white" />
-            <Textarea placeholder="Eligibility" value={eligibility} onChange={(e) => setEligibility(e.target.value)} className="border-white/20 bg-white/5 text-white" />
-            <Textarea placeholder="Judging rubric" value={judgingRubric} onChange={(e) => setJudgingRubric(e.target.value)} className="border-white/20 bg-white/5 text-white" />
-            {mode === "edit" ? (
-              <div className="rounded-lg border border-white/10 p-3">
-                <p className="mb-2 text-sm text-white/80">Winners</p>
-                <div className="space-y-2">
-                  {winnersRows.map((row, index) => (
-                    <div key={`${index}-${row.user_id}`} className="rounded-md border border-white/10 p-2">
-                      <Input
-                        placeholder="Winner user UUID"
-                        value={row.user_id}
-                        onChange={(e) => updateWinner(index, { user_id: e.target.value })}
-                        className="mb-2 border-white/20 bg-white/5 text-white"
-                      />
-                      <Input
-                        placeholder="Placement (e.g. 1st Place)"
-                        list={`placement-options-${index}`}
-                        value={row.placement}
-                        onChange={(e) => updateWinner(index, { placement: e.target.value })}
-                        className="mb-2 border-white/20 bg-white/5 text-white"
-                      />
-                      <datalist id={`placement-options-${index}`}>
-                        {PLACEMENT_SUGGESTIONS.map((suggestion) => (
-                          <option key={suggestion} value={suggestion} />
-                        ))}
-                      </datalist>
-                      <Textarea
-                        placeholder="Decision text"
-                        value={row.decision_text}
-                        onChange={(e) => updateWinner(index, { decision_text: e.target.value })}
-                        className="border-white/20 bg-white/5 text-white"
-                      />
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        className="mt-2 rounded-full text-white/70 hover:bg-white/10 hover:text-white"
-                        onClick={() => removeWinnerRow(index)}
-                        disabled={winnersRows.length <= 1}
-                      >
-                        Remove row
-                      </Button>
-                    </div>
-                  ))}
-                </div>
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="mt-2 rounded-full border-white/20 text-white hover:bg-white/10"
-                  onClick={addWinnerRow}
+
+            {/* Right col: reward, links, tags, difficulty, attachments */}
+            <div className="space-y-4 rounded-xl border border-white/10 bg-white/5 p-4">
+              <div>
+                <label className={labelCls}>Reward *</label>
+                <Textarea placeholder="Prize or incentive description" value={rewardText} onChange={(e) => setRewardText(e.target.value)} className={`${inputCls} min-h-[80px]`} />
+              </div>
+              <div>
+                <label className={labelCls}>External link</label>
+                <Input placeholder="https://..." value={externalLink} onChange={(e) => setExternalLink(e.target.value)} className={inputCls} />
+              </div>
+              <div>
+                <label className={labelCls}>Tags (comma-separated)</label>
+                <Input placeholder="e.g. AI, design, open-source" value={tags} onChange={(e) => setTags(e.target.value)} className={inputCls} />
+              </div>
+              <div>
+                <label className={labelCls}>Difficulty</label>
+                <select
+                  value={difficulty}
+                  onChange={(e) => setDifficulty(e.target.value as "starter" | "builder" | "hardcore" | "")}
+                  className="w-full rounded-md border border-white/20 bg-white/5 px-3 py-2 text-sm text-white"
                 >
-                  Add Winner Row
+                  <option value="">— Not set —</option>
+                  <option value="starter">Starter</option>
+                  <option value="builder">Builder</option>
+                  <option value="hardcore">Hardcore</option>
+                </select>
+              </div>
+              <div>
+                <label className={labelCls}>Attachments — one per line: <span className="font-mono">Label|https://…</span></label>
+                <Textarea placeholder={"Slides|https://...\nDataset|https://..."} value={attachments} onChange={(e) => setAttachments(e.target.value)} className={`${inputCls} min-h-[80px]`} />
+              </div>
+            </div>
+          </div>
+
+          {/* Row 4: Eligibility + Judging rubric — full width */}
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+            <div className="rounded-xl border border-white/10 bg-white/5 p-4">
+              <label className={labelCls}>Eligibility *</label>
+              <Textarea placeholder="Who can participate and any restrictions…" value={eligibility} onChange={(e) => setEligibility(e.target.value)} className={`${inputCls} min-h-[160px] resize-y`} />
+            </div>
+            <div className="rounded-xl border border-white/10 bg-white/5 p-4">
+              <label className={labelCls}>Judging rubric *</label>
+              <Textarea placeholder="How submissions will be evaluated…" value={judgingRubric} onChange={(e) => setJudgingRubric(e.target.value)} className={`${inputCls} min-h-[160px] resize-y`} />
+            </div>
+          </div>
+
+          {/* Row 5: Hero image upload — file only, no raw URL input */}
+          <div className="rounded-xl border border-white/10 bg-white/5 p-4">
+            <label className={labelCls}>Hero image</label>
+            <div className="flex items-start gap-4">
+              {heroImageUrl ? (
+                <div
+                  className="h-20 w-32 flex-shrink-0 rounded-lg bg-white/10"
+                  style={{ backgroundImage: `url(${heroImageUrl})`, backgroundSize: "cover", backgroundPosition: "center" }}
+                />
+              ) : (
+                <div className="flex h-20 w-32 flex-shrink-0 items-center justify-center rounded-lg border border-dashed border-white/20 text-xs text-white/40">
+                  No image
+                </div>
+              )}
+              <div className="flex-1">
+                <Input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => void handleHeroUpload(e.target.files)}
+                  className={inputCls}
+                  disabled={uploadingHero}
+                />
+                {uploadingHero ? (
+                  <p className="mt-1 text-xs text-white/60">Uploading…</p>
+                ) : heroImageUrl ? (
+                  <p className="mt-1 truncate text-xs text-white/40">{heroImageUrl}</p>
+                ) : (
+                  <p className="mt-1 text-xs text-white/40">Upload a banner image for the challenge card.</p>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Winners panel — edit mode only */}
+          {mode === "edit" ? (
+            <div className="rounded-xl border border-white/10 bg-white/5 p-4">
+              <p className="mb-3 text-sm font-medium text-white">Winners</p>
+              <div className="space-y-2">
+                {winnersRows.map((row, index) => (
+                  <div key={`${index}-${row.user_id}`} className="rounded-md border border-white/10 p-3">
+                    <Input
+                      placeholder="Winner user UUID"
+                      value={row.user_id}
+                      onChange={(e) => updateWinner(index, { user_id: e.target.value })}
+                      className={`mb-2 ${inputCls}`}
+                    />
+                    <Input
+                      placeholder="Placement (e.g. 1st Place)"
+                      list={`placement-options-${index}`}
+                      value={row.placement}
+                      onChange={(e) => updateWinner(index, { placement: e.target.value })}
+                      className={`mb-2 ${inputCls}`}
+                    />
+                    <datalist id={`placement-options-${index}`}>
+                      {PLACEMENT_SUGGESTIONS.map((suggestion) => (
+                        <option key={suggestion} value={suggestion} />
+                      ))}
+                    </datalist>
+                    <Textarea
+                      placeholder="Decision text"
+                      value={row.decision_text}
+                      onChange={(e) => updateWinner(index, { decision_text: e.target.value })}
+                      className={inputCls}
+                    />
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      className="mt-2 rounded-full text-white/70 hover:bg-white/10 hover:text-white"
+                      onClick={() => removeWinnerRow(index)}
+                      disabled={winnersRows.length <= 1}
+                    >
+                      Remove
+                    </Button>
+                  </div>
+                ))}
+              </div>
+              <div className="mt-3 flex gap-2">
+                <Button type="button" variant="outline" className="rounded-full border-white/20 text-white hover:bg-white/10" onClick={addWinnerRow}>
+                  Add row
                 </Button>
-                <Button type="button" variant="outline" className="mt-2 rounded-full border-white/20 text-white hover:bg-white/10" disabled={isPending} onClick={() => runAction("winners")}>
-                  Save Winners
+                <Button type="button" variant="outline" className="rounded-full border-white/20 text-white hover:bg-white/10" disabled={isPending} onClick={() => runAction("winners")}>
+                  Save winners
                 </Button>
               </div>
-            ) : null}
-          </div>
+            </div>
+          ) : null}
         </div>
       )}
     </div>

@@ -34,6 +34,7 @@ const actionSchema = z.union([
         .default([]),
       eligibility: z.string().min(1).max(10000),
       judging_rubric: z.string().min(1).max(10000),
+      difficulty: z.enum(["starter", "builder", "hardcore"]).nullable().optional(),
       status: z.enum(["draft", "published"]).default("draft"),
     }),
   }),
@@ -59,6 +60,7 @@ const actionSchema = z.union([
           .optional(),
         eligibility: z.string().min(1).max(10000).optional(),
         judging_rubric: z.string().min(1).max(10000).optional(),
+        difficulty: z.enum(["starter", "builder", "hardcore"]).nullable().optional(),
       })
       .refine((v) => Object.keys(v).length > 0, "At least one field must be provided"),
   }),
