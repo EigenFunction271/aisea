@@ -70,7 +70,7 @@ export default async function BuilderProfilePage({
   const { data: builder } = await admin
     .from("builders")
     .select(
-      "id, username, name, city, bio, skills, github_handle, linkedin_url, twitter_url, instagram_url, personal_url, created_at"
+      "id, username, name, city, bio, skills, github_handle, linkedin_url, twitter_url, instagram_url, personal_url, created_at, is_wiki_contributor"
     )
     .eq("username", handle)
     .maybeSingle();
@@ -87,8 +87,8 @@ export default async function BuilderProfilePage({
   const builderUserId = builderAuth?.user_id ?? null;
   const isOwner = Boolean(viewer && builderUserId && viewer.id === builderUserId);
 
-  // Parallel: enrollment count, submission list with challenge titles
-  const [enrollRes, submitRes, skillsRes] = await Promise.all([
+  // Parallel: enrollment count, submission list, skills, wiki page count
+  const [enrollRes, submitRes, skillsRes, wikiCountRes, wikiPagesRes] = await Promise.all([
     builderUserId
       ? admin
           .from("challenge_enrollments")
@@ -105,9 +105,34 @@ export default async function BuilderProfilePage({
           .limit(50)
       : Promise.resolve({ data: [] }),
     admin.from("skills").select("slug, label").in("slug", SKILL_TAXONOMY),
+    builderUserId
+      ? admin
+          .from("wiki_pages")
+          .select("id", { count: "exact", head: true })
+          .eq("author_id", builderUserId)
+          .eq("status", "live")
+      : Promise.resolve({ count: 0 }),
+    // Recent live wiki pages by this author for the WIKI tab
+    builderUserId
+      ? admin
+          .from("wiki_pages")
+          .select("id, slug, title, type, updated_at")
+          .eq("author_id", builderUserId)
+          .eq("status", "live")
+          .order("updated_at", { ascending: false })
+          .limit(10)
+      : Promise.resolve({ data: [] }),
   ]);
 
   const enrollmentCount = (enrollRes as { count: number | null }).count ?? 0;
+  const wikiPageCount = (wikiCountRes as { count: number | null }).count ?? 0;
+  const wikiPages = ((wikiPagesRes as { data: Array<Record<string, unknown>> | null }).data ?? []).map((p) => ({
+    id: p.id as string,
+    slug: p.slug as string,
+    title: p.title as string,
+    type: p.type as string,
+    updated_at: p.updated_at as string,
+  }));
 
   const submissions = ((submitRes as { data: Array<Record<string, unknown>> | null }).data ?? []).map((s) => ({
     id: s.id as string,
@@ -176,6 +201,21 @@ export default async function BuilderProfilePage({
               >
                 {builder.name}
               </h1>
+              {(builder as unknown as { is_wiki_contributor: boolean }).is_wiki_contributor && (
+                <span
+                  style={{
+                    fontFamily: "var(--font-dm-mono), monospace",
+                    fontSize: 9,
+                    letterSpacing: "0.08em",
+                    padding: "2px 7px",
+                    borderRadius: 3,
+                    background: "var(--contributor-tag)",
+                    color: "#fff",
+                  }}
+                >
+                  WIKI CONTRIBUTOR
+                </span>
+              )}
               {isOwner && (
                 <Link
                   href="/dashboard/edit-profile"
@@ -264,6 +304,7 @@ export default async function BuilderProfilePage({
         {[
           { label: "Enrolled", value: enrollmentCount },
           { label: "Submissions", value: submissions.length },
+          { label: "Wiki pages", value: wikiPageCount },
           { label: "Node", value: builder.city },
         ].map((stat, i) => (
           <div
@@ -320,6 +361,7 @@ export default async function BuilderProfilePage({
       {/* Tabs */}
       <ProfileTabs
         submissions={submissions}
+        wikiPages={wikiPages}
         social={{
           bio: builder.bio,
           github_handle: builder.github_handle,

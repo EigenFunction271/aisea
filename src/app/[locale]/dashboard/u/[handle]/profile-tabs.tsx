@@ -20,7 +20,15 @@ type SocialLinks = {
   bio: string | null;
 };
 
-type Tab = "submissions" | "about";
+type WikiPage = {
+  id: string;
+  slug: string;
+  title: string;
+  type: string;
+  updated_at: string;
+};
+
+type Tab = "submissions" | "wiki" | "about";
 
 const MONO: React.CSSProperties = {
   fontFamily: "var(--font-dm-mono), monospace",
@@ -46,8 +54,10 @@ export function ProfileTabs({
   social,
   locale,
   challengesPath,
+  wikiPages = [],
 }: {
   submissions: Submission[];
+  wikiPages?: WikiPage[];
   social: SocialLinks;
   locale: string;
   challengesPath: string;
@@ -89,6 +99,9 @@ export function ProfileTabs({
       >
         <button style={tabStyle("submissions")} onClick={() => setActiveTab("submissions")}>
           Submissions
+        </button>
+        <button style={tabStyle("wiki")} onClick={() => setActiveTab("wiki")}>
+          Wiki
         </button>
         <button style={tabStyle("about")} onClick={() => setActiveTab("about")}>
           About
@@ -176,6 +189,74 @@ export function ProfileTabs({
                       }}
                     >
                       {sub.status.replace("_", " ")}
+                    </span>
+                  </div>
+                </a>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* WIKI tab */}
+      {activeTab === "wiki" && (
+        <div>
+          {wikiPages.length === 0 ? (
+            <p style={{ fontSize: 14, color: "var(--ds-text-muted)" }}>
+              No published wiki pages yet.
+            </p>
+          ) : (
+            <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
+              {wikiPages.map((page, i) => (
+                <a
+                  key={page.id}
+                  href={`/${locale}/dashboard/wiki/p/${page.slug}`}
+                  style={{ textDecoration: "none" }}
+                >
+                  <div
+                    style={{
+                      padding: "10px 0",
+                      borderTop: i === 0 ? "1px solid var(--ds-border)" : "none",
+                      borderBottom: "1px solid var(--ds-border)",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 12,
+                      transition: "padding-left 0.1s",
+                    }}
+                    onMouseEnter={(e) => ((e.currentTarget as HTMLDivElement).style.paddingLeft = "6px")}
+                    onMouseLeave={(e) => ((e.currentTarget as HTMLDivElement).style.paddingLeft = "0")}
+                  >
+                    <span
+                      style={{
+                        ...MONO,
+                        fontSize: 9,
+                        padding: "2px 6px",
+                        borderRadius: 3,
+                        border: "1px solid var(--ds-border)",
+                        color: "var(--ds-text-muted)",
+                        flexShrink: 0,
+                        textTransform: "uppercase" as const,
+                        letterSpacing: "0.06em",
+                      }}
+                    >
+                      {page.type}
+                    </span>
+                    <span
+                      style={{
+                        fontFamily: "var(--font-syne), sans-serif",
+                        fontSize: 14,
+                        fontWeight: 600,
+                        color: "var(--ds-text-primary)",
+                        flex: 1,
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        whiteSpace: "nowrap",
+                      }}
+                    >
+                      {page.title}
+                    </span>
+                    <span style={{ ...MONO, fontSize: 11, color: "var(--ds-text-muted)", flexShrink: 0 }}>
+                      {new Date(page.updated_at).toLocaleDateString("en-GB", { day: "numeric", month: "short" })}
                     </span>
                   </div>
                 </a>

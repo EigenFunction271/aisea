@@ -43,23 +43,33 @@ export type WikiEditorProps = {
     parent_id: string | null;
     status: string;
   };
+  /** If proposing an update to a live page, pass the original's id */
+  suggestedUpdateOf?: string;
+  /** Pre-fill values for a proposal without passing a page (avoids edit-mode) */
+  initialValues?: {
+    title: string;
+    description: string;
+    body: string;
+    type: WikiPageType;
+    parentId: string;
+  };
   /** Flat list of tree nodes for parent selector */
   treeNodes: WikiTreeNode[];
   locale: string;
 };
 
-export function WikiEditor({ page, treeNodes, locale }: WikiEditorProps) {
+export function WikiEditor({ page, suggestedUpdateOf, initialValues, treeNodes, locale }: WikiEditorProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const autosaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // ── Form state ──────────────────────────────────────────────────────────
-  const [title, setTitle] = useState(page?.title ?? "");
+  const [title, setTitle] = useState(page?.title ?? initialValues?.title ?? "");
   const [slug, setSlug] = useState(page?.slug ?? "");
-  const [description, setDescription] = useState(page?.description ?? "");
-  const [body, setBody] = useState(page?.body ?? "");
-  const [type, setType] = useState<WikiPageType>(page?.type ?? "guide");
-  const [parentId, setParentId] = useState<string>(page?.parent_id ?? "");
+  const [description, setDescription] = useState(page?.description ?? initialValues?.description ?? "");
+  const [body, setBody] = useState(page?.body ?? initialValues?.body ?? "");
+  const [type, setType] = useState<WikiPageType>(page?.type ?? initialValues?.type ?? "guide");
+  const [parentId, setParentId] = useState<string>(page?.parent_id ?? initialValues?.parentId ?? "");
 
   const [previewMode, setPreviewMode] = useState<"edit" | "split" | "preview">("edit");
   const [saveState, setSaveState] = useState<SaveState>("idle");
@@ -143,7 +153,8 @@ export function WikiEditor({ page, treeNodes, locale }: WikiEditorProps) {
     setSaveState("saving");
 
     const payload = {
-      id: page?.id,
+      // For proposals: always create new (no id); include suggested_update_of
+      id: suggestedUpdateOf ? undefined : page?.id,
       slug,
       title,
       description,
@@ -151,6 +162,7 @@ export function WikiEditor({ page, treeNodes, locale }: WikiEditorProps) {
       type,
       parent_id: parentId || null,
       status: action === "draft" ? "draft" : "pending_review",
+      ...(suggestedUpdateOf ? { suggested_update_of: suggestedUpdateOf } : {}),
     };
 
     try {
@@ -201,7 +213,7 @@ export function WikiEditor({ page, treeNodes, locale }: WikiEditorProps) {
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 28, gap: 12, flexWrap: "wrap" }}>
         <div>
           <p style={{ ...MONO, fontSize: 10, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--ds-text-muted)", marginBottom: 6 }}>
-            {isEditing ? "Edit page" : "New page"}
+            {suggestedUpdateOf ? "Suggest update" : isEditing ? "Edit page" : "New page"}
           </p>
           <h1 style={{ fontFamily: "var(--font-syne), sans-serif", fontSize: 22, fontWeight: 800, color: "var(--ds-text-primary)" }}>
             {isEditing ? page.title || "Untitled" : title || "Untitled"}

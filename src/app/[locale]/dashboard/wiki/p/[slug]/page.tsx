@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { Link } from "@/i18n/routing";
 import { MarkdownRenderer } from "../../_components/markdown-renderer";
+import { SuggestUpdateButton } from "../../_components/suggest-update-button";
 import type { WikiLink } from "../../types";
 
 const MONO: React.CSSProperties = {
@@ -239,24 +240,29 @@ export default async function WikiPageDetailPage({
         </span>
 
         {/* Edit / Admin actions */}
-        {(isAuthor || isAdmin) && (
-          <Link
-            href={`/dashboard/wiki/p/${slug}/edit` as Parameters<typeof Link>[0]["href"]}
-            locale={locale as "en" | "id" | "zh" | "vi"}
-            style={{
-              ...MONO,
-              fontSize: 11,
-              padding: "3px 10px",
-              borderRadius: 4,
-              border: "1px solid var(--ds-border)",
-              color: "var(--ds-text-secondary)",
-              textDecoration: "none",
-              marginLeft: "auto",
-            }}
-          >
-            Edit
-          </Link>
-        )}
+        <div style={{ display: "flex", gap: 8, marginLeft: "auto" }}>
+          {(isAuthor || isAdmin) && (
+            <Link
+              href={`/dashboard/wiki/p/${slug}/edit` as Parameters<typeof Link>[0]["href"]}
+              locale={locale as "en" | "id" | "zh" | "vi"}
+              style={{
+                ...MONO,
+                fontSize: 11,
+                padding: "3px 10px",
+                borderRadius: 4,
+                border: "1px solid var(--ds-border)",
+                color: "var(--ds-text-secondary)",
+                textDecoration: "none",
+              }}
+            >
+              Edit
+            </Link>
+          )}
+          {/* Members (non-author) can suggest updates to live, non-section pages */}
+          {user && !isAuthor && page.type !== "section" && (
+            <SuggestUpdateButton slug={slug} locale={locale} />
+          )}
+        </div>
       </div>
 
       {/* Section container: show children grid instead of body */}

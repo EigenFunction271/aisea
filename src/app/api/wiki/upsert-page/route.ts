@@ -15,6 +15,7 @@ const schema = z.object({
   type: z.enum(["guide", "reference", "resource", "section"]),
   parent_id: z.string().uuid().nullable().default(null),
   status: z.enum(["draft", "pending_review"]),
+  suggested_update_of: z.string().uuid().optional(),
 });
 
 export async function POST(req: Request) {
@@ -59,6 +60,9 @@ export async function POST(req: Request) {
         parent_id: data.parent_id,
         status: data.status,
         author_id: user.id,
+        ...(data.suggested_update_of
+          ? { suggested_update_of: data.suggested_update_of }
+          : {}),
       })
       .select("id, slug")
       .single();
