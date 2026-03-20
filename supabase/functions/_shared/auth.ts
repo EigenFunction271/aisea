@@ -19,31 +19,61 @@ export async function getUserIdFromRequest(req: Request): Promise<string> {
   }
   const token = authHeader.replace("Bearer ", "").trim();
 
-  const url = Deno.env.get("SUPABASE_URL");
+  // Prefer edge function env vars, but fall back to request headers/origin.
+  // In some redeploy states, env vars can be missing while the request still
+  // contains the public apikey header used by Supabase.
+  const url =
+    Deno.env.get("SUPABASE_URL") ?? new URL(req.url).origin;
   const publicKey =
     Deno.env.get("SUPABASE_ANON_KEY") ??
-    Deno.env.get("SUPABASE_PUBLISHABLE_KEY");
+    Deno.env.get("SUPABASE_PUBLISHABLE_KEY") ??
+    req.headers.get("apikey") ?? undefined;
 
-  if (!url || !publicKey) {
-    throw new Error("Missing SUPABASE_URL or SUPABASE_ANON_KEY");
-  }
+  if (!url || !publicKey) throw new Error("Missing SUPABASE_URL or SUPABASE anon/publishable key");
 
   const supabase = createClient(url, publicKey);
   // getClaims() performs local JWT verification without a network round-trip.
   // The method exists in @supabase/supabase-js@2 but is not yet included in the public
   // type declarations — cast through unknown to avoid a suppression comment on the whole file.
-  const { data, error } = await (
-    supabase.auth as unknown as {
-      getClaims(token: string): Promise<{
-        data: { claims: { sub: string } } | null;
-        error: { message: string } | null;
-      }>;
+  let data: { claims?: { sub?: string } } | null = null;
+  let error: { message: string } | null = null;
+  try {
+    ({ data, error } = await (
+      supabase.auth as unknown as {
+        getClaims(token: string): Promise<{
+          data: { claims: { sub: string } } | null;
+          error: { message: string } | null;
+        }>;
+      }
+    ).getClaims(token));
+  } catch (e) {
+    // If local verification fails for any runtime reason, we'll fall back to
+    // server-side auth verification below.
+    error = { message: e instanceof Error ? e.message : "JWT verification failed" };
+  }
+
+  // Fallback: if local claim verification fails, ask Auth to validate the JWT.
+  if (error || !data?.claims?.sub) {
+    // In some edge runtimes we may not be able to verify locally via getClaims().
+    // In that case, validate via Auth by sending the token to /user using
+    // global Authorization headers.
+    const authClient = createClient(url, publicKey, {
+      auth: { autoRefreshToken: false, persistSession: false },
+      global: { headers: { Authorization: `Bearer ${token}` } },
+    });
+
+    // In supabase-js v2, `auth.getUser()` is not reliably driven by `global.headers.Authorization`
+    // in every edge runtime/bundling path. Pass the JWT explicitly for deterministic behavior.
+    const userRes = await authClient.auth.getUser(token);
+    if (userRes.error || !userRes.data.user?.id) {
+      throw new Error(userRes.error?.message ?? error?.message ?? "Invalid JWT");
     }
-  ).getClaims(token);
+    return userRes.data.user.id;
+  }
 
   const userId = data?.claims?.sub;
-  if (error || !userId) {
-    throw new Error(error?.message ?? "Invalid JWT");
+  if (!userId) {
+    throw new Error("Invalid JWT");
   }
   return userId;
 }

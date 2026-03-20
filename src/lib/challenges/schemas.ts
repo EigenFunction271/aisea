@@ -31,22 +31,24 @@ export const challengeWinnerSchema = z.object({
 export const challengeSchema = z.object({
   id: z.string().uuid(),
   created_by: z.string().uuid(),
-  title: z.string().min(1).max(200),
-  subtitle: z.string().min(1).max(240),
-  description: z.string().min(1).max(20000),
+  title: z.string().max(200),
+  subtitle: z.string().max(240),
+  description: z.string().max(20000),
   hero_image_url: z.string().url().nullable(),
-  host_name: z.string().min(1).max(200),
-  org_name: z.string().min(1).max(200),
+  host_name: z.string().max(200),
+  org_name: z.string().max(200),
   start_at: z.string(),
   end_at: z.string(),
-  timezone: z.string().min(1).max(80),
-  reward_text: z.string().min(1).max(3000),
+  // Drafts may legitimately persist empty strings for required columns;
+  // we enforce non-empty values only when publishing below.
+  timezone: z.string().max(80),
+  reward_text: z.string().max(3000),
   external_link: z.string().url().nullable(),
   status: challengeStatusSchema,
   tags: z.array(z.string().min(1).max(60)).max(30),
   attachments: z.array(challengeAttachmentSchema).max(30),
-  eligibility: z.string().min(1).max(10000),
-  judging_rubric: z.string().min(1).max(10000),
+  eligibility: z.string().max(10000),
+  judging_rubric: z.string().max(10000),
   winners: z.array(challengeWinnerSchema).max(20),
   published_at: z.string().nullable(),
   closed_at: z.string().nullable(),
@@ -54,6 +56,43 @@ export const challengeSchema = z.object({
   winner_announced_at: z.string().nullable(),
   created_at: z.string(),
   updated_at: z.string(),
+}).superRefine((c, ctx) => {
+  // Drafts can persist empty strings in required columns.
+  // Published challenges must have non-empty values.
+  if (c.status !== "published") return;
+
+  const requiredText: Array<{
+    key: keyof Pick<typeof c, "title" | "subtitle" | "description" | "host_name" | "org_name" | "reward_text" | "eligibility" | "judging_rubric">;
+    label: string;
+  }> = [
+    { key: "title", label: "title" },
+    { key: "subtitle", label: "subtitle" },
+    { key: "description", label: "description" },
+    { key: "host_name", label: "host name" },
+    { key: "org_name", label: "org name" },
+    { key: "reward_text", label: "reward text" },
+    { key: "eligibility", label: "eligibility" },
+    { key: "judging_rubric", label: "judging rubric" },
+  ];
+
+  for (const { key, label } of requiredText) {
+    const value = (c[key] as unknown as string) ?? "";
+    if (!value.trim()) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: `${label} is required when published`,
+        path: [key as string],
+      });
+    }
+  }
+
+  if (!c.timezone.trim()) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "timezone is required when published",
+      path: ["timezone"],
+    });
+  }
 });
 
 export const challengeSubmissionFileSchema = z.object({

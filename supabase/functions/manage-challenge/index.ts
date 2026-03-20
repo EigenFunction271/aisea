@@ -23,6 +23,7 @@ const actionSchema = z.discriminatedUnion("action", [
         description: z.string().max(20000),
         hero_image_url: z.string().url().optional().nullable(),
         host_name: z.string().max(200),
+        // Draft saves allow empty strings; publish mode enforces non-empty via superRefine.
         org_name: z.string().max(200),
         // Accept string or null for drafts; superRefine enforces valid datetimes for published.
         start_at: z.string().nullable().optional(),
@@ -153,6 +154,19 @@ Deno.serve(async (req) => {
   try {
     parsed = actionSchema.parse(await req.json());
   } catch (e) {
+    // Avoid relying on instanceof across potential bundling boundaries.
+    const maybeZod = e as { issues?: unknown; message?: unknown } | undefined;
+    if (maybeZod?.issues && Array.isArray(maybeZod.issues)) {
+      return jsonResponse(
+        {
+          error: "Invalid request payload",
+          issues: maybeZod.issues,
+        },
+        400,
+        corsHeaders
+      );
+    }
+
     return jsonResponse(
       { error: e instanceof Error ? e.message : "Invalid request payload" },
       400,
@@ -170,8 +184,15 @@ Deno.serve(async (req) => {
     const nowMs = Date.now();
     const fallbackStart = new Date(nowMs + 24 * 60 * 60 * 1000).toISOString();
     const fallbackEnd   = new Date(nowMs + 8 * 24 * 60 * 60 * 1000).toISOString();
-    const resolvedStart = parsed.payload.start_at ?? fallbackStart;
-    const resolvedEnd   = parsed.payload.end_at   ?? fallbackEnd;
+    // Treat empty strings as "missing" as well; datetime inputs can submit `""`.
+    const resolvedStart =
+      typeof parsed.payload.start_at === "string" && parsed.payload.start_at.trim().length > 0
+        ? parsed.payload.start_at
+        : fallbackStart;
+    const resolvedEnd =
+      typeof parsed.payload.end_at === "string" && parsed.payload.end_at.trim().length > 0
+        ? parsed.payload.end_at
+        : fallbackEnd;
 
     const startAt = new Date(resolvedStart).getTime();
     const endAt   = new Date(resolvedEnd).getTime();

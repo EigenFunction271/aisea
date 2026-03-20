@@ -157,7 +157,11 @@ async function invokeWithAuth<T>(
     if (typeof window !== "undefined" && process.env.NODE_ENV === "development") {
       console.debug(`[${functionName}] invalid response`, { data });
     }
-    throw new Error(`Invalid response from ${functionName}`);
+    const details =
+      parsed.error?.flatten?.()
+        ? JSON.stringify(parsed.error.flatten(), null, 2)
+        : parsed.error?.message ?? "unknown zod error";
+    throw new Error(`Invalid response from ${functionName}: ${details}`);
   }
 
   return parsed.data;
