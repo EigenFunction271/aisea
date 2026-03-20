@@ -118,6 +118,20 @@
 
 /* ── Dashboard design tokens ── */
 :root {
+  /* wiki-specific tokens */
+  --wiki-callout-bg: #141a0e;
+  --wiki-callout-border: #3a4a1a;
+  --wiki-warning-bg: #1a1100;
+  --wiki-warning-border: #4a3300;
+  --wiki-code-bg: #0f0f0f;
+  --wiki-draft-stripe: #1a1400;
+  --wiki-pending-badge: #f59e0b;
+  --wiki-approved-badge: #10b981;
+  --wiki-rejected-badge: #ff4444;
+  --contributor-tag: #7c3aed;
+  --wiki-tree-hover: rgba(255, 255, 255, 0.04);
+  --wiki-tree-active: rgba(255, 255, 255, 0.08);
+  --wiki-tree-indent: 16px;
   --ds-bg-base: #0a0a0a;
   --ds-bg-surface: #111111;
   --ds-bg-raised: #1a1a1a;

@@ -9,11 +9,17 @@ type NavItem = { label: string; href: string };
 const NAV_ITEMS: NavItem[] = [
   { label: "HOME", href: "/dashboard" },
   { label: "CHALLENGES", href: "/dashboard/challenges" },
+  { label: "WIKI", href: "/dashboard/wiki" },
   { label: "PROFILE", href: "/dashboard/profile" },
 ];
 
 const BOTTOM_ITEMS: NavItem[] = [
   { label: "SETTINGS", href: "/dashboard/settings" },
+];
+
+const ADMIN_ITEMS: NavItem[] = [
+  { label: "ADMIN › CHALLENGES", href: "/dashboard/challenges/admin" },
+  { label: "ADMIN › WIKI", href: "/dashboard/wiki/admin" },
 ];
 
 const CITY_COLORS: Record<string, string> = {
@@ -40,6 +46,9 @@ function isActive(pathname: string, href: string): boolean {
   if (href === "/dashboard") return /\/dashboard$/.test(pathname);
   if (href === "/dashboard/profile") {
     return pathname.includes("/dashboard/profile") || pathname.includes("/dashboard/u/");
+  }
+  if (href === "/dashboard/wiki") {
+    return pathname.includes("/dashboard/wiki");
   }
   return pathname.includes(href.replace("/dashboard", ""));
 }
@@ -69,10 +78,12 @@ export function SidebarNav({
   locale,
   city,
   username,
+  role,
 }: {
   locale: string;
   city: string | null;
   username: string | null;
+  role?: string | null;
 }) {
   return (
     <div className="flex h-full flex-col">
@@ -134,6 +145,14 @@ export function SidebarNav({
         {BOTTOM_ITEMS.map((item) => (
           <NavLink key={item.href} item={item} locale={locale} />
         ))}
+        {(role === "admin" || role === "super_admin") && (
+          <>
+            <div className="mx-4 my-1" style={{ borderTop: "1px solid var(--ds-border-subtle)" }} />
+            {ADMIN_ITEMS.map((item) => (
+              <NavLink key={item.href} item={item} locale={locale} />
+            ))}
+          </>
+        )}
       </div>
     </div>
   );

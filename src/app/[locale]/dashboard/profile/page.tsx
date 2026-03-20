@@ -19,25 +19,21 @@ export default async function ProfileRedirectPage({
     redirect(`/${locale}/login?next=/${locale}/dashboard/profile`);
   }
 
+  // Single join query — avoids the previous 3-step sequential waterfall.
   const { data: link } = await admin
     .from("builder_auth")
-    .select("builder_id")
+    .select("builder_id, builders(username)")
     .eq("user_id", user.id)
     .maybeSingle();
 
-  if (!link) {
+  if (!link?.builder_id) {
     redirect(`/${locale}/dashboard/create-profile`);
   }
 
-  const { data: builder } = await admin
-    .from("builders")
-    .select("username")
-    .eq("id", link.builder_id)
-    .maybeSingle();
-
-  if (!builder?.username) {
+  const username = (link.builders as unknown as { username: string } | null)?.username;
+  if (!username) {
     redirect(`/${locale}/dashboard`);
   }
 
-  redirect(`/${locale}/dashboard/u/${builder.username}`);
+  redirect(`/${locale}/dashboard/u/${username}`);
 }

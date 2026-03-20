@@ -1,20 +1,10 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { getCachedBuilderProfile } from "@/lib/queries/builder-profile";
 import { DashboardContent } from "./dashboard-content";
 import { routing } from "@/i18n/routing";
 import type { LiveChallenge, ActivityItem } from "./dashboard-types";
-
-type BuilderProfile = {
-  id: string;
-  username: string;
-  name: string;
-  city: string;
-  bio: string | null;
-  skills: string[];
-  github_handle: string | null;
-  project_count: number;
-};
 
 export default async function DashboardPage({
   params,
@@ -34,60 +24,81 @@ export default async function DashboardPage({
   } = await supabase.auth.getUser();
   if (!user) redirect(`/${locale}/login?next=/${locale}/dashboard`);
 
-  // ── Builder profile ──────────────────────────────────────────────────────
-  const { data: link } = await supabase
-    .from("builder_auth")
-    .select("builder_id")
-    .eq("user_id", user.id)
-    .maybeSingle();
+  // ── Phase 1: profile + challenges + activity in parallel ─────────────────
+  const [profile, challengesRes, enrollActivityRes, submitActivityRes] = await Promise.all([
+    getCachedBuilderProfile(user.id),
 
-  let builder: BuilderProfile | null = null;
-  if (link?.builder_id) {
-    const { data: b } = await supabase
-      .from("builders")
-      .select("id, username, name, city, bio, skills, github_handle")
-      .eq("id", link.builder_id)
-      .single();
-    if (b) {
-      const { count } = await supabase
-        .from("projects")
-        .select("id", { count: "exact", head: true })
-        .eq("builder_id", b.id);
-      builder = { ...b, skills: (b.skills ?? []) as string[], project_count: count ?? 0 };
-    }
-  }
+    admin
+      .from("challenges")
+      .select("id, title, subtitle, hero_image_url, end_at, reward_text")
+      .eq("status", "published")
+      .order("start_at", { ascending: false })
+      .limit(3),
 
-  // ── Live challenges (up to 3) ────────────────────────────────────────────
-  const { data: rawChallenges } = await admin
-    .from("challenges")
-    .select("id, title, subtitle, hero_image_url, end_at, reward_text")
-    .eq("status", "published")
-    .order("start_at", { ascending: false })
-    .limit(3);
+    admin
+      .from("challenge_enrollments")
+      .select("id, challenge_id, enrolled_at, challenges(title)")
+      .eq("user_id", user.id)
+      .order("enrolled_at", { ascending: false })
+      .limit(8),
 
-  const challengeIds = (rawChallenges ?? []).map((c) => c.id);
-
-  // Enrollment + submission state and counts in parallel
-  const [enrollRes, submitRes, enrollCountRes] = await Promise.all([
-    challengeIds.length
-      ? admin.from("challenge_enrollments").select("challenge_id").eq("user_id", user.id).in("challenge_id", challengeIds)
-      : Promise.resolve({ data: [] }),
-    challengeIds.length
-      ? admin.from("challenge_submissions").select("challenge_id").eq("user_id", user.id).in("challenge_id", challengeIds)
-      : Promise.resolve({ data: [] }),
-    challengeIds.length
-      ? admin.from("challenge_enrollments").select("challenge_id").in("challenge_id", challengeIds)
-      : Promise.resolve({ data: [] }),
+    admin
+      .from("challenge_submissions")
+      .select("id, challenge_id, submitted_at, challenges(title)")
+      .eq("user_id", user.id)
+      .not("submitted_at", "is", null)
+      .order("submitted_at", { ascending: false })
+      .limit(8),
   ]);
+
+  const challengeIds = (challengesRes.data ?? []).map((c) => c.id);
+
+  // ── Phase 2: per-user enrollment state + counts (parallel) ───────────────
+  // Counts use count:exact/head:true to avoid fetching rows into memory.
+  const [projectCountRes, enrollRes, submitRes, ...enrollCountResults] = await Promise.all([
+    profile
+      ? supabase
+          .from("projects")
+          .select("id", { count: "exact", head: true })
+          .eq("builder_id", profile.id)
+      : Promise.resolve({ count: 0 }),
+    challengeIds.length
+      ? admin
+          .from("challenge_enrollments")
+          .select("challenge_id")
+          .eq("user_id", user.id)
+          .in("challenge_id", challengeIds)
+      : Promise.resolve({ data: [] }),
+    challengeIds.length
+      ? admin
+          .from("challenge_submissions")
+          .select("challenge_id")
+          .eq("user_id", user.id)
+          .in("challenge_id", challengeIds)
+      : Promise.resolve({ data: [] }),
+    ...challengeIds.map((id) =>
+      admin
+        .from("challenge_enrollments")
+        .select("id", { count: "exact", head: true })
+        .eq("challenge_id", id)
+        .then((r) => ({ id, count: r.count ?? 0 }))
+    ),
+  ]);
+
+  const builder = profile
+    ? {
+        ...profile,
+        project_count: (projectCountRes as { count: number | null }).count ?? 0,
+      }
+    : null;
 
   const enrolledSet = new Set((enrollRes.data ?? []).map((e) => e.challenge_id));
   const submittedSet = new Set((submitRes.data ?? []).map((s) => s.challenge_id));
-  const enrollmentCounts: Record<string, number> = {};
-  for (const id of challengeIds) {
-    enrollmentCounts[id] = (enrollCountRes.data ?? []).filter((e) => e.challenge_id === id).length;
-  }
+  const enrollmentCounts = Object.fromEntries(
+    (enrollCountResults as { id: string; count: number }[]).map((r) => [r.id, r.count])
+  );
 
-  const liveChallenges: LiveChallenge[] = (rawChallenges ?? []).map((c) => ({
+  const liveChallenges: LiveChallenge[] = (challengesRes.data ?? []).map((c) => ({
     id: c.id,
     title: c.title,
     subtitle: c.subtitle,
@@ -98,32 +109,15 @@ export default async function DashboardPage({
     enrollment_count: enrollmentCounts[c.id] ?? 0,
   }));
 
-  // ── Recent activity (up to 5 items) ─────────────────────────────────────
-  const [enrollActivity, submitActivity] = await Promise.all([
-    admin
-      .from("challenge_enrollments")
-      .select("id, challenge_id, enrolled_at, challenges(title)")
-      .eq("user_id", user.id)
-      .order("enrolled_at", { ascending: false })
-      .limit(8),
-    admin
-      .from("challenge_submissions")
-      .select("id, challenge_id, submitted_at, challenges(title)")
-      .eq("user_id", user.id)
-      .not("submitted_at", "is", null)
-      .order("submitted_at", { ascending: false })
-      .limit(8),
-  ]);
-
   const activityItems: ActivityItem[] = [
-    ...(enrollActivity.data ?? []).map((e) => ({
+    ...(enrollActivityRes.data ?? []).map((e) => ({
       id: `enroll-${e.id}`,
       type: "enrolled" as const,
       challengeTitle: (e.challenges as unknown as { title: string } | null)?.title ?? "a challenge",
       challengeId: e.challenge_id,
       timestamp: e.enrolled_at as string,
     })),
-    ...(submitActivity.data ?? [])
+    ...(submitActivityRes.data ?? [])
       .filter((s) => s.submitted_at)
       .map((s) => ({
         id: `submit-${s.id}`,

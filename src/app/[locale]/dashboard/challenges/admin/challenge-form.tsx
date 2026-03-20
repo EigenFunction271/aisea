@@ -45,12 +45,10 @@ function toLocalDatetimeValue(iso: string) {
   return new Date(date.getTime() - tzOffset).toISOString().slice(0, 16);
 }
 
-// Returns null for empty inputs so Zod's .min(1) can surface a clear error rather
-// than passing an empty string through to the server and getting a cryptic datetime error.
 function fromLocalDatetimeValue(local: string): string | null {
   if (!local) return null;
-  const iso = new Date(local).toISOString();
-  return Number.isNaN(new Date(local).getTime()) ? null : iso;
+  const d = new Date(local);
+  return Number.isNaN(d.getTime()) ? null : d.toISOString();
 }
 
 export function ChallengeForm({
@@ -110,7 +108,16 @@ export function ChallengeForm({
       });
   }
 
-  function buildPayload() {
+  // Builds the payload for a server call. For draft saves the DB columns are NOT NULL,
+  // so we substitute placeholder dates when the user hasn't set them yet. These are
+  // overwritten whenever the user fills in real dates before publishing.
+  function buildPayload({ isDraft = false } = {}) {
+    const startIso = fromLocalDatetimeValue(startAt);
+    const endIso = fromLocalDatetimeValue(endAt);
+    const now = Date.now();
+    const draftStartFallback = new Date(now + 24 * 60 * 60 * 1000).toISOString();
+    const draftEndFallback = new Date(now + 8 * 24 * 60 * 60 * 1000).toISOString();
+
     return {
       title: title.trim(),
       subtitle: subtitle.trim(),
@@ -118,9 +125,9 @@ export function ChallengeForm({
       hero_image_url: heroImageUrl.trim() || null,
       host_name: hostName.trim(),
       org_name: orgName.trim(),
-      start_at: fromLocalDatetimeValue(startAt),
-      end_at: fromLocalDatetimeValue(endAt),
-      timezone: timezone.trim(),
+      start_at: startIso ?? (isDraft ? draftStartFallback : null),
+      end_at: endIso ?? (isDraft ? draftEndFallback : null),
+      timezone: timezone.trim() || "UTC",
       reward_text: rewardText.trim(),
       external_link: externalLink.trim() || null,
       tags: tags
@@ -134,7 +141,8 @@ export function ChallengeForm({
     };
   }
 
-  function validate(): string | null {
+  // Full validation — only enforced before publish, not draft saves.
+  function validatePublish(): string | null {
     if (!title.trim()) return "Title is required.";
     if (!subtitle.trim()) return "Subtitle is required.";
     if (!description.trim()) return "Description is required.";
@@ -150,12 +158,15 @@ export function ChallengeForm({
     if (!rewardText.trim()) return "Reward text is required.";
     if (!eligibility.trim()) return "Eligibility is required.";
     if (!judgingRubric.trim()) return "Judging rubric is required.";
+    return validateAttachments();
+  }
 
+  // Light validation — always enforced so malformed attachments don't cause opaque server errors.
+  function validateAttachments(): string | null {
     const badAttachment = parseAttachments().find((a) => !a.url);
     if (badAttachment) {
       return `Attachment line "${badAttachment._raw}" is missing a URL. Format: Label|https://...`;
     }
-
     return null;
   }
 
@@ -307,23 +318,24 @@ export function ChallengeForm({
     setError(null);
     setSuccess(null);
 
-    // Validate all fields before touching the network. Status transitions (unpublish,
-    // close, archive) don't change content so skip the content check for those.
-    if (action === "save" || action === "publish") {
-      const validationError = validate();
-      if (validationError) {
-        setError(validationError);
-        return;
-      }
+    // Publish requires all fields; draft saves only require valid attachment format.
+    // Status transitions (unpublish, close, archive) touch no content fields.
+    if (action === "publish") {
+      const validationError = validatePublish();
+      if (validationError) { setError(validationError); return; }
+    } else if (action === "save") {
+      const attachmentError = validateAttachments();
+      if (attachmentError) { setError(attachmentError); return; }
     }
 
     startTransition(async () => {
       try {
         const supabase = createClient();
+        const isDraft = action !== "publish";
         if (mode === "create") {
           const created = await createChallenge(supabase, {
-            ...buildPayload(),
-            status: action === "publish" ? "published" : "draft",
+            ...buildPayload({ isDraft }),
+            status: isDraft ? "draft" : "published",
           });
           setSuccess(action === "publish" ? "Challenge created and published." : "Challenge draft created.");
           router.push(`/dashboard/challenges/admin/${created.challenge.id}`);
@@ -333,7 +345,7 @@ export function ChallengeForm({
         if (!initial) throw new Error("Missing challenge context");
 
         if (action === "save") {
-          await updateChallenge(supabase, initial.id, buildPayload());
+          await updateChallenge(supabase, initial.id, buildPayload({ isDraft }));
           setSuccess("Challenge saved.");
           return;
         }

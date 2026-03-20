@@ -16,50 +16,76 @@ declare const Deno: {
 const actionSchema = z.union([
   z.object({
     action: z.literal("create"),
-    payload: z.object({
-      title: z.string().min(1).max(200),
-      subtitle: z.string().min(1).max(240),
-      description: z.string().min(1).max(20000),
-      hero_image_url: z.string().url().optional().nullable(),
-      host_name: z.string().min(1).max(200),
-      org_name: z.string().min(1).max(200),
-      start_at: z.string().datetime(),
-      end_at: z.string().datetime(),
-      timezone: z.string().min(1).max(80),
-      reward_text: z.string().min(1).max(3000),
-      external_link: z.string().url().optional().nullable(),
-      tags: z.array(z.string().min(1).max(60)).default([]),
-      attachments: z
-        .array(z.object({ label: z.string().min(1).max(120), url: z.string().url() }))
-        .default([]),
-      eligibility: z.string().min(1).max(10000),
-      judging_rubric: z.string().min(1).max(10000),
-      difficulty: z.enum(["starter", "builder", "hardcore"]).nullable().optional(),
-      status: z.enum(["draft", "published"]).default("draft"),
-    }),
+    payload: z
+      .object({
+        title: z.string().max(200),
+        subtitle: z.string().max(240),
+        description: z.string().max(20000),
+        hero_image_url: z.string().url().optional().nullable(),
+        host_name: z.string().max(200),
+        org_name: z.string().max(200),
+        // Accept any string for drafts; datetimes are validated via superRefine for published.
+        start_at: z.string(),
+        end_at: z.string(),
+        timezone: z.string().max(80),
+        reward_text: z.string().max(3000),
+        external_link: z.string().url().optional().nullable(),
+        tags: z.array(z.string().min(1).max(60)).default([]),
+        attachments: z
+          .array(z.object({ label: z.string().min(1).max(120), url: z.string().url() }))
+          .default([]),
+        eligibility: z.string().max(10000),
+        judging_rubric: z.string().max(10000),
+        difficulty: z.enum(["starter", "builder", "hardcore"]).nullable().optional(),
+        status: z.enum(["draft", "published"]).default("draft"),
+      })
+      .superRefine((p, ctx) => {
+        if (p.status !== "published") return;
+        const requiredText = [
+          "title", "subtitle", "description", "host_name",
+          "org_name", "reward_text", "eligibility", "judging_rubric",
+        ] as const;
+        for (const field of requiredText) {
+          if (!p[field].trim()) {
+            ctx.addIssue({
+              code: z.ZodIssueCode.custom,
+              message: `${field.replace(/_/g, " ")} is required to publish`,
+              path: [field],
+            });
+          }
+        }
+        const startMs = new Date(p.start_at).getTime();
+        const endMs = new Date(p.end_at).getTime();
+        if (!p.start_at || !Number.isFinite(startMs))
+          ctx.addIssue({ code: z.ZodIssueCode.custom, message: "start_at must be a valid datetime to publish", path: ["start_at"] });
+        if (!p.end_at || !Number.isFinite(endMs))
+          ctx.addIssue({ code: z.ZodIssueCode.custom, message: "end_at must be a valid datetime to publish", path: ["end_at"] });
+        if (Number.isFinite(startMs) && Number.isFinite(endMs) && endMs <= startMs)
+          ctx.addIssue({ code: z.ZodIssueCode.custom, message: "end_at must be after start_at", path: ["end_at"] });
+      }),
   }),
   z.object({
     action: z.literal("update"),
     challenge_id: z.string().uuid(),
     payload: z
       .object({
-        title: z.string().min(1).max(200).optional(),
-        subtitle: z.string().min(1).max(240).optional(),
-        description: z.string().min(1).max(20000).optional(),
+        title: z.string().max(200).optional(),
+        subtitle: z.string().max(240).optional(),
+        description: z.string().max(20000).optional(),
         hero_image_url: z.string().url().optional().nullable(),
-        host_name: z.string().min(1).max(200).optional(),
-        org_name: z.string().min(1).max(200).optional(),
-        start_at: z.string().datetime().optional(),
-        end_at: z.string().datetime().optional(),
-        timezone: z.string().min(1).max(80).optional(),
-        reward_text: z.string().min(1).max(3000).optional(),
+        host_name: z.string().max(200).optional(),
+        org_name: z.string().max(200).optional(),
+        start_at: z.string().optional(),
+        end_at: z.string().optional(),
+        timezone: z.string().max(80).optional(),
+        reward_text: z.string().max(3000).optional(),
         external_link: z.string().url().optional().nullable(),
         tags: z.array(z.string().min(1).max(60)).optional(),
         attachments: z
           .array(z.object({ label: z.string().min(1).max(120), url: z.string().url() }))
           .optional(),
-        eligibility: z.string().min(1).max(10000).optional(),
-        judging_rubric: z.string().min(1).max(10000).optional(),
+        eligibility: z.string().max(10000).optional(),
+        judging_rubric: z.string().max(10000).optional(),
         difficulty: z.enum(["starter", "builder", "hardcore"]).nullable().optional(),
       })
       .refine((v) => Object.keys(v).length > 0, "At least one field must be provided"),

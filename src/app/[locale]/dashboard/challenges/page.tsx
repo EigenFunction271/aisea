@@ -46,41 +46,59 @@ export default async function DashboardChallengesPage({
     data: { user },
   } = await supabase.auth.getUser();
 
+  // ── Phase 1: profile checks + challenge list in parallel ──────────────────
+  const [isProfileComplete, role, challengesRes] = await Promise.all([
+    user ? getProfileCompleteState(user.id) : Promise.resolve(false),
+    user ? getUserRole(user.id) : Promise.resolve<"member">("member"),
+    admin
+      .from("challenges")
+      .select("id, title, subtitle, hero_image_url, reward_text, host_name, org_name, tags, status, start_at, end_at, difficulty")
+      .in("status", ["published", "archived"])
+      .order("created_at", { ascending: false }),
+  ]);
+
   const isAuthenticated = Boolean(user);
-  const isProfileComplete = user ? await getProfileCompleteState(user.id) : false;
-  const role = user ? await getUserRole(user.id) : "member";
-
-  const { data: challenges } = await admin
-    .from("challenges")
-    .select("id, title, subtitle, hero_image_url, reward_text, host_name, org_name, tags, status, start_at, end_at, difficulty")
-    .in("status", ["published", "archived"])
-    .order("created_at", { ascending: false });
-
-  const challengeIds = (challenges ?? []).map((c) => c.id);
+  const challengeIds = (challengesRes.data ?? []).map((c) => c.id);
 
   let enrollmentSet = new Set<string>();
   let submittedSet = new Set<string>();
   const enrollmentCounts: Record<string, number> = {};
 
   if (challengeIds.length > 0) {
-    const [userEnrollRes, userSubmitRes, allEnrollRes] = await Promise.all([
+    // ── Phase 2: per-user state + per-challenge counts in parallel ───────────
+    // Counts use count:exact/head:true — no rows transferred, just the integer.
+    const [userEnrollRes, userSubmitRes, ...countResults] = await Promise.all([
       user
-        ? admin.from("challenge_enrollments").select("challenge_id").eq("user_id", user.id).in("challenge_id", challengeIds)
+        ? admin
+            .from("challenge_enrollments")
+            .select("challenge_id")
+            .eq("user_id", user.id)
+            .in("challenge_id", challengeIds)
         : Promise.resolve({ data: [] }),
       user
-        ? admin.from("challenge_submissions").select("challenge_id").eq("user_id", user.id).in("challenge_id", challengeIds)
+        ? admin
+            .from("challenge_submissions")
+            .select("challenge_id")
+            .eq("user_id", user.id)
+            .in("challenge_id", challengeIds)
         : Promise.resolve({ data: [] }),
-      admin.from("challenge_enrollments").select("challenge_id").in("challenge_id", challengeIds),
+      ...challengeIds.map((id) =>
+        admin
+          .from("challenge_enrollments")
+          .select("id", { count: "exact", head: true })
+          .eq("challenge_id", id)
+          .then((r) => ({ id, count: r.count ?? 0 }))
+      ),
     ]);
 
     enrollmentSet = new Set((userEnrollRes.data ?? []).map((e) => e.challenge_id));
     submittedSet = new Set((userSubmitRes.data ?? []).map((s) => s.challenge_id));
-    for (const id of challengeIds) {
-      enrollmentCounts[id] = (allEnrollRes.data ?? []).filter((e) => e.challenge_id === id).length;
+    for (const { id, count } of countResults as { id: string; count: number }[]) {
+      enrollmentCounts[id] = count;
     }
   }
 
-  const cards: ChallengeCard[] = (challenges ?? []).map((challenge) => ({
+  const cards: ChallengeCard[] = (challengesRes.data ?? []).map((challenge) => ({
     ...challenge,
     tags: challenge.tags ?? [],
     start_at: challenge.start_at,

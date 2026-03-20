@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { getCachedBuilderProfile } from "@/lib/queries/builder-profile";
 import { DashboardShell } from "./_components/shell";
 
 export default async function DashboardLayout({
@@ -15,37 +16,16 @@ export default async function DashboardLayout({
     data: { user },
   } = await supabase.auth.getUser();
 
-  let userName: string | null = null;
-  let userCity: string | null = null;
-  let username: string | null = null;
-
-  if (user) {
-    const { data: link } = await supabase
-      .from("builder_auth")
-      .select("builder_id")
-      .eq("user_id", user.id)
-      .maybeSingle();
-
-    if (link?.builder_id) {
-      const { data: builder } = await supabase
-        .from("builders")
-        .select("name, city, username")
-        .eq("id", link.builder_id)
-        .maybeSingle();
-
-      userName = builder?.name ?? null;
-      userCity = builder?.city ?? null;
-      username = builder?.username ?? null;
-    }
-  }
+  const profile = user ? await getCachedBuilderProfile(user.id) : null;
 
   return (
     <DashboardShell
       locale={locale}
       userEmail={user?.email ?? null}
-      userName={userName}
-      userCity={userCity}
-      username={username}
+      userName={profile?.name ?? null}
+      userCity={profile?.city ?? null}
+      username={profile?.username ?? null}
+      userRole={profile?.role ?? null}
     >
       {children}
     </DashboardShell>

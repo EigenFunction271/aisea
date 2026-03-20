@@ -1,10 +1,6 @@
-"use client";
-
-import { useState } from "react";
-import { Menu } from "lucide-react";
-import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 import { Topbar } from "./topbar";
 import { SidebarNav } from "./sidebar-nav";
+import { MobileMenu } from "./mobile-menu";
 
 export function DashboardShell({
   children,
@@ -13,6 +9,7 @@ export function DashboardShell({
   userName,
   userCity,
   username,
+  userRole,
 }: {
   children: React.ReactNode;
   locale: string;
@@ -20,9 +17,8 @@ export function DashboardShell({
   userName: string | null;
   userCity: string | null;
   username: string | null;
+  userRole?: string | null;
 }) {
-  const [mobileOpen, setMobileOpen] = useState(false);
-
   return (
     <div className="min-h-screen" style={{ backgroundColor: "var(--ds-bg-base)" }}>
       {/* ── Topbar ── */}
@@ -31,15 +27,8 @@ export function DashboardShell({
         style={{ borderBottom: "1px solid var(--ds-border)", backgroundColor: "var(--ds-bg-base)" }}
       >
         <div className="flex h-full items-center">
-          {/* Mobile hamburger */}
-          <button
-            className="flex h-12 w-12 shrink-0 items-center justify-center lg:hidden"
-            style={{ color: "var(--ds-text-muted)" }}
-            onClick={() => setMobileOpen(true)}
-            aria-label="Open navigation"
-          >
-            <Menu className="h-5 w-5" />
-          </button>
+          {/* Mobile hamburger + sheet (client island) */}
+          <MobileMenu locale={locale} city={userCity} username={username} role={userRole} />
 
           <div className="flex-1">
             <Topbar
@@ -56,20 +45,8 @@ export function DashboardShell({
         className="fixed bottom-0 left-0 top-12 z-40 hidden w-[220px] overflow-y-auto lg:block"
         style={{ borderRight: "1px solid var(--ds-border)", backgroundColor: "var(--ds-bg-base)" }}
       >
-        <SidebarNav locale={locale} city={userCity} username={username} />
+        <SidebarNav locale={locale} city={userCity} username={username} role={userRole} />
       </aside>
-
-      {/* ── Mobile sidebar sheet ── */}
-      <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
-        <SheetContent
-          side="left"
-          className="w-[220px] p-0"
-          style={{ backgroundColor: "var(--ds-bg-base)", borderRight: "1px solid var(--ds-border)" }}
-        >
-          <SheetTitle className="sr-only">Navigation</SheetTitle>
-          <SidebarNav locale={locale} city={userCity} username={username} />
-        </SheetContent>
-      </Sheet>
 
       {/* ── Main content ── */}
       <main
