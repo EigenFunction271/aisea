@@ -154,7 +154,13 @@ Deno.serve(async (req) => {
     const now = new Date().toISOString();
     const startAt = new Date(parsed.payload.start_at).getTime();
     const endAt = new Date(parsed.payload.end_at).getTime();
-    if (!Number.isFinite(startAt) || !Number.isFinite(endAt) || endAt <= startAt) {
+    // For drafts with both dates populated, still enforce ordering; the superRefine
+    // above handles the published case where dates are required to be present.
+    if (
+      parsed.payload.start_at && parsed.payload.end_at &&
+      Number.isFinite(startAt) && Number.isFinite(endAt) &&
+      endAt <= startAt
+    ) {
       return jsonResponse({ error: "end_at must be after start_at" }, 400, corsHeaders);
     }
 
@@ -185,7 +191,8 @@ Deno.serve(async (req) => {
     if (parsed.payload.start_at || parsed.payload.end_at) {
       const nextStart = new Date(parsed.payload.start_at ?? challenge.start_at).getTime();
       const nextEnd = new Date(parsed.payload.end_at ?? challenge.end_at).getTime();
-      if (!Number.isFinite(nextStart) || !Number.isFinite(nextEnd) || nextEnd <= nextStart) {
+      // Only enforce ordering when both sides resolve to a parseable date.
+      if (Number.isFinite(nextStart) && Number.isFinite(nextEnd) && nextEnd <= nextStart) {
         return jsonResponse({ error: "end_at must be after start_at" }, 400, corsHeaders);
       }
     }
