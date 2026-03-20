@@ -3,6 +3,9 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { ChallengesList } from "./challenges-list";
 import type { ChallengeCard } from "./types";
 
+// Challenge list changes only on admin action — no need to re-fetch every render.
+export const revalidate = 60;
+
 async function getProfileCompleteState(userId: string): Promise<boolean> {
   const admin = createAdminClient();
   const { data, error } = await admin.rpc("is_profile_complete_for_challenges", {
@@ -65,9 +68,9 @@ export default async function DashboardChallengesPage({
   const enrollmentCounts: Record<string, number> = {};
 
   if (challengeIds.length > 0) {
-    // ── Phase 2: per-user state + per-challenge counts in parallel ───────────
-    // Counts use count:exact/head:true — no rows transferred, just the integer.
-    const [userEnrollRes, userSubmitRes, ...countResults] = await Promise.all([
+    // ── Phase 2: user enrollment state + all counts in parallel ──────────────
+    // get_enrollment_counts uses a single GROUP BY query — one round-trip for all challenges.
+    const [userEnrollRes, userSubmitRes, countsRes] = await Promise.all([
       user
         ? admin
             .from("challenge_enrollments")
@@ -82,19 +85,13 @@ export default async function DashboardChallengesPage({
             .eq("user_id", user.id)
             .in("challenge_id", challengeIds)
         : Promise.resolve({ data: [] }),
-      ...challengeIds.map((id) =>
-        admin
-          .from("challenge_enrollments")
-          .select("id", { count: "exact", head: true })
-          .eq("challenge_id", id)
-          .then((r) => ({ id, count: r.count ?? 0 }))
-      ),
+      admin.rpc("get_enrollment_counts", { challenge_ids: challengeIds }),
     ]);
 
     enrollmentSet = new Set((userEnrollRes.data ?? []).map((e) => e.challenge_id));
     submittedSet = new Set((userSubmitRes.data ?? []).map((s) => s.challenge_id));
-    for (const { id, count } of countResults as { id: string; count: number }[]) {
-      enrollmentCounts[id] = count;
+    for (const row of (countsRes.data ?? []) as { challenge_id: string; count: number }[]) {
+      enrollmentCounts[row.challenge_id] = row.count;
     }
   }
 

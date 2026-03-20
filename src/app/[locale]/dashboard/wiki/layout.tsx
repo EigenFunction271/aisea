@@ -1,3 +1,4 @@
+import "highlight.js/styles/github-dark.css";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { WikiTreePanel } from "./_components/wiki-tree-panel";
 import type { WikiTreeNode } from "./types";

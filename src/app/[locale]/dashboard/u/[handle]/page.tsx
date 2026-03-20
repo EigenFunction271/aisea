@@ -66,25 +66,19 @@ export default async function BuilderProfilePage({
     data: { user: viewer },
   } = await supabase.auth.getUser();
 
-  // Fetch builder
+  // Single join — builder row + auth user_id in one round-trip.
   const { data: builder } = await admin
     .from("builders")
     .select(
-      "id, username, name, city, bio, skills, github_handle, linkedin_url, twitter_url, instagram_url, personal_url, created_at, is_wiki_contributor"
+      "id, username, name, city, bio, skills, github_handle, linkedin_url, twitter_url, instagram_url, personal_url, created_at, is_wiki_contributor, builder_auth(user_id)"
     )
     .eq("username", handle)
     .maybeSingle();
 
   if (!builder) notFound();
 
-  // Find builder's auth user_id
-  const { data: builderAuth } = await admin
-    .from("builder_auth")
-    .select("user_id")
-    .eq("builder_id", builder.id)
-    .maybeSingle();
-
-  const builderUserId = builderAuth?.user_id ?? null;
+  const builderUserId =
+    (builder.builder_auth as unknown as { user_id: string } | null)?.user_id ?? null;
   const isOwner = Boolean(viewer && builderUserId && viewer.id === builderUserId);
 
   // Parallel: enrollment count, submission list, skills, wiki page count

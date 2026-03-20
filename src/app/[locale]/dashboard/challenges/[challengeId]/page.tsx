@@ -54,15 +54,22 @@ export default async function ChallengeDetailPage({
     data: { user },
   } = await supabase.auth.getUser();
   const isAuthenticated = Boolean(user);
-  const isProfileComplete = user ? await getProfileCompleteState(user.id) : false;
-  const isLocked = !(isAuthenticated && isProfileComplete);
 
-  const { data: challenge } = await admin
-    .from("challenges")
-    .select("*")
-    .eq("id", challengeId)
-    .in("status", ["published", "archived"])
-    .maybeSingle();
+  // Profile check and challenge fetch are independent — run in parallel.
+  const [isProfileComplete, challengeRes] = await Promise.all([
+    user ? getProfileCompleteState(user.id) : Promise.resolve(false),
+    admin
+      .from("challenges")
+      .select(
+        "id, title, subtitle, hero_image_url, status, end_at, description, eligibility, judging_rubric, external_link, tags, difficulty, host_name, org_name, reward_text"
+      )
+      .eq("id", challengeId)
+      .in("status", ["published", "archived"])
+      .maybeSingle(),
+  ]);
+
+  const { data: challenge } = challengeRes;
+  const isLocked = !(isAuthenticated && isProfileComplete);
 
   if (!challenge) notFound();
 

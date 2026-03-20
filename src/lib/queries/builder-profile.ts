@@ -49,11 +49,13 @@ async function fetchBuilderProfile(userId: string): Promise<CachedBuilderProfile
 
 /**
  * Cached builder profile lookup by auth user id.
- * TTL: 60 s. Invalidate with revalidateTag(`builder-profile:${userId}`)
- * after a profile update.
+ * TTL: 60 s.
+ * Targeted invalidation: revalidateTag(`builder-profile:${userId}`)
+ * Bulk invalidation:     revalidateTag("builder-profile")
  */
-export const getCachedBuilderProfile = unstable_cache(
-  fetchBuilderProfile,
-  ["builder-profile"],
-  { revalidate: 60, tags: ["builder-profile"] }
-);
+export function getCachedBuilderProfile(userId: string): Promise<CachedBuilderProfile> {
+  return unstable_cache(fetchBuilderProfile, ["builder-profile", userId], {
+    revalidate: 60,
+    tags: ["builder-profile", `builder-profile:${userId}`],
+  })(userId);
+}

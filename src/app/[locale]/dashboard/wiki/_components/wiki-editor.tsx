@@ -2,7 +2,14 @@
 
 import { useState, useEffect, useTransition, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { MarkdownRenderer } from "./markdown-renderer";
+import dynamic from "next/dynamic";
+
+// Lazy-load the markdown renderer so react-markdown + highlight.js are only
+// bundled when the editor is actually opened — not on every wiki page load.
+const MarkdownRenderer = dynamic(
+  () => import("./markdown-renderer-client").then((m) => ({ default: m.MarkdownRenderer })),
+  { ssr: false, loading: () => <div style={{ color: "var(--ds-text-muted)", fontSize: 13 }}>Rendering…</div> }
+);
 import type { WikiPageType, WikiTreeNode } from "../types";
 
 const MONO: React.CSSProperties = {

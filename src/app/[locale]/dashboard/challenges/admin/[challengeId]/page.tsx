@@ -30,7 +30,12 @@ export default async function EditChallengePage({
     redirect(`/${locale}/dashboard/challenges`);
   }
 
-  let challengeQuery = admin.from("challenges").select("*").eq("id", challengeId);
+  let challengeQuery = admin
+    .from("challenges")
+    .select(
+      "id, title, subtitle, description, hero_image_url, host_name, org_name, start_at, end_at, timezone, reward_text, external_link, status, tags, attachments, eligibility, judging_rubric, difficulty, winners, created_by"
+    )
+    .eq("id", challengeId);
   if (role === "admin") challengeQuery = challengeQuery.eq("created_by", user.id);
   const { data: challenge } = await challengeQuery.maybeSingle();
   if (!challenge) notFound();

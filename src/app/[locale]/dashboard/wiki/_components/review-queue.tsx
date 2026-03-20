@@ -113,6 +113,7 @@ function ReviewRow({
           locale={locale as "en" | "id" | "zh" | "vi"}
           style={{ ...MONO, fontSize: 11, color: "var(--ds-accent)", textDecoration: "none" }}
           target="_blank"
+          rel="noopener noreferrer"
         >
           Preview ↗
         </Link>

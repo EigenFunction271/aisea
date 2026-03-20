@@ -135,7 +135,7 @@ export function SubmissionReviewPanel({
                 <a
                   href={submission.submission_url}
                   target="_blank"
-                  rel="noreferrer"
+                  rel="noopener noreferrer"
                   className="mt-1 block text-sm text-blue-300 underline"
                 >
                   View submission URL

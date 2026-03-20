@@ -1,7 +1,7 @@
-// Server component — no "use client".
-// react-markdown v9+ is RSC-compatible; highlight.js runs at request time and
-// the pre-highlighted HTML is streamed to the client. Zero markdown JS shipped.
-// The highlight.js CSS is imported in wiki/layout.tsx so it is available globally.
+"use client";
+
+// Client version of MarkdownRenderer — only loaded by the wiki editor preview pane
+// via next/dynamic. Do NOT import this from server components.
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeSlug from "rehype-slug";
@@ -28,24 +28,6 @@ const INLINE_CODE_STYLE: React.CSSProperties = {
 };
 
 export function MarkdownRenderer({ body }: { body: string }) {
-  function sanitizeLinkUri(uri: string | undefined) {
-    const raw = (uri ?? "").trim();
-    if (!raw) return "#";
-
-    // Safe allowlist:
-    // - same-origin absolute paths: "/something"
-    // - hash links: "#section"
-    // - relative paths: "./foo" / "../foo"
-    // - external links over HTTP(S)
-    if (raw.startsWith("#")) return raw;
-    if (raw.startsWith("/")) return raw.startsWith("//") ? "#" : raw;
-    if (raw.startsWith("./") || raw.startsWith("../")) return raw;
-    if (raw.startsWith("http://") || raw.startsWith("https://")) return raw;
-
-    // Everything else (javascript:, data:, mailto:, etc.) is rejected.
-    return "#";
-  }
-
   return (
     <div
       style={{
@@ -59,7 +41,6 @@ export function MarkdownRenderer({ body }: { body: string }) {
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
         rehypePlugins={[rehypeSlug, rehypeHighlight]}
-        transformLinkUri={(uri) => sanitizeLinkUri(uri)}
         components={{
           h1: ({ children }) => (
             <h1
@@ -109,20 +90,16 @@ export function MarkdownRenderer({ body }: { body: string }) {
           p: ({ children }) => (
             <p style={{ margin: "0.75em 0" }}>{children}</p>
           ),
-          a: ({ href, children }) => {
-            const safeHref = sanitizeLinkUri(typeof href === "string" ? href : undefined);
-            const isExternal = safeHref.startsWith("http://") || safeHref.startsWith("https://");
-            return (
+          a: ({ href, children }) => (
             <a
-              href={safeHref}
-              target={isExternal ? "_blank" : undefined}
-              rel={isExternal ? "noopener noreferrer" : undefined}
+              href={href}
+              target="_blank"
+              rel="noopener noreferrer"
               style={{ color: "var(--ds-accent)", textUnderlineOffset: 3 }}
             >
               {children}
             </a>
-            );
-          },
+          ),
           code: (props) => {
             const { className, children } = props as { className?: string; children?: React.ReactNode };
             const isBlock = /language-/.test(className ?? "");

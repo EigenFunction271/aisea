@@ -1,3 +1,6 @@
+// Dashboard home: live challenges change only on admin action; cache for 60 s.
+export const revalidate = 60;
+
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -55,7 +58,7 @@ export default async function DashboardPage({
 
   // ── Phase 2: per-user enrollment state + counts (parallel) ───────────────
   // Counts use count:exact/head:true to avoid fetching rows into memory.
-  const [projectCountRes, enrollRes, submitRes, ...enrollCountResults] = await Promise.all([
+  const [projectCountRes, enrollRes, submitRes, enrollCountResults] = await Promise.all([
     profile
       ? supabase
           .from("projects")
@@ -76,13 +79,9 @@ export default async function DashboardPage({
           .eq("user_id", user.id)
           .in("challenge_id", challengeIds)
       : Promise.resolve({ data: [] }),
-    ...challengeIds.map((id) =>
-      admin
-        .from("challenge_enrollments")
-        .select("id", { count: "exact", head: true })
-        .eq("challenge_id", id)
-        .then((r) => ({ id, count: r.count ?? 0 }))
-    ),
+    challengeIds.length
+      ? admin.rpc("get_enrollment_counts", { challenge_ids: challengeIds })
+      : Promise.resolve({ data: [] }),
   ]);
 
   const builder = profile
@@ -94,8 +93,9 @@ export default async function DashboardPage({
 
   const enrolledSet = new Set((enrollRes.data ?? []).map((e) => e.challenge_id));
   const submittedSet = new Set((submitRes.data ?? []).map((s) => s.challenge_id));
+  const enrollCountData = enrollCountResults as unknown as { data: { challenge_id: string; count: number }[] | null };
   const enrollmentCounts = Object.fromEntries(
-    (enrollCountResults as { id: string; count: number }[]).map((r) => [r.id, r.count])
+    (enrollCountData.data ?? []).map((r) => [r.challenge_id, r.count])
   );
 
   const liveChallenges: LiveChallenge[] = (challengesRes.data ?? []).map((c) => ({
