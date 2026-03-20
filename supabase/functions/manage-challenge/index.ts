@@ -13,7 +13,7 @@ declare const Deno: {
   serve: (handler: (req: Request) => Response | Promise<Response>) => void;
 };
 
-const actionSchema = z.union([
+const actionSchema = z.discriminatedUnion("action", [
   z.object({
     action: z.literal("create"),
     payload: z
@@ -24,9 +24,9 @@ const actionSchema = z.union([
         hero_image_url: z.string().url().optional().nullable(),
         host_name: z.string().max(200),
         org_name: z.string().max(200),
-        // Accept any string for drafts; datetimes are validated via superRefine for published.
-        start_at: z.string(),
-        end_at: z.string(),
+        // Accept string or null for drafts; superRefine enforces valid datetimes for published.
+        start_at: z.string().nullable().optional(),
+        end_at: z.string().nullable().optional(),
         timezone: z.string().max(80),
         reward_text: z.string().max(3000),
         external_link: z.string().url().optional().nullable(),
@@ -54,8 +54,8 @@ const actionSchema = z.union([
             });
           }
         }
-        const startMs = new Date(p.start_at).getTime();
-        const endMs = new Date(p.end_at).getTime();
+        const startMs = new Date(p.start_at ?? "").getTime();
+        const endMs = new Date(p.end_at ?? "").getTime();
         if (!p.start_at || !Number.isFinite(startMs))
           ctx.addIssue({ code: z.ZodIssueCode.custom, message: "start_at must be a valid datetime to publish", path: ["start_at"] });
         if (!p.end_at || !Number.isFinite(endMs))
@@ -91,7 +91,19 @@ const actionSchema = z.union([
       .refine((v) => Object.keys(v).length > 0, "At least one field must be provided"),
   }),
   z.object({
-    action: z.enum(["publish", "unpublish", "archive", "close"]),
+    action: z.literal("publish"),
+    challenge_id: z.string().uuid(),
+  }),
+  z.object({
+    action: z.literal("unpublish"),
+    challenge_id: z.string().uuid(),
+  }),
+  z.object({
+    action: z.literal("archive"),
+    challenge_id: z.string().uuid(),
+  }),
+  z.object({
+    action: z.literal("close"),
     challenge_id: z.string().uuid(),
   }),
   z.object({
@@ -152,12 +164,20 @@ Deno.serve(async (req) => {
 
   if (parsed.action === "create") {
     const now = new Date().toISOString();
-    const startAt = new Date(parsed.payload.start_at).getTime();
-    const endAt = new Date(parsed.payload.end_at).getTime();
-    // For drafts with both dates populated, still enforce ordering; the superRefine
-    // above handles the published case where dates are required to be present.
+
+    // Server-side fallback dates for drafts when the client omits them.
+    // The DB columns are NOT NULL so we must always supply a value.
+    const nowMs = Date.now();
+    const fallbackStart = new Date(nowMs + 24 * 60 * 60 * 1000).toISOString();
+    const fallbackEnd   = new Date(nowMs + 8 * 24 * 60 * 60 * 1000).toISOString();
+    const resolvedStart = parsed.payload.start_at ?? fallbackStart;
+    const resolvedEnd   = parsed.payload.end_at   ?? fallbackEnd;
+
+    const startAt = new Date(resolvedStart).getTime();
+    const endAt   = new Date(resolvedEnd).getTime();
+
+    // Only enforce ordering when both dates are present and parseable.
     if (
-      parsed.payload.start_at && parsed.payload.end_at &&
       Number.isFinite(startAt) && Number.isFinite(endAt) &&
       endAt <= startAt
     ) {
@@ -167,6 +187,8 @@ Deno.serve(async (req) => {
     const status = parsed.payload.status;
     const row = {
       ...parsed.payload,
+      start_at: resolvedStart,
+      end_at: resolvedEnd,
       created_by: userId,
       status,
       published_at: status === "published" ? now : null,
