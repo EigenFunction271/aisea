@@ -59,7 +59,6 @@ export function MarkdownRenderer({ body }: { body: string }) {
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
         rehypePlugins={[rehypeSlug, rehypeHighlight]}
-        transformLinkUri={(uri) => sanitizeLinkUri(uri)}
         components={{
           h1: ({ children }) => (
             <h1
