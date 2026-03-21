@@ -1,24 +1,26 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo, useRef } from "react";
 import {
   DndContext,
   DragEndEvent,
-  DragOverEvent,
+  DragMoveEvent,
   DragStartEvent,
   PointerSensor,
   useSensor,
   useSensors,
   DragOverlay,
   closestCenter,
+  useDraggable,
+  useDroppable,
 } from "@dnd-kit/core";
-import {
-  SortableContext,
-  useSortable,
-  verticalListSortingStrategy,
-} from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import type { WikiTreeNode } from "../types";
+import {
+  applyWikiTreeMove,
+  resolveWikiTreeDropZone,
+  type WikiTreeDropPlacement,
+} from "@/lib/wiki/apply-tree-move";
 import { WikiSuperAdminDeleteButton } from "./wiki-super-admin-delete-button";
 
 const MONO: React.CSSProperties = {
@@ -26,6 +28,8 @@ const MONO: React.CSSProperties = {
 };
 
 type FlatNode = WikiTreeNode & { depth: number };
+
+type DropPreview = { overId: string; zone: WikiTreeDropPlacement };
 
 function flattenTree(
   nodes: WikiTreeNode[],
@@ -41,35 +45,133 @@ function flattenTree(
   ]);
 }
 
-function SortableRow({
+function ZoneHighlight({
+  nodeType,
+  activeZone,
+}: {
+  nodeType: WikiTreeNode["type"];
+  activeZone: WikiTreeDropPlacement;
+}) {
+  const accent = "color-mix(in srgb, var(--ds-accent) 14%, transparent)";
+  if (nodeType === "section") {
+    return (
+      <>
+        <div
+          aria-hidden
+          style={{
+            position: "absolute",
+            left: 0,
+            right: 0,
+            top: 0,
+            height: "33.33%",
+            background: activeZone === "before" ? accent : "transparent",
+            pointerEvents: "none",
+          }}
+        />
+        <div
+          aria-hidden
+          style={{
+            position: "absolute",
+            left: 0,
+            right: 0,
+            top: "33.33%",
+            height: "33.34%",
+            background: activeZone === "inside" ? accent : "transparent",
+            pointerEvents: "none",
+          }}
+        />
+        <div
+          aria-hidden
+          style={{
+            position: "absolute",
+            left: 0,
+            right: 0,
+            bottom: 0,
+            height: "33.33%",
+            background: activeZone === "after" ? accent : "transparent",
+            pointerEvents: "none",
+          }}
+        />
+      </>
+    );
+  }
+  return (
+    <>
+      <div
+        aria-hidden
+        style={{
+          position: "absolute",
+          left: 0,
+          right: 0,
+          top: 0,
+          height: "50%",
+          background: activeZone === "before" ? accent : "transparent",
+          pointerEvents: "none",
+        }}
+      />
+      <div
+        aria-hidden
+        style={{
+          position: "absolute",
+          left: 0,
+          right: 0,
+          bottom: 0,
+          height: "50%",
+          background: activeZone === "after" ? accent : "transparent",
+          pointerEvents: "none",
+        }}
+      />
+    </>
+  );
+}
+
+function TreeRow({
   node,
-  isDragging,
   isSuperAdmin,
   locale,
+  preview,
 }: {
   node: FlatNode;
-  isDragging: boolean;
   isSuperAdmin: boolean;
   locale: string;
+  preview: DropPreview | null;
 }) {
-  const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id: node.id });
+  const {
+    attributes,
+    listeners,
+    setNodeRef: setDragRef,
+    transform,
+    isDragging: dragActive,
+  } = useDraggable({ id: node.id });
+
+  const { setNodeRef: setDropRef, isOver } = useDroppable({ id: node.id });
+
+  function setNodeRef(el: HTMLDivElement | null) {
+    setDragRef(el);
+    setDropRef(el);
+  }
+
+  const showZone = Boolean(preview && preview.overId === node.id && !dragActive);
 
   const style: React.CSSProperties = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-    opacity: isDragging ? 0.3 : 1,
+    // Keep source row in place while DragOverlay follows the pointer
+    transform: dragActive ? undefined : CSS.Transform.toString(transform),
+    opacity: dragActive ? 0.35 : 1,
     display: "flex",
     alignItems: "center",
     gap: 8,
     paddingLeft: node.depth * 20 + 12,
     paddingRight: 12,
     minHeight: 32,
-    background: "var(--ds-bg-base)",
+    position: "relative",
+    background: isOver && !showZone ? "var(--ds-bg-raised)" : "var(--ds-bg-base)",
+    outline: isOver && !showZone ? "1px dashed var(--ds-accent)" : undefined,
     borderBottom: "1px solid var(--ds-border-subtle)",
   };
 
   return (
     <div ref={setNodeRef} style={style}>
+      {showZone ? <ZoneHighlight nodeType={node.type} activeZone={preview!.zone} /> : null}
       <div
         {...attributes}
         {...listeners}
@@ -81,10 +183,22 @@ function SortableRow({
           flex: 1,
           minWidth: 0,
           padding: "4px 0",
+          position: "relative",
+          zIndex: 1,
         }}
       >
         <span style={{ ...MONO, fontSize: 10, color: "var(--ds-text-muted)", flexShrink: 0 }}>⠿</span>
-        <span style={{ ...MONO, fontSize: 12, color: "var(--ds-text-secondary)", flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+        <span
+          style={{
+            ...MONO,
+            fontSize: 12,
+            color: "var(--ds-text-secondary)",
+            flex: 1,
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            whiteSpace: "nowrap",
+          }}
+        >
           {node.title}
         </span>
         <span style={{ ...MONO, fontSize: 9, color: "var(--ds-text-muted)", flexShrink: 0 }}>
@@ -92,13 +206,15 @@ function SortableRow({
         </span>
       </div>
       {isSuperAdmin && (
-        <WikiSuperAdminDeleteButton
-          pageId={node.id}
-          title={node.title}
-          hasChildren={node.has_children}
-          locale={locale}
-          redirectTo={`/${locale}/dashboard/wiki/admin`}
-        />
+        <div style={{ position: "relative", zIndex: 1 }}>
+          <WikiSuperAdminDeleteButton
+            pageId={node.id}
+            title={node.title}
+            hasChildren={node.has_children}
+            locale={locale}
+            redirectTo={`/${locale}/dashboard/wiki/admin`}
+          />
+        </div>
       )}
     </div>
   );
@@ -116,49 +232,87 @@ export function AdminTreeManager({
   const [nodes, setNodes] = useState<WikiTreeNode[]>(initialNodes);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [saveState, setSaveState] = useState<"idle" | "saving" | "saved" | "error">("idle");
+  const [dropPreview, setDropPreview] = useState<DropPreview | null>(null);
 
-  const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 6 } })
-  );
+  const lastPointerRef = useRef({ x: 0, y: 0 });
+  const pointerCleanupRef = useRef<(() => void) | null>(null);
 
-  const flat = flattenTree(nodes, null, 0);
+  const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 6 } }));
 
-  function handleDragStart({ active }: DragStartEvent) {
-    setActiveId(active.id as string);
+  const flat = useMemo(() => flattenTree(nodes, null, 0), [nodes]);
+
+  function attachPointerTracker() {
+    const handler = (e: PointerEvent) => {
+      lastPointerRef.current = { x: e.clientX, y: e.clientY };
+    };
+    window.addEventListener("pointermove", handler, { passive: true });
+    pointerCleanupRef.current = () => {
+      window.removeEventListener("pointermove", handler);
+      pointerCleanupRef.current = null;
+    };
   }
 
-  function handleDragEnd({ active, over }: DragEndEvent) {
-    setActiveId(null);
-    if (!over || active.id === over.id) return;
+  function detachPointerTracker() {
+    pointerCleanupRef.current?.();
+  }
 
-    const activeNode = nodes.find((n) => n.id === active.id);
-    const overNode = nodes.find((n) => n.id === over.id);
-    if (!activeNode || !overNode) return;
+  function handleDragStart({ active, activatorEvent }: DragStartEvent) {
+    if (activatorEvent instanceof PointerEvent) {
+      lastPointerRef.current = { x: activatorEvent.clientX, y: activatorEvent.clientY };
+    }
+    setActiveId(active.id as string);
+    setDropPreview(null);
+    attachPointerTracker();
+  }
 
-    // Re-parent: active takes same parent as over, and inserts after over
-    const newParentId = overNode.parent_id;
-
-    setNodes((prev) => {
-      const siblings = prev
-        .filter((n) => n.id !== active.id && n.parent_id === newParentId)
-        .sort((a, b) => a.sort_order - b.sort_order);
-
-      // Insert active after 'over' in siblings
-      const overIdx = siblings.findIndex((n) => n.id === over.id);
-      const insertAt = overIdx === -1 ? siblings.length : overIdx + 1;
-      siblings.splice(insertAt, 0, { ...activeNode, parent_id: newParentId });
-
-      const updated = siblings.map((n, i) => ({ ...n, sort_order: i }));
-
-      return prev.map((n) => {
-        const match = updated.find((u) => u.id === n.id);
-        return match ?? n;
-      });
+  function handleDragMove(event: DragMoveEvent) {
+    if (!event.over?.rect) {
+      setDropPreview(null);
+      return;
+    }
+    const overId = event.over.id as string;
+    if (overId === event.active.id) {
+      setDropPreview(null);
+      return;
+    }
+    const node = nodes.find((n) => n.id === overId);
+    if (!node) {
+      setDropPreview(null);
+      return;
+    }
+    const pointerY = lastPointerRef.current.y;
+    const zone = resolveWikiTreeDropZone(event.over.rect, pointerY, node.type);
+    setDropPreview((prev) => {
+      if (prev?.overId === overId && prev.zone === zone) return prev;
+      return { overId, zone };
     });
   }
 
-  function handleDragOver({ active, over }: DragOverEvent) {
+  function handleDragEnd(event: DragEndEvent) {
+    detachPointerTracker();
+    setDropPreview(null);
+    setActiveId(null);
+
+    const { active, over } = event;
     if (!over || active.id === over.id) return;
+
+    const node = nodes.find((n) => n.id === over.id);
+    if (!node) return;
+
+    const pointerY = lastPointerRef.current.y;
+    const placement = over.rect
+      ? resolveWikiTreeDropZone(over.rect, pointerY, node.type)
+      : node.type === "section"
+        ? "inside"
+        : "after";
+
+    setNodes((prev) => applyWikiTreeMove(prev, active.id as string, over.id as string, placement));
+  }
+
+  function handleDragCancel() {
+    detachPointerTracker();
+    setDropPreview(null);
+    setActiveId(null);
   }
 
   const saveTree = useCallback(async () => {
@@ -187,10 +341,13 @@ export function AdminTreeManager({
   return (
     <div>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
-        <p style={{ ...MONO, fontSize: 11, color: "var(--ds-text-muted)" }}>
-          Drag rows to reorder. Changes are saved with the button below.
+        <p style={{ ...MONO, fontSize: 11, color: "var(--ds-text-muted)", maxWidth: "78ch", lineHeight: 1.45 }}>
+          <strong>Section</strong> rows: top third = place <strong>before</strong>, middle = <strong>inside</strong> folder,
+          bottom = <strong>after</strong>. <strong>Guide / reference / resource</strong>: top half = <strong>before</strong>,
+          bottom half = <strong>after</strong>. Save when done.
         </p>
         <button
+          type="button"
           onClick={saveTree}
           disabled={saveState === "saving"}
           style={{
@@ -203,6 +360,7 @@ export function AdminTreeManager({
             color: "var(--ds-accent)",
             cursor: "pointer",
             opacity: saveState === "saving" ? 0.5 : 1,
+            flexShrink: 0,
           }}
         >
           {saveState === "saving" ? "Saving…" : saveState === "saved" ? "Saved ✓" : saveState === "error" ? "Error" : "Save tree"}
@@ -220,25 +378,21 @@ export function AdminTreeManager({
           sensors={sensors}
           collisionDetection={closestCenter}
           onDragStart={handleDragStart}
+          onDragMove={handleDragMove}
           onDragEnd={handleDragEnd}
-          onDragOver={handleDragOver}
+          onDragCancel={handleDragCancel}
         >
-          <SortableContext
-            items={flat.map((n) => n.id)}
-            strategy={verticalListSortingStrategy}
-          >
-            {flat.map((node) => (
-              <SortableRow
-                key={node.id}
-                node={node}
-                isDragging={node.id === activeId}
-                isSuperAdmin={isSuperAdmin}
-                locale={locale}
-              />
-            ))}
-          </SortableContext>
+          {flat.map((node) => (
+            <TreeRow
+              key={node.id}
+              node={node}
+              isSuperAdmin={isSuperAdmin}
+              locale={locale}
+              preview={dropPreview}
+            />
+          ))}
 
-          <DragOverlay>
+          <DragOverlay dropAnimation={null}>
             {activeNode ? (
               <div
                 style={{

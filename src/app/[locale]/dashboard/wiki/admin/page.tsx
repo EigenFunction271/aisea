@@ -152,7 +152,7 @@ export default async function WikiAdminPage({
       {/* Tree manager */}
       <section>
         <p style={{ ...MONO, fontSize: 10, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--ds-text-muted)", marginBottom: 14 }}>
-          Page tree (drag to reorder)
+          Page tree (drag into sections & reorder)
         </p>
         {isSuperAdmin && (
           <p style={{ ...MONO, fontSize: 11, color: "var(--ds-text-muted)", marginBottom: 12 }}>
