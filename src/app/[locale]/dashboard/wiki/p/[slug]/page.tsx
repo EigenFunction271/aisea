@@ -18,6 +18,20 @@ const LINK_TYPE_LABEL: Record<string, string> = {
   other: "LINK",
 };
 
+/** Live pages are public to anyone who can open the route; others only author/co-authors/admins. */
+async function wikiPageVisibleToRequester(
+  page: { status: string; author_id: string; co_author_ids: string[] | null | undefined },
+  userId: string | undefined,
+  admin: ReturnType<typeof createAdminClient>
+): Promise<boolean> {
+  if (page.status === "live") return true;
+  if (!userId) return false;
+  if (userId === page.author_id) return true;
+  if (page.co_author_ids?.includes(userId)) return true;
+  const { data: role } = await admin.rpc("get_profile_role", { target_user_id: userId });
+  return role === "admin" || role === "super_admin";
+}
+
 export const revalidate = 60;
 
 export async function generateMetadata({
@@ -27,14 +41,20 @@ export async function generateMetadata({
 }) {
   const { slug } = await params;
   const admin = createAdminClient();
-  const { data } = await admin
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  const { data: page } = await admin
     .from("wiki_pages")
-    .select("title, description")
+    .select("title, description, status, author_id, co_author_ids")
     .eq("slug", slug)
-    .eq("status", "live")
     .maybeSingle();
-  if (!data) return {};
-  return { title: `${data.title} — AI.SEA Wiki`, description: data.description };
+  if (!page) return {};
+  const visible = await wikiPageVisibleToRequester(page, user?.id, admin);
+  if (!visible) return {};
+  return { title: `${page.title} — AI.SEA Wiki`, description: page.description };
 }
 
 export default async function WikiPageDetailPage({
@@ -50,15 +70,17 @@ export default async function WikiPageDetailPage({
     data: { user },
   } = await supabase.auth.getUser();
 
-  // Fetch page
+  // Fetch page (any status — visibility enforced below; live-only was breaking post-submit redirect)
   const { data: page } = await admin
     .from("wiki_pages")
     .select("*")
     .eq("slug", slug)
-    .eq("status", "live")
     .maybeSingle();
 
   if (!page) notFound();
+
+  const canView = await wikiPageVisibleToRequester(page, user?.id, admin);
+  if (!canView) notFound();
 
   // Parent breadcrumb
   let parentTitle: string | null = null;
@@ -153,6 +175,15 @@ export default async function WikiPageDetailPage({
         <span style={{ ...MONO, fontSize: 11, color: "var(--ds-border)" }}>/</span>
         <span style={{ ...MONO, fontSize: 11, color: "var(--ds-text-secondary)" }}>{page.title}</span>
       </nav>
+
+      {page.status !== "live" && (
+        <p style={{ ...MONO, fontSize: 12, color: "var(--ds-text-muted)", marginBottom: 16 }}>
+          {page.status === "pending_review" && "Awaiting admin review — not visible in the public wiki tree yet."}
+          {page.status === "draft" && "Draft — only you (and admins) can see this page."}
+          {page.status === "needs_update" && "Changes were requested — edit from the wiki editor when ready."}
+          {page.status === "rejected" && "This submission was rejected. You can revise and resubmit if allowed."}
+        </p>
+      )}
 
       {/* Title */}
       <h1

@@ -48,7 +48,7 @@ export async function POST(req: Request) {
   const isNew = !data.id;
 
   if (isNew) {
-    // Insert — RLS enforces author_id = auth.uid() and status = 'draft'
+    // Insert — RLS enforces author_id = auth.uid() and status draft or pending_review
     const { data: inserted, error } = await supabase
       .from("wiki_pages")
       .insert({
