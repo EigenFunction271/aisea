@@ -80,6 +80,9 @@ function ChallengeCardItem({
   const { label, variant } = getStatusBadge(challenge, challenge.enrollment_state);
   const remaining = daysLeft(challenge.end_at);
   const isLive = variant === "live";
+  const isUpcoming = variant === "upcoming";
+  /** Builders can enroll before start (upcoming) or during live; not when closed/archived-only. */
+  const canEnrollOrContinue = isLive || isUpcoming;
   const visibleTags = challenge.tags.slice(0, 2);
 
   // CTA config
@@ -96,11 +99,11 @@ function ChallengeCardItem({
     ctaHref = `/dashboard/challenges/${challenge.id}`;
     ctaLabel = "View Submission";
     ctaStyle = { background: "transparent", color: "var(--ds-text-secondary)", border: "1px solid var(--ds-border)" };
-  } else if (challenge.enrollment_state === "enrolled" && isLive) {
+  } else if (challenge.enrollment_state === "enrolled" && canEnrollOrContinue) {
     ctaHref = `/dashboard/challenges/${challenge.id}`;
-    ctaLabel = "Continue →";
+    ctaLabel = isLive ? "Continue →" : "View challenge →";
     ctaStyle = { background: "transparent", color: "var(--ds-text-primary)", border: "1px solid var(--ds-border)" };
-  } else if (challenge.enrollment_state === "not_enrolled" && isLive) {
+  } else if (challenge.enrollment_state === "not_enrolled" && canEnrollOrContinue) {
     ctaAction = () => onEnroll(challenge.id);
     ctaLabel = isEnrolling ? "Joining…" : "Take the Challenge →";
     ctaStyle = { background: "var(--ds-accent)", color: "#0a0a0a", border: "none" };
