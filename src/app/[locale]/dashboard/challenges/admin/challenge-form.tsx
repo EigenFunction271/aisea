@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, useTransition } from "react";
+import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { Link, useRouter } from "@/i18n/routing";
 import { createClient } from "@/lib/supabase/client";
 import { createChallenge, setChallengeWinners, transitionChallenge, updateChallenge } from "@/lib/challenges/edge-functions";
@@ -51,6 +51,43 @@ function fromLocalDatetimeValue(local: string): string | null {
   return Number.isNaN(d.getTime()) ? null : d.toISOString();
 }
 
+const CHALLENGE_PAYLOAD_KEYS = [
+  "title",
+  "subtitle",
+  "description",
+  "hero_image_url",
+  "host_name",
+  "org_name",
+  "start_at",
+  "end_at",
+  "timezone",
+  "reward_text",
+  "external_link",
+  "tags",
+  "attachments",
+  "eligibility",
+  "judging_rubric",
+  "difficulty",
+] as const;
+
+/** Shallow diff for partial PATCH; arrays compared by JSON serialization. */
+function diffChallengePayload(
+  current: Record<string, unknown>,
+  baseline: Record<string, unknown>
+): Record<string, unknown> {
+  const out: Record<string, unknown> = {};
+  for (const key of CHALLENGE_PAYLOAD_KEYS) {
+    const c = current[key];
+    const b = baseline[key];
+    if (key === "tags" || key === "attachments") {
+      if (JSON.stringify(c) !== JSON.stringify(b)) out[key] = c;
+    } else if (c !== b) {
+      out[key] = c;
+    }
+  }
+  return out;
+}
+
 export function ChallengeForm({
   mode,
   initial,
@@ -95,6 +132,9 @@ export function ChallengeForm({
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
+  /** Last server-aligned payload for edit mode — used to send PATCH with only changed fields. */
+  const lastSavedPayloadRef = useRef<Record<string, unknown> | null>(null);
+
   function parseAttachments() {
     return attachments
       .split("\n")
@@ -108,15 +148,16 @@ export function ChallengeForm({
       });
   }
 
-  // Builds the payload for a server call. For draft saves the DB columns are NOT NULL,
-  // so we substitute placeholder dates when the user hasn't set them yet. These are
-  // overwritten whenever the user fills in real dates before publishing.
-  function buildPayload({ isDraft = false } = {}) {
+  // Builds the payload for a server call. Empty start/end dates are sent as "" for drafts;
+  // manage-challenge applies server-side fallbacks so we don't duplicate that logic here.
+  function buildPayload({
+    attachmentRows,
+  }: {
+    attachmentRows?: ReturnType<typeof parseAttachments>;
+  } = {}) {
     const startIso = fromLocalDatetimeValue(startAt);
     const endIso = fromLocalDatetimeValue(endAt);
-    const now = Date.now();
-    const draftStartFallback = new Date(now + 24 * 60 * 60 * 1000).toISOString();
-    const draftEndFallback = new Date(now + 8 * 24 * 60 * 60 * 1000).toISOString();
+    const rows = attachmentRows ?? parseAttachments();
 
     return {
       title: title.trim(),
@@ -125,8 +166,8 @@ export function ChallengeForm({
       hero_image_url: heroImageUrl.trim() || null,
       host_name: hostName.trim(),
       org_name: orgName.trim(),
-      start_at: startIso ?? (isDraft ? draftStartFallback : null),
-      end_at: endIso ?? (isDraft ? draftEndFallback : null),
+      start_at: startIso ?? "",
+      end_at: endIso ?? "",
       timezone: timezone.trim() || "UTC",
       reward_text: rewardText.trim(),
       external_link: externalLink.trim() || null,
@@ -134,12 +175,21 @@ export function ChallengeForm({
         .split(",")
         .map((s) => s.trim())
         .filter(Boolean),
-      attachments: parseAttachments().map(({ label, url }) => ({ label, url })),
+      attachments: rows.map(({ label, url }) => ({ label, url })),
       eligibility: eligibility.trim(),
       judging_rubric: judgingRubric.trim(),
       difficulty: (difficulty || null) as "starter" | "builder" | "hardcore" | null,
     };
   }
+
+  useEffect(() => {
+    if (mode !== "edit" || !initial) {
+      lastSavedPayloadRef.current = null;
+      return;
+    }
+    lastSavedPayloadRef.current = buildPayload() as Record<string, unknown>;
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- baseline only when switching challenge
+  }, [mode, initial?.id]);
 
   // Full validation — only enforced before publish, not draft saves.
   function validatePublish(): string | null {
@@ -158,12 +208,12 @@ export function ChallengeForm({
     if (!rewardText.trim()) return "Reward text is required.";
     if (!eligibility.trim()) return "Eligibility is required.";
     if (!judgingRubric.trim()) return "Judging rubric is required.";
-    return validateAttachments();
+    return validateAttachments(parseAttachments());
   }
 
   // Light validation — always enforced so malformed attachments don't cause opaque server errors.
-  function validateAttachments(): string | null {
-    const badAttachment = parseAttachments().find((a) => !a.url);
+  function validateAttachments(rows = parseAttachments()): string | null {
+    const badAttachment = rows.find((a) => !a.url);
     if (badAttachment) {
       return `Attachment line "${badAttachment._raw}" is missing a URL. Format: Label|https://...`;
     }
@@ -318,13 +368,16 @@ export function ChallengeForm({
     setError(null);
     setSuccess(null);
 
+    let parsedForSave: ReturnType<typeof parseAttachments> | undefined;
+
     // Publish requires all fields; draft saves only require valid attachment format.
     // Status transitions (unpublish, close, archive) touch no content fields.
     if (action === "publish") {
       const validationError = validatePublish();
       if (validationError) { setError(validationError); return; }
     } else if (action === "save") {
-      const attachmentError = validateAttachments();
+      parsedForSave = parseAttachments();
+      const attachmentError = validateAttachments(parsedForSave);
       if (attachmentError) { setError(attachmentError); return; }
     }
 
@@ -334,7 +387,7 @@ export function ChallengeForm({
         const isDraft = action !== "publish";
         if (mode === "create") {
           const created = await createChallenge(supabase, {
-            ...buildPayload({ isDraft }),
+            ...buildPayload({ attachmentRows: parsedForSave }),
             status: isDraft ? "draft" : "published",
           });
           setSuccess(action === "publish" ? "Challenge created and published." : "Challenge draft created.");
@@ -345,7 +398,22 @@ export function ChallengeForm({
         if (!initial) throw new Error("Missing challenge context");
 
         if (action === "save") {
-          await updateChallenge(supabase, initial.id, buildPayload({ isDraft }));
+          const full = buildPayload({ attachmentRows: parsedForSave }) as Record<string, unknown>;
+          const baseline = lastSavedPayloadRef.current;
+          if (!baseline) {
+            await updateChallenge(supabase, initial.id, full);
+          } else {
+            const partial = diffChallengePayload(full, baseline);
+            if (Object.keys(partial).length === 0) {
+              setSuccess("Nothing to save.");
+              return;
+            }
+            await updateChallenge(supabase, initial.id, partial);
+          }
+          lastSavedPayloadRef.current = buildPayload({ attachmentRows: parsedForSave }) as Record<
+            string,
+            unknown
+          >;
           setSuccess("Challenge saved.");
           return;
         }

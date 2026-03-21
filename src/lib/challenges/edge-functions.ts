@@ -118,18 +118,56 @@ const reviewSubmissionPayloadSchema = z.object({
   review_decision_text: z.string().min(1).max(5000),
 });
 
-async function getSessionToken(supabase: SupabaseClient): Promise<string> {
-  // getUser() re-validates the session against the Supabase Auth server, which is
-  // more correct than getSession() which only reads the locally cached token.
-  // We still need the raw access_token for the Authorization header, so we call
-  // getSession() after confirming the user is authenticated, but only to extract it.
+/** Max time we reuse an access token without re-validating (logout / refresh edge cases). */
+const SESSION_TOKEN_MAX_CACHE_MS = 45_000;
+/** Refresh before JWT exp to avoid sending a token the gateway rejects mid-request. */
+const SESSION_TOKEN_EXPIRY_LEEWAY_MS = 30_000;
+
+type SessionTokenCache = { token: string; expiresAtMs: number };
+
+let sessionTokenCache: SessionTokenCache | null = null;
+let sessionTokenInFlight: Promise<string> | null = null;
+
+async function refreshSessionToken(supabase: SupabaseClient): Promise<string> {
   const { error: userError } = await supabase.auth.getUser();
   if (userError) throw new Error(userError.message ?? "Failed to verify auth session");
   const {
     data: { session },
   } = await supabase.auth.getSession();
-  if (!session?.access_token) throw new Error("You are not signed in. Please log in and try again.");
+  if (!session?.access_token) {
+    throw new Error("You are not signed in. Please log in and try again.");
+  }
+  const now = Date.now();
+  const jwtExpiryMs = session.expires_at ? session.expires_at * 1000 : now + SESSION_TOKEN_MAX_CACHE_MS;
+  const candidate = Math.min(
+    jwtExpiryMs - SESSION_TOKEN_EXPIRY_LEEWAY_MS,
+    now + SESSION_TOKEN_MAX_CACHE_MS
+  );
+  const expiresAtMs = Math.max(now + 1_000, candidate);
+  sessionTokenCache = { token: session.access_token, expiresAtMs };
   return session.access_token;
+}
+
+/**
+ * Returns the access token for Edge Function calls.
+ * Caches briefly to avoid getUser + getSession on every rapid draft save; concurrent
+ * callers share one refresh via `sessionTokenInFlight`.
+ */
+async function getSessionToken(supabase: SupabaseClient): Promise<string> {
+  const now = Date.now();
+  if (sessionTokenCache && now < sessionTokenCache.expiresAtMs) {
+    return sessionTokenCache.token;
+  }
+
+  if (sessionTokenInFlight) {
+    return sessionTokenInFlight;
+  }
+
+  sessionTokenInFlight = refreshSessionToken(supabase).finally(() => {
+    sessionTokenInFlight = null;
+  });
+
+  return sessionTokenInFlight;
 }
 
 async function invokeWithAuth<T>(

@@ -32,7 +32,11 @@ const createProfileSchema = z.object({
 
 type CreateBuilderProfilePayload = z.infer<typeof createProfileSchema>;
 
-function jsonResponse(body: unknown, status: number) {
+function jsonResponse(
+  body: unknown,
+  status: number,
+  corsHeaders: Record<string, string>
+) {
   return new Response(JSON.stringify(body), {
     status,
     headers: { "Content-Type": "application/json", ...corsHeaders },
@@ -46,7 +50,7 @@ Deno.serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
   if (req.method !== "POST") {
-    return jsonResponse({ error: "Method not allowed" }, 405);
+    return jsonResponse({ error: "Method not allowed" }, 405, corsHeaders);
   }
 
   let userId: string;
@@ -58,7 +62,8 @@ Deno.serve(async (req) => {
     });
     return jsonResponse(
       { error: e instanceof Error ? e.message : "Unauthorized" },
-      401
+      401,
+      corsHeaders
     );
   }
 
@@ -71,14 +76,14 @@ Deno.serve(async (req) => {
       e instanceof z.ZodError
         ? e.errors.map((err) => `${err.path.join(".")}: ${err.message}`).join("; ")
         : "Invalid JSON body";
-    return jsonResponse({ error: message }, 400);
+    return jsonResponse({ error: message }, 400, corsHeaders);
   }
 
   const { username, name, city, bio, skills, github_handle, linkedin_url, instagram_url, twitter_url, personal_url } = body;
 
   const slug = username.trim().toLowerCase().replace(/[^a-z0-9_-]/g, "-");
   if (!slug) {
-    return jsonResponse({ error: "Invalid username" }, 400);
+    return jsonResponse({ error: "Invalid username" }, 400, corsHeaders);
   }
 
   const admin = createAdminClient();
@@ -90,7 +95,7 @@ Deno.serve(async (req) => {
     .eq("username", slug)
     .maybeSingle();
   if (existing) {
-    return jsonResponse({ error: "Username already taken" }, 409);
+    return jsonResponse({ error: "Username already taken" }, 409, corsHeaders);
   }
 
   // Validate skills slugs exist
@@ -104,7 +109,8 @@ Deno.serve(async (req) => {
     if (invalid.length > 0) {
       return jsonResponse(
         { error: `Invalid skills: ${invalid.join(", ")}` },
-        400
+        400,
+        corsHeaders
       );
     }
   }
@@ -132,7 +138,8 @@ Deno.serve(async (req) => {
   if (insertError) {
     return jsonResponse(
       { error: insertError.message ?? "Failed to create profile" },
-      500
+      500,
+      corsHeaders
     );
   }
 
@@ -145,14 +152,16 @@ Deno.serve(async (req) => {
     if (linkError.code === "23505") {
       return jsonResponse(
         { error: "You already have a builder profile linked" },
-        409
+        409,
+        corsHeaders
       );
     }
     return jsonResponse(
       { error: linkError.message ?? "Failed to link profile" },
-      500
+      500,
+      corsHeaders
     );
   }
 
-  return jsonResponse({ builder }, 201);
+  return jsonResponse({ builder }, 201, corsHeaders);
 });
