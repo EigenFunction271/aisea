@@ -1,4 +1,4 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { Link } from "@/i18n/routing";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -65,6 +65,9 @@ export default async function BuilderProfilePage({
   const {
     data: { user: viewer },
   } = await supabase.auth.getUser();
+  if (!viewer) {
+    redirect(`/${locale}/login?next=/${locale}/dashboard/u/${encodeURIComponent(handle)}`);
+  }
 
   // Single join — builder row + auth user_id in one round-trip.
   const { data: builder } = await admin
