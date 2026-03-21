@@ -451,7 +451,7 @@ export function DashboardContent({
         {[
           builder ? { label: "Edit profile", href: "/dashboard/edit-profile" } : null,
           { label: "All challenges", href: "/dashboard/challenges" },
-          { label: "Builder directory", href: "/builders" },
+          { label: "Builder directory", href: "/dashboard/builders" },
         ]
           .filter(Boolean)
           .map((item) => (

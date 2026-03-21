@@ -9,6 +9,7 @@ type NavItem = { label: string; href: string };
 const NAV_ITEMS: NavItem[] = [
   { label: "HOME", href: "/dashboard" },
   { label: "CHALLENGES", href: "/dashboard/challenges" },
+  { label: "BUILDERS", href: "/dashboard/builders" },
   { label: "WIKI", href: "/dashboard/wiki" },
   { label: "PROFILE", href: "/dashboard/profile" },
 ];
@@ -49,6 +50,9 @@ function isActive(pathname: string, href: string): boolean {
   }
   if (href === "/dashboard/wiki") {
     return pathname.includes("/dashboard/wiki");
+  }
+  if (href === "/dashboard/builders") {
+    return pathname.includes("/dashboard/builders");
   }
   return pathname.includes(href.replace("/dashboard", ""));
 }

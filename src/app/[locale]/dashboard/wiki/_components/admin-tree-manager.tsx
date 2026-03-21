@@ -19,6 +19,7 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import type { WikiTreeNode } from "../types";
+import { WikiSuperAdminDeleteButton } from "./wiki-super-admin-delete-button";
 
 const MONO: React.CSSProperties = {
   fontFamily: "var(--font-dm-mono), monospace",
@@ -43,9 +44,13 @@ function flattenTree(
 function SortableRow({
   node,
   isDragging,
+  isSuperAdmin,
+  locale,
 }: {
   node: FlatNode;
   isDragging: boolean;
+  isSuperAdmin: boolean;
+  locale: string;
 }) {
   const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id: node.id });
 
@@ -58,26 +63,56 @@ function SortableRow({
     gap: 8,
     paddingLeft: node.depth * 20 + 12,
     paddingRight: 12,
-    height: 32,
+    minHeight: 32,
     background: "var(--ds-bg-base)",
     borderBottom: "1px solid var(--ds-border-subtle)",
-    cursor: "grab",
   };
 
   return (
-    <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
-      <span style={{ ...MONO, fontSize: 10, color: "var(--ds-text-muted)", flexShrink: 0 }}>⠿</span>
-      <span style={{ ...MONO, fontSize: 12, color: "var(--ds-text-secondary)", flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-        {node.title}
-      </span>
-      <span style={{ ...MONO, fontSize: 9, color: "var(--ds-text-muted)", flexShrink: 0 }}>
-        {node.type}
-      </span>
+    <div ref={setNodeRef} style={style}>
+      <div
+        {...attributes}
+        {...listeners}
+        style={{
+          cursor: "grab",
+          display: "flex",
+          alignItems: "center",
+          gap: 8,
+          flex: 1,
+          minWidth: 0,
+          padding: "4px 0",
+        }}
+      >
+        <span style={{ ...MONO, fontSize: 10, color: "var(--ds-text-muted)", flexShrink: 0 }}>⠿</span>
+        <span style={{ ...MONO, fontSize: 12, color: "var(--ds-text-secondary)", flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+          {node.title}
+        </span>
+        <span style={{ ...MONO, fontSize: 9, color: "var(--ds-text-muted)", flexShrink: 0 }}>
+          {node.type}
+        </span>
+      </div>
+      {isSuperAdmin && (
+        <WikiSuperAdminDeleteButton
+          pageId={node.id}
+          title={node.title}
+          hasChildren={node.has_children}
+          locale={locale}
+          redirectTo={`/${locale}/dashboard/wiki/admin`}
+        />
+      )}
     </div>
   );
 }
 
-export function AdminTreeManager({ initialNodes }: { initialNodes: WikiTreeNode[] }) {
+export function AdminTreeManager({
+  initialNodes,
+  locale,
+  isSuperAdmin = false,
+}: {
+  initialNodes: WikiTreeNode[];
+  locale: string;
+  isSuperAdmin?: boolean;
+}) {
   const [nodes, setNodes] = useState<WikiTreeNode[]>(initialNodes);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [saveState, setSaveState] = useState<"idle" | "saving" | "saved" | "error">("idle");
@@ -197,6 +232,8 @@ export function AdminTreeManager({ initialNodes }: { initialNodes: WikiTreeNode[
                 key={node.id}
                 node={node}
                 isDragging={node.id === activeId}
+                isSuperAdmin={isSuperAdmin}
+                locale={locale}
               />
             ))}
           </SortableContext>

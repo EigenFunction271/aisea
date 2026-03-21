@@ -34,6 +34,8 @@ export default async function WikiAdminPage({
     redirect(`/${locale}/dashboard/wiki`);
   }
 
+  const isSuperAdmin = role === "super_admin";
+
   // ── Pending review queue ─────────────────────────────────────────────────
   const { data: pending } = await admin
     .from("wiki_pages")
@@ -81,7 +83,7 @@ export default async function WikiAdminPage({
   const { data: allPages } = await admin
     .from("wiki_pages")
     .select("id, slug, title, type, status, parent_id, sort_order")
-    .in("status", ["live", "draft", "pending_review", "needs_update"])
+    .in("status", ["live", "draft", "pending_review", "needs_update", "rejected"])
     .order("sort_order", { ascending: true });
 
   const rawNodes = allPages ?? [];
@@ -152,7 +154,12 @@ export default async function WikiAdminPage({
         <p style={{ ...MONO, fontSize: 10, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--ds-text-muted)", marginBottom: 14 }}>
           Page tree (drag to reorder)
         </p>
-        <AdminTreeManager initialNodes={treeNodes} />
+        {isSuperAdmin && (
+          <p style={{ ...MONO, fontSize: 11, color: "var(--ds-text-muted)", marginBottom: 12 }}>
+            Super admins can delete pages or whole branches (sections with children) using Delete on each row.
+          </p>
+        )}
+        <AdminTreeManager initialNodes={treeNodes} locale={locale} isSuperAdmin={isSuperAdmin} />
       </section>
     </div>
   );

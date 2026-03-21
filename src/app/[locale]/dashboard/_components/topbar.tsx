@@ -55,6 +55,8 @@ function cityFlag(city: string | null): string {
 function getBreadcrumb(pathname: string): string | null {
   if (/\/dashboard\/challenges\/admin/.test(pathname)) return "Admin";
   if (/\/dashboard\/challenges/.test(pathname)) return "Challenges";
+  if (/\/dashboard\/builders/.test(pathname)) return "Builders";
+  if (/\/dashboard\/wiki/.test(pathname)) return "Wiki";
   if (/\/dashboard\/(edit|create)-profile/.test(pathname)) return "Profile";
   if (/\/dashboard\/settings/.test(pathname)) return "Settings";
   return null;

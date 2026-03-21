@@ -11,6 +11,7 @@ const MarkdownRenderer = dynamic(
   { ssr: false, loading: () => <div style={{ color: "var(--ds-text-muted)", fontSize: 13 }}>Rendering…</div> }
 );
 import type { WikiPageType, WikiTreeNode } from "../types";
+import { WikiResourceAttachmentsEditor } from "./wiki-resource-attachments";
 
 const MONO: React.CSSProperties = {
   fontFamily: "var(--font-dm-mono), monospace",
@@ -270,7 +271,7 @@ export function WikiEditor({ page, suggestedUpdateOf, initialValues, treeNodes, 
           >
             <option value="guide">Guide</option>
             <option value="reference">Reference</option>
-            <option value="resource">Resource</option>
+            <option value="resource">Resource (body + file attachments)</option>
             <option value="section">Section (container only)</option>
           </select>
         </div>
@@ -382,6 +383,18 @@ export function WikiEditor({ page, suggestedUpdateOf, initialValues, treeNodes, 
             )}
           </div>
         </div>
+      )}
+
+      {type === "resource" && !suggestedUpdateOf && (
+        <>
+          {page?.id ? (
+            <WikiResourceAttachmentsEditor pageId={page.id} />
+          ) : (
+            <p style={{ ...MONO, fontSize: 12, color: "var(--ds-text-muted)", marginBottom: 20 }}>
+              Save this page as a draft first — then you can attach PDFs, images, and other files for download.
+            </p>
+          )}
+        </>
       )}
 
       {/* Error */}

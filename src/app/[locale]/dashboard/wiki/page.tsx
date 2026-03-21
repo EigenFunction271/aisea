@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { Link } from "@/i18n/routing";
 import type { WikiPageType } from "./types";
+import { WikiHoverListRowIndent } from "./_components/wiki-hover-surface";
 
 const MONO: React.CSSProperties = {
   fontFamily: "var(--font-dm-mono), monospace",
@@ -182,7 +183,7 @@ export default async function WikiHomePage({
                 locale={locale as "en" | "id" | "zh" | "vi"}
                 style={{ textDecoration: "none" }}
               >
-                <div
+                <WikiHoverListRowIndent
                   style={{
                     display: "flex",
                     alignItems: "center",
@@ -190,10 +191,7 @@ export default async function WikiHomePage({
                     padding: "10px 0",
                     borderTop: i === 0 ? "1px solid var(--ds-border)" : "none",
                     borderBottom: "1px solid var(--ds-border)",
-                    transition: "background 0.1s",
                   }}
-                  onMouseEnter={(e) => ((e.currentTarget as HTMLDivElement).style.paddingLeft = "6px")}
-                  onMouseLeave={(e) => ((e.currentTarget as HTMLDivElement).style.paddingLeft = "0")}
                 >
                   {/* Type badge */}
                   <span
@@ -237,7 +235,7 @@ export default async function WikiHomePage({
                     )}
                     <span>{relativeDate(page.updated_at)}</span>
                   </span>
-                </div>
+                </WikiHoverListRowIndent>
               </Link>
             ))}
           </div>

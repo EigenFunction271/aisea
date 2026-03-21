@@ -4,6 +4,8 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { Link } from "@/i18n/routing";
 import { MarkdownRenderer } from "../../_components/markdown-renderer";
 import { SuggestUpdateButton } from "../../_components/suggest-update-button";
+import { WikiSuperAdminDeleteButton } from "../../_components/wiki-super-admin-delete-button";
+import { WikiHoverBorderAccent } from "../../_components/wiki-hover-surface";
 import type { WikiLink } from "../../types";
 
 const MONO: React.CSSProperties = {
@@ -17,6 +19,18 @@ const LINK_TYPE_LABEL: Record<string, string> = {
   video: "VIDEO",
   other: "LINK",
 };
+
+function wikiPublicFileUrl(storagePath: string): string {
+  const base = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
+  const path = storagePath.split("/").map(encodeURIComponent).join("/");
+  return `${base}/storage/v1/object/public/wiki-public/${path}`;
+}
+
+function formatAttachmentBytes(n: number): string {
+  if (n < 1024) return `${n} B`;
+  if (n < 1024 * 1024) return `${(n / 1024).toFixed(1)} KB`;
+  return `${(n / (1024 * 1024)).toFixed(1)} MB`;
+}
 
 /** Live pages are public to anyone who can open the route; others only author/co-authors/admins. */
 async function wikiPageVisibleToRequester(
@@ -110,6 +124,23 @@ export default async function WikiPageDetailPage({
     .eq("page_id", page.id)
     .order("added_at", { ascending: true });
 
+  let fileAttachments: {
+    id: string;
+    filename: string;
+    storage_path: string;
+    file_size_bytes: number;
+    mime_type: string;
+  }[] = [];
+
+  if (page.type === "resource") {
+    const { data: attRows } = await admin
+      .from("wiki_attachments")
+      .select("id, filename, storage_path, file_size_bytes, mime_type")
+      .eq("page_id", page.id)
+      .order("uploaded_at", { ascending: true });
+    fileAttachments = attRows ?? [];
+  }
+
   // Author info
   let authorUsername: string | null = null;
   let authorName: string | null = null;
@@ -137,11 +168,19 @@ export default async function WikiPageDetailPage({
   // Check if current user is the author or admin
   let isAuthor = false;
   let isAdmin = false;
+  let isSuperAdmin = false;
   if (user) {
     isAuthor = user.id === page.author_id;
     const role = await admin.rpc("get_profile_role", { target_user_id: user.id });
-    isAdmin = role.data === "admin" || role.data === "super_admin";
+    const r = role.data as string | null;
+    isAdmin = r === "admin" || r === "super_admin";
+    isSuperAdmin = r === "super_admin";
   }
+
+  const { count: childPageCount } = await admin
+    .from("wiki_pages")
+    .select("id", { count: "exact", head: true })
+    .eq("parent_id", page.id);
 
   const updatedAt = new Date(page.updated_at).toLocaleDateString("en-GB", {
     day: "numeric",
@@ -271,7 +310,7 @@ export default async function WikiPageDetailPage({
         </span>
 
         {/* Edit / Admin actions */}
-        <div style={{ display: "flex", gap: 8, marginLeft: "auto" }}>
+        <div style={{ display: "flex", gap: 8, marginLeft: "auto", alignItems: "center" }}>
           {(isAuthor || isAdmin) && (
             <Link
               href={`/dashboard/wiki/p/${slug}/edit` as Parameters<typeof Link>[0]["href"]}
@@ -288,6 +327,15 @@ export default async function WikiPageDetailPage({
             >
               Edit
             </Link>
+          )}
+          {isSuperAdmin && (
+            <WikiSuperAdminDeleteButton
+              pageId={page.id}
+              title={page.title}
+              hasChildren={(childPageCount ?? 0) > 0}
+              locale={locale}
+              redirectTo={`/${locale}/dashboard/wiki`}
+            />
           )}
           {/* Members (non-author) can suggest updates to live, non-section pages */}
           {user && !isAuthor && page.type !== "section" && (
@@ -313,20 +361,13 @@ export default async function WikiPageDetailPage({
                   locale={locale as "en" | "id" | "zh" | "vi"}
                   style={{ textDecoration: "none" }}
                 >
-                  <div
+                  <WikiHoverBorderAccent
                     style={{
                       padding: "14px 16px",
                       border: "1px solid var(--ds-border)",
                       borderRadius: 8,
                       background: "var(--ds-bg-surface)",
-                      transition: "border-color 0.15s",
                     }}
-                    onMouseEnter={(e) =>
-                      ((e.currentTarget as HTMLDivElement).style.borderColor = "var(--ds-accent)44")
-                    }
-                    onMouseLeave={(e) =>
-                      ((e.currentTarget as HTMLDivElement).style.borderColor = "var(--ds-border)")
-                    }
                   >
                     <p
                       style={{
@@ -344,7 +385,7 @@ export default async function WikiPageDetailPage({
                         {child.description}
                       </p>
                     )}
-                  </div>
+                  </WikiHoverBorderAccent>
                 </Link>
               ))}
             </div>
@@ -359,6 +400,45 @@ export default async function WikiPageDetailPage({
             <p style={{ fontSize: 14, color: "var(--ds-text-muted)" }}>
               This page has no content yet.
             </p>
+          )}
+
+          {page.type === "resource" && fileAttachments.length > 0 && (
+            <section style={{ marginTop: 40 }}>
+              <p style={{ ...MONO, fontSize: 10, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--ds-text-muted)", marginBottom: 14 }}>
+                Attached files
+              </p>
+              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                {fileAttachments.map((f) => (
+                  <a
+                    key={f.id}
+                    href={wikiPublicFileUrl(f.storage_path)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ textDecoration: "none" }}
+                  >
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        gap: 12,
+                        padding: "10px 14px",
+                        border: "1px solid var(--ds-border)",
+                        borderRadius: 6,
+                        background: "var(--ds-bg-surface)",
+                      }}
+                    >
+                      <span style={{ fontFamily: "var(--font-syne), sans-serif", fontSize: 14, fontWeight: 600, color: "var(--ds-text-primary)" }}>
+                        {f.filename}
+                      </span>
+                      <span style={{ ...MONO, fontSize: 11, color: "var(--ds-text-muted)" }}>
+                        {formatAttachmentBytes(f.file_size_bytes)} · ↗
+                      </span>
+                    </div>
+                  </a>
+                ))}
+              </div>
+            </section>
           )}
 
           {/* Child pages (sub-articles) */}
@@ -419,7 +499,7 @@ export default async function WikiPageDetailPage({
                     rel="noopener noreferrer"
                     style={{ textDecoration: "none" }}
                   >
-                    <div
+                    <WikiHoverBorderAccent
                       style={{
                         display: "flex",
                         alignItems: "flex-start",
@@ -428,14 +508,7 @@ export default async function WikiPageDetailPage({
                         border: "1px solid var(--ds-border)",
                         borderRadius: 6,
                         background: "var(--ds-bg-surface)",
-                        transition: "border-color 0.15s",
                       }}
-                      onMouseEnter={(e) =>
-                        ((e.currentTarget as HTMLDivElement).style.borderColor = "var(--ds-accent)44")
-                      }
-                      onMouseLeave={(e) =>
-                        ((e.currentTarget as HTMLDivElement).style.borderColor = "var(--ds-border)")
-                      }
                     >
                       <span
                         style={{
@@ -460,7 +533,7 @@ export default async function WikiPageDetailPage({
                         )}
                       </div>
                       <span style={{ ...MONO, fontSize: 11, color: "var(--ds-text-muted)", flexShrink: 0, marginTop: 2 }}>↗</span>
-                    </div>
+                    </WikiHoverBorderAccent>
                   </a>
                 ))}
               </div>
