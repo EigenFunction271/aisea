@@ -111,11 +111,13 @@ function ChallengeCardItem({
     fontSize: 11,
     fontWeight: 500,
     letterSpacing: "0.04em",
-    padding: "6px 14px",
+    padding: "10px 14px",
     borderRadius: 4,
     cursor: ctaAction || ctaHref ? "pointer" : "default",
     opacity: isEnrolling ? 0.6 : 1,
-    whiteSpace: "nowrap",
+    width: "100%",
+    boxSizing: "border-box",
+    textAlign: "center",
   };
 
   return (
@@ -237,13 +239,15 @@ function ChallengeCardItem({
         </div>
       )}
 
-      {/* Builder count + CTA */}
+      {/* Builder count + full-width CTA */}
       <div
         style={{
           display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
+          flexDirection: "column",
+          alignItems: "stretch",
+          gap: 10,
           marginTop: 16,
+          width: "100%",
         }}
       >
         <span
@@ -258,11 +262,17 @@ function ChallengeCardItem({
 
         {ctaLabel && (
           ctaHref ? (
-            <Link href={ctaHref as Parameters<typeof Link>[0]["href"]}>
-              <button style={{ ...btnBase, ...ctaStyle }}>{ctaLabel}</button>
+            <Link
+              href={ctaHref as Parameters<typeof Link>[0]["href"]}
+              style={{ display: "block", width: "100%" }}
+            >
+              <button type="button" style={{ ...btnBase, ...ctaStyle }}>
+                {ctaLabel}
+              </button>
             </Link>
           ) : (
             <button
+              type="button"
               style={{ ...btnBase, ...ctaStyle }}
               onClick={ctaAction ?? undefined}
               disabled={isEnrolling}

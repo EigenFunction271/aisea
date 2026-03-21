@@ -145,13 +145,15 @@ function ChallengeStripCard({ challenge }: { challenge: LiveChallenge }) {
         {challenge.subtitle}
       </p>
 
-      {/* Builder count + CTA */}
+      {/* Builder count + full-width CTA */}
       <div
         style={{
           display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
+          flexDirection: "column",
+          alignItems: "stretch",
+          gap: 10,
           marginTop: 16,
+          width: "100%",
         }}
       >
         <span
@@ -163,17 +165,24 @@ function ChallengeStripCard({ challenge }: { challenge: LiveChallenge }) {
         >
           {challenge.enrollment_count} builder{challenge.enrollment_count !== 1 ? "s" : ""}
         </span>
-        <Link href={`/dashboard/challenges/${challenge.id}`}>
+        <Link
+          href={`/dashboard/challenges/${challenge.id}`}
+          style={{ display: "block", width: "100%" }}
+        >
           <button
+            type="button"
             style={{
               ...ctaStyle,
-              padding: "6px 14px",
+              width: "100%",
+              boxSizing: "border-box",
+              padding: "10px 14px",
               borderRadius: 4,
               fontSize: 12,
               fontFamily: "var(--font-dm-mono), monospace",
               fontWeight: 500,
               cursor: "pointer",
               letterSpacing: "0.02em",
+              textAlign: "center",
             }}
           >
             {ctaLabel}
