@@ -116,7 +116,14 @@ export function WikiResourceAttachmentsEditor({ pageId }: { pageId: string }) {
         }}
       >
         {uploading ? "Uploading…" : "Add files"}
-        <input type="file" multiple disabled={uploading} onChange={onFileChange} style={{ display: "none" }} />
+        <input
+          type="file"
+          multiple
+          disabled={uploading}
+          onChange={onFileChange}
+          style={{ display: "none" }}
+          accept=".pdf,.zip,.png,.jpg,.jpeg,.webp,.gif,.txt,.md,.markdown,application/pdf,application/zip,image/*,text/plain,text/markdown"
+        />
       </label>
 
       {error && (

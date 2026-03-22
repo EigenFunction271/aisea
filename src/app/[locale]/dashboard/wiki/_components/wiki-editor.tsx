@@ -187,7 +187,14 @@ export function WikiEditor({ page, suggestedUpdateOf, initialValues, treeNodes, 
       setSaveState("saved");
 
       startTransition(() => {
-        router.push(`/${locale}/dashboard/wiki/p/${json.slug}`);
+        // New resource pages need a saved `page.id` before uploads work; sending users to the
+        // viewer hid the editor. After first draft save, land on /edit so "Add files" is visible.
+        const isNew = !page && !suggestedUpdateOf;
+        const target =
+          isNew && action === "draft" && type === "resource"
+            ? `/${locale}/dashboard/wiki/p/${json.slug}/edit`
+            : `/${locale}/dashboard/wiki/p/${json.slug}`;
+        router.push(target);
         router.refresh();
       });
     } catch (err) {
@@ -390,8 +397,10 @@ export function WikiEditor({ page, suggestedUpdateOf, initialValues, treeNodes, 
           {page?.id ? (
             <WikiResourceAttachmentsEditor pageId={page.id} />
           ) : (
-            <p style={{ ...MONO, fontSize: 12, color: "var(--ds-text-muted)", marginBottom: 20 }}>
-              Save this page as a draft first — then you can attach PDFs, images, and other files for download.
+            <p style={{ ...MONO, fontSize: 12, color: "var(--ds-text-muted)", marginBottom: 20, lineHeight: 1.5 }}>
+              Save a draft with <strong>Save draft</strong> below. After the first save, you’ll be taken to the editor
+              where the <strong>Add files</strong> control appears (files need a saved page id). You can also open{" "}
+              <strong>Edit</strong> from the wiki page anytime.
             </p>
           )}
         </>

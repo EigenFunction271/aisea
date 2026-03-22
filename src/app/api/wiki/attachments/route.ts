@@ -22,10 +22,14 @@ function safeFilename(name: string): string {
   return base.slice(0, 180) || "file";
 }
 
-/** Some browsers omit `file.type`; infer from extension when needed. */
-function resolveMime(file: File): string {
-  if (file.type && ALLOWED_MIME.has(file.type)) return file.type;
-  const ext = file.name.toLowerCase().split(".").pop() ?? "";
+/** Strip MIME parameters (e.g. `application/pdf; charset=binary` → `application/pdf`). */
+function normalizeDeclaredMime(raw: string | undefined): string {
+  if (!raw) return "";
+  return raw.split(";")[0].trim().toLowerCase();
+}
+
+function mimeFromExtension(filename: string): string | null {
+  const ext = filename.toLowerCase().split(".").pop() ?? "";
   const byExt: Record<string, string> = {
     pdf: "application/pdf",
     zip: "application/zip",
@@ -39,7 +43,41 @@ function resolveMime(file: File): string {
     markdown: "text/markdown",
   };
   const m = byExt[ext];
-  return m && ALLOWED_MIME.has(m) ? m : "";
+  return m && ALLOWED_MIME.has(m) ? m : null;
+}
+
+/**
+ * Resolve a canonical MIME for storage + DB. Browsers often send `type;params` which does not
+ * match ALLOWED_MIME exactly; some PDFs report `application/octet-stream` until read.
+ */
+function resolveMime(file: File): string {
+  const declared = normalizeDeclaredMime(file.type);
+  if (declared && ALLOWED_MIME.has(declared)) return declared;
+
+  if (declared === "application/octet-stream") {
+    const fromExt = mimeFromExtension(file.name);
+    if (fromExt) return fromExt;
+  }
+
+  const fromExt = mimeFromExtension(file.name);
+  return fromExt ?? "";
+}
+
+/** Safe display name for DB (no NUL / control chars). */
+function sanitizeFilenameForDb(name: string): string {
+  const cleaned = name.replace(/\0/g, "").replace(/[\u0001-\u001F\u007F]/g, "");
+  return cleaned.slice(0, 255) || "file";
+}
+
+function friendlyStorageError(message: string): string {
+  const m = message.toLowerCase();
+  if (m.includes("pattern") || m.includes("invalidkey") || m.includes("invalid key")) {
+    return `${message} — Try renaming the file to use only letters, numbers, and .-_ or use a shorter name. If this persists, check Storage → wiki-public allowed MIME types in the Supabase dashboard.`;
+  }
+  if (m.includes("mime") || m.includes("content-type") || m.includes("invalidmimetype")) {
+    return `${message} — The file type could not be accepted. Try a standard PDF export or rename to end in .pdf.`;
+  }
+  return message;
 }
 
 async function canManageAttachments(
@@ -119,7 +157,7 @@ export async function POST(req: Request) {
   const pageIdRaw = formData.get("page_id");
   const file = formData.get("file");
   const pageIdParsed = z.string().uuid().safeParse(
-    typeof pageIdRaw === "string" ? pageIdRaw : null
+    typeof pageIdRaw === "string" ? pageIdRaw.trim() : null
   );
   if (!pageIdParsed.success) {
     return NextResponse.json({ error: "Invalid page_id" }, { status: 422 });
@@ -163,14 +201,15 @@ export async function POST(req: Request) {
 
   const buf = Buffer.from(await file.arrayBuffer());
   const path = `pages/${pid}/${crypto.randomUUID()}-${safeFilename(file.name)}`;
+  const contentType = normalizeDeclaredMime(mime) || mime;
 
   const { error: upErr } = await admin.storage.from("wiki-public").upload(path, buf, {
-    contentType: mime,
+    contentType,
     upsert: false,
   });
 
   if (upErr) {
-    return NextResponse.json({ error: upErr.message }, { status: 500 });
+    return NextResponse.json({ error: friendlyStorageError(upErr.message) }, { status: 500 });
   }
 
   const { data: row, error: insErr } = await admin
@@ -178,7 +217,7 @@ export async function POST(req: Request) {
     .insert({
       page_id: pid,
       uploader_id: user.id,
-      filename: file.name,
+      filename: sanitizeFilenameForDb(file.name),
       storage_path: path,
       bucket: "wiki-public",
       file_size_bytes: buf.length,
