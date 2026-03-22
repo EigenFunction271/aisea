@@ -22,6 +22,8 @@ import {
   type WikiTreeDropPlacement,
 } from "@/lib/wiki/apply-tree-move";
 import { WikiSuperAdminDeleteButton } from "./wiki-super-admin-delete-button";
+import { Spinner } from "@/components/ui/spinner";
+import { toast } from "sonner";
 
 const MONO: React.CSSProperties = {
   fontFamily: "var(--font-dm-mono), monospace",
@@ -330,9 +332,11 @@ export function AdminTreeManager({
       });
       if (!res.ok) throw new Error("Save failed");
       setSaveState("saved");
+      toast.success("Wiki tree saved");
       setTimeout(() => setSaveState("idle"), 2000);
     } catch {
       setSaveState("error");
+      toast.error("Couldn’t save tree", { description: "Check your connection and try again." });
     }
   }, [nodes]);
 
@@ -358,11 +362,15 @@ export function AdminTreeManager({
             border: "1px solid var(--ds-accent)",
             background: "transparent",
             color: "var(--ds-accent)",
-            cursor: "pointer",
-            opacity: saveState === "saving" ? 0.5 : 1,
+            cursor: saveState === "saving" ? "wait" : "pointer",
+            opacity: saveState === "saving" ? 0.85 : 1,
             flexShrink: 0,
+            display: "inline-flex",
+            alignItems: "center",
+            gap: 8,
           }}
         >
+          {saveState === "saving" ? <Spinner className="size-3.5 shrink-0 text-[var(--ds-accent)]" aria-hidden /> : null}
           {saveState === "saving" ? "Saving…" : saveState === "saved" ? "Saved ✓" : saveState === "error" ? "Error" : "Save tree"}
         </button>
       </div>

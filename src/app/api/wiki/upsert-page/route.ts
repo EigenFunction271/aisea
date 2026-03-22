@@ -77,7 +77,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ id: inserted.id, slug: inserted.slug });
   } else {
-    // Update — RLS allows author (draft/needs_update) or admin (any status)
+    // Update — RLS allows author (draft / needs_update / pending_review) or admin (any status)
     const { data: updated, error } = await supabase
       .from("wiki_pages")
       .update({

@@ -15,6 +15,7 @@ import { notFound } from 'next/navigation';
 import { routing } from '@/i18n/routing';
 import { ThemeProvider } from 'next-themes';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { SiteProviders } from './_components/site-providers';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -53,14 +54,7 @@ export async function generateMetadata({
   params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
   const { locale } = await params;
-  
-  const localeNames: Record<string, string> = {
-    en: 'English',
-    id: 'Indonesian',
-    zh: 'Chinese',
-    vi: 'Vietnamese',
-  };
-  
+
   const localeDescriptions: Record<string, string> = {
     en: "Join AISEA (24-30 Nov 2025) - Southeast Asia's largest grassroots builder movement bringing together builders, startups, corporates, and VCs.",
     id: "Bergabunglah dengan AISEA (24-30 Nov 2025) - gerakan builder terbesar di Asia Tenggara yang menghubungkan builder, startup, korporat, dan VC.",
@@ -191,7 +185,7 @@ export default async function LocaleLayout({
         <ErrorBoundary>
           <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
             <NextIntlClientProvider messages={messages}>
-              {children}
+              <SiteProviders>{children}</SiteProviders>
             </NextIntlClientProvider>
           </ThemeProvider>
         </ErrorBoundary>

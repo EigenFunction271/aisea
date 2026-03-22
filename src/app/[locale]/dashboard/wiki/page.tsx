@@ -46,6 +46,28 @@ export default async function WikiHomePage({
     data: { user },
   } = await supabase.auth.getUser();
 
+  // Current user's editable wiki pages (not shown in tree / recent until live)
+  let myDrafts: {
+    id: string;
+    slug: string;
+    title: string;
+    type: string;
+    status: string;
+    updated_at: string;
+    parent_id: string | null;
+    author_id: string;
+  }[] = [];
+  if (user) {
+    const { data: draftRows } = await admin
+      .from("wiki_pages")
+      .select("id, slug, title, type, status, updated_at, parent_id, author_id")
+      .eq("author_id", user.id)
+      .in("status", ["draft", "needs_update", "pending_review"])
+      .order("updated_at", { ascending: false })
+      .limit(25);
+    myDrafts = draftRows ?? [];
+  }
+
   // Recent live pages (excluding section containers)
   const { data: recent } = await admin
     .from("wiki_pages")
@@ -69,10 +91,11 @@ export default async function WikiHomePage({
     searchResults = data;
   }
 
-  // Fetch parent titles for recent + search results
+  // Fetch parent titles for recent + search results + my drafts
   const parentIds = [
     ...(recent ?? []).map((p) => p.parent_id),
     ...(searchResults ?? []).map((p) => p.parent_id),
+    ...myDrafts.map((p) => p.parent_id),
   ].filter(Boolean) as string[];
 
   const parentTitles: Record<string, string> = {};
@@ -163,6 +186,132 @@ export default async function WikiHomePage({
           }}
         />
       </form>
+
+      {/* Author's drafts & pages awaiting revision (not in sidebar until live) */}
+      {user && (
+        <section style={{ marginBottom: 36 }}>
+          <p style={{ ...MONO, fontSize: 10, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--ds-text-muted)", marginBottom: 14 }}>
+            Your pages in progress
+          </p>
+          {myDrafts.length === 0 ? (
+            <p style={{ ...MONO, fontSize: 13, color: "var(--ds-text-muted)", lineHeight: 1.5 }}>
+              Nothing here yet. Drafts, pages in review, and pages that need updates appear here — use{" "}
+              <Link
+                href="/dashboard/wiki/new"
+                locale={locale as "en" | "id" | "zh" | "vi"}
+                style={{ color: "var(--ds-accent)", textDecoration: "none" }}
+              >
+                Write a page
+              </Link>{" "}
+              to start.
+            </p>
+          ) : (
+            <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
+              {myDrafts.map((page, i) => (
+                <WikiHoverListRowIndent
+                  key={page.id}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 12,
+                    padding: "10px 0",
+                    borderTop: i === 0 ? "1px solid var(--ds-border)" : "none",
+                    borderBottom: "1px solid var(--ds-border)",
+                  }}
+                >
+                  <span
+                    style={{
+                      ...MONO,
+                      fontSize: 9,
+                      letterSpacing: "0.08em",
+                      padding: "2px 6px",
+                      borderRadius: 3,
+                      color: TYPE_COLORS[page.type as WikiPageType],
+                      border: `1px solid ${TYPE_COLORS[page.type as WikiPageType]}44`,
+                      flexShrink: 0,
+                    }}
+                  >
+                    {TYPE_LABELS[page.type as WikiPageType]}
+                  </span>
+                  <span
+                    style={{
+                      ...MONO,
+                      fontSize: 9,
+                      letterSpacing: "0.06em",
+                      padding: "2px 6px",
+                      borderRadius: 3,
+                      color:
+                        page.status === "needs_update"
+                          ? "#fb923c"
+                          : page.status === "pending_review"
+                            ? "var(--wiki-pending-badge)"
+                            : "var(--ds-text-muted)",
+                      border: `1px solid var(--ds-border)`,
+                      flexShrink: 0,
+                    }}
+                  >
+                    {page.status === "needs_update"
+                      ? "NEEDS UPDATE"
+                      : page.status === "pending_review"
+                        ? "IN REVIEW"
+                        : "DRAFT"}
+                  </span>
+                  <Link
+                    href={`/dashboard/wiki/p/${page.slug}` as Parameters<typeof Link>[0]["href"]}
+                    locale={locale as "en" | "id" | "zh" | "vi"}
+                    style={{
+                      fontFamily: "var(--font-syne), sans-serif",
+                      fontSize: 14,
+                      fontWeight: 600,
+                      color: "var(--ds-text-primary)",
+                      flex: 1,
+                      minWidth: 0,
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      whiteSpace: "nowrap",
+                      textDecoration: "none",
+                    }}
+                  >
+                    {page.title}
+                  </Link>
+                  <span
+                    style={{
+                      ...MONO,
+                      fontSize: 11,
+                      color: "var(--ds-text-muted)",
+                      flexShrink: 0,
+                      display: "flex",
+                      gap: 10,
+                      alignItems: "center",
+                    }}
+                  >
+                    {page.parent_id && parentTitles[page.parent_id] ? (
+                      <span>{parentTitles[page.parent_id]}</span>
+                    ) : null}
+                    <span>{relativeDate(page.updated_at)}</span>
+                  </span>
+                  <Link
+                    href={`/dashboard/wiki/p/${page.slug}/edit` as Parameters<typeof Link>[0]["href"]}
+                    locale={locale as "en" | "id" | "zh" | "vi"}
+                    style={{
+                      ...MONO,
+                      fontSize: 11,
+                      padding: "3px 10px",
+                      borderRadius: 4,
+                      border: "1px solid var(--ds-border)",
+                      color: "var(--ds-text-secondary)",
+                      textDecoration: "none",
+                      flexShrink: 0,
+                    }}
+                  >
+                    Edit
+                  </Link>
+                </WikiHoverListRowIndent>
+              ))}
+            </div>
+          )}
+        </section>
+      )}
 
       {/* Results or recent */}
       <section>

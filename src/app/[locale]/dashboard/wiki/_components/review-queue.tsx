@@ -3,6 +3,8 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Link } from "@/i18n/routing";
+import { Spinner } from "@/components/ui/spinner";
+import { toast } from "sonner";
 
 const MONO: React.CSSProperties = {
   fontFamily: "var(--font-dm-mono), monospace",
@@ -62,27 +64,42 @@ function ReviewRow({
   const [note, setNote] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [done, setDone] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
   async function submit() {
     if (!action) return;
     setError(null);
+    setSubmitting(true);
 
-    const res = await fetch("/api/wiki/review-page", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        page_id: item.id,
-        action,
-        rejection_note: note || undefined,
-      }),
-    });
-    const json = await res.json();
-    if (!res.ok) {
-      setError(json.error ?? "Failed");
-      return;
+    try {
+      const res = await fetch("/api/wiki/review-page", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          page_id: item.id,
+          action,
+          rejection_note: note || undefined,
+        }),
+      });
+      const json = await res.json();
+      if (!res.ok) {
+        const msg = json.error ?? "Failed";
+        setError(msg);
+        toast.error("Review action failed", { description: msg });
+        return;
+      }
+      toast.success(
+        action === "approve"
+          ? "Page approved"
+          : action === "reject"
+            ? "Submission rejected"
+            : "Changes requested"
+      );
+      setDone(true);
+      startTransition(() => router.refresh());
+    } finally {
+      setSubmitting(false);
     }
-    setDone(true);
-    startTransition(() => router.refresh());
   }
 
   if (done) {
@@ -124,6 +141,8 @@ function ReviewRow({
         {(["approve", "request_changes", "reject"] as ReviewAction[]).map((a) => (
           <button
             key={a}
+            type="button"
+            disabled={submitting}
             onClick={() => setAction(action === a ? null : a)}
             style={{
               ...MONO,
@@ -133,7 +152,8 @@ function ReviewRow({
               border: `1px solid ${action === a ? "var(--ds-accent)" : "var(--ds-border)"}`,
               background: action === a ? "var(--ds-accent)22" : "transparent",
               color: action === a ? "var(--ds-accent)" : "var(--ds-text-muted)",
-              cursor: "pointer",
+              cursor: submitting ? "not-allowed" : "pointer",
+              opacity: submitting ? 0.5 : 1,
             }}
           >
             {a.replace("_", " ")}
@@ -146,6 +166,7 @@ function ReviewRow({
             value={note}
             onChange={(e) => setNote(e.target.value)}
             placeholder="Note for the author (optional)"
+            disabled={submitting}
             style={{
               ...MONO,
               fontSize: 12,
@@ -157,14 +178,16 @@ function ReviewRow({
               borderRadius: 4,
               color: "var(--ds-text-secondary)",
               outline: "none",
+              opacity: submitting ? 0.6 : 1,
             }}
           />
         )}
 
         {action && (
           <button
+            type="button"
             onClick={submit}
-            disabled={isPending}
+            disabled={submitting || isPending}
             style={{
               ...MONO,
               fontSize: 11,
@@ -173,11 +196,22 @@ function ReviewRow({
               border: "none",
               background: action === "approve" ? "var(--wiki-approved-badge)" : action === "reject" ? "var(--wiki-rejected-badge)" : "var(--wiki-pending-badge)",
               color: "#000",
-              cursor: "pointer",
+              cursor: submitting ? "wait" : "pointer",
               fontWeight: 700,
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 8,
+              opacity: submitting ? 0.9 : 1,
             }}
           >
-            Confirm
+            {submitting ? (
+              <>
+                <Spinner className="size-3 shrink-0 text-[var(--ds-text-primary)]" aria-hidden />
+                Sending…
+              </>
+            ) : (
+              "Confirm"
+            )}
           </button>
         )}
 

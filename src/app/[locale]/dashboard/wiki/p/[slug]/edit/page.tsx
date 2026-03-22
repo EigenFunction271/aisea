@@ -41,8 +41,8 @@ export default async function WikiEditPage({
     redirect(`/${locale}/dashboard/wiki/p/${slug}`);
   }
 
-  // For non-admin, only allow editing draft or needs_update
-  if (!isAdmin && !["draft", "needs_update"].includes(page.status)) {
+  // For non-admin, only allow editing in-progress statuses (not live / rejected)
+  if (!isAdmin && !["draft", "needs_update", "pending_review"].includes(page.status)) {
     redirect(`/${locale}/dashboard/wiki/p/${slug}`);
   }
 

@@ -3,6 +3,7 @@
 import { useState, useEffect, useTransition, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
+import { toast } from "sonner";
 
 // Lazy-load the markdown renderer so react-markdown + highlight.js are only
 // bundled when the editor is actually opened — not on every wiki page load.
@@ -12,6 +13,12 @@ const MarkdownRenderer = dynamic(
 );
 import type { WikiPageType, WikiTreeNode } from "../types";
 import { WikiResourceAttachmentsEditor } from "./wiki-resource-attachments";
+import { WikiInlineSpinner } from "./wiki-inline-spinner";
+import { Spinner } from "@/components/ui/spinner";
+
+function SpinnerIcon() {
+  return <Spinner className="size-3.5 shrink-0 text-[var(--ds-accent)]" aria-hidden />;
+}
 
 const MONO: React.CSSProperties = {
   fontFamily: "var(--font-dm-mono), monospace",
@@ -186,6 +193,18 @@ export function WikiEditor({ page, suggestedUpdateOf, initialValues, treeNodes, 
       localStorage.removeItem(AUTOSAVE_KEY(page?.id ?? null));
       setSaveState("saved");
 
+      if (action === "draft") {
+        toast.success(
+          suggestedUpdateOf ? "Proposal saved as draft" : "Draft saved",
+          { description: "Redirecting…" }
+        );
+      } else {
+        toast.success(
+          suggestedUpdateOf ? "Proposal submitted for review" : "Submitted for admin review",
+          { description: "Redirecting…" }
+        );
+      }
+
       startTransition(() => {
         // New resource pages need a saved `page.id` before uploads work; sending users to the
         // viewer hid the editor. After first draft save, land on /edit so "Add files" is visible.
@@ -199,7 +218,9 @@ export function WikiEditor({ page, suggestedUpdateOf, initialValues, treeNodes, 
       });
     } catch (err) {
       setSaveState("error");
-      setSubmitError(err instanceof Error ? err.message : "An error occurred.");
+      const msg = err instanceof Error ? err.message : "An error occurred.";
+      setSubmitError(msg);
+      toast.error("Couldn’t save", { description: msg });
     }
   }
 
@@ -211,6 +232,9 @@ export function WikiEditor({ page, suggestedUpdateOf, initialValues, treeNodes, 
       : saveState === "error"
       ? "Error"
       : "Auto-saved";
+
+  /** Server upsert in flight (buttons must use this — `isPending` only covers navigation after). */
+  const isSubmitting = saveState === "saving";
 
   const isEditing = !!page;
 
@@ -235,10 +259,16 @@ export function WikiEditor({ page, suggestedUpdateOf, initialValues, treeNodes, 
           </h1>
         </div>
 
-        {/* Auto-save indicator */}
-        <span style={{ ...MONO, fontSize: 11, color: saveState === "error" ? "var(--ds-destructive)" : "var(--ds-text-muted)" }}>
-          {saveLabel}
-        </span>
+        {/* Local autosave vs server save */}
+        <div style={{ minHeight: 22, display: "flex", alignItems: "center", justifyContent: "flex-end" }}>
+          {isSubmitting ? (
+            <WikiInlineSpinner label="Saving to server…" />
+          ) : (
+            <span style={{ ...MONO, fontSize: 11, color: saveState === "error" ? "var(--ds-destructive)" : "var(--ds-text-muted)" }}>
+              {saveLabel}
+            </span>
+          )}
+        </div>
       </div>
 
       {/* Metadata fields */}
@@ -251,7 +281,8 @@ export function WikiEditor({ page, suggestedUpdateOf, initialValues, treeNodes, 
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             placeholder="Page title"
-            style={{ ...INPUT_STYLE, fontSize: 16, fontFamily: "var(--font-syne), sans-serif", fontWeight: 700 }}
+            disabled={isSubmitting}
+            style={{ ...INPUT_STYLE, fontSize: 16, fontFamily: "var(--font-syne), sans-serif", fontWeight: 700, opacity: isSubmitting ? 0.7 : 1 }}
           />
         </div>
 
@@ -263,7 +294,8 @@ export function WikiEditor({ page, suggestedUpdateOf, initialValues, treeNodes, 
             value={slug}
             onChange={(e) => setSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, "-"))}
             placeholder="page-url-slug"
-            style={INPUT_STYLE}
+            disabled={isSubmitting}
+            style={{ ...INPUT_STYLE, opacity: isSubmitting ? 0.7 : 1 }}
           />
         </div>
 
@@ -274,7 +306,8 @@ export function WikiEditor({ page, suggestedUpdateOf, initialValues, treeNodes, 
           <select
             value={type}
             onChange={(e) => setType(e.target.value as WikiPageType)}
-            style={{ ...INPUT_STYLE, cursor: "pointer" }}
+            disabled={isSubmitting}
+            style={{ ...INPUT_STYLE, cursor: "pointer", opacity: isSubmitting ? 0.7 : 1 }}
           >
             <option value="guide">Guide</option>
             <option value="reference">Reference</option>
@@ -291,7 +324,8 @@ export function WikiEditor({ page, suggestedUpdateOf, initialValues, treeNodes, 
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             placeholder="One sentence about this page…"
-            style={INPUT_STYLE}
+            disabled={isSubmitting}
+            style={{ ...INPUT_STYLE, opacity: isSubmitting ? 0.7 : 1 }}
           />
         </div>
 
@@ -302,7 +336,8 @@ export function WikiEditor({ page, suggestedUpdateOf, initialValues, treeNodes, 
           <select
             value={parentId}
             onChange={(e) => setParentId(e.target.value)}
-            style={{ ...INPUT_STYLE, cursor: "pointer" }}
+            disabled={isSubmitting}
+            style={{ ...INPUT_STYLE, cursor: "pointer", opacity: isSubmitting ? 0.7 : 1 }}
           >
             <option value="">— None (root level) —</option>
             {sectionNodes.map((n) => (
@@ -322,6 +357,8 @@ export function WikiEditor({ page, suggestedUpdateOf, initialValues, treeNodes, 
             {(["edit", "split", "preview"] as const).map((mode) => (
               <button
                 key={mode}
+                type="button"
+                disabled={isSubmitting}
                 onClick={() => setPreviewMode(mode)}
                 style={{
                   ...MONO,
@@ -333,8 +370,9 @@ export function WikiEditor({ page, suggestedUpdateOf, initialValues, treeNodes, 
                   borderBottom: previewMode === mode ? "2px solid var(--ds-accent)" : "2px solid transparent",
                   background: "transparent",
                   color: previewMode === mode ? "var(--ds-text-primary)" : "var(--ds-text-muted)",
-                  cursor: "pointer",
+                  cursor: isSubmitting ? "not-allowed" : "pointer",
                   marginBottom: -1,
+                  opacity: isSubmitting ? 0.5 : 1,
                 }}
               >
                 {mode}
@@ -352,6 +390,7 @@ export function WikiEditor({ page, suggestedUpdateOf, initialValues, treeNodes, 
                 value={body}
                 onChange={(e) => setBody(e.target.value)}
                 placeholder={`Write in Markdown...\n\n## Section\n\nYour content here.`}
+                disabled={isSubmitting}
                 style={{
                   ...MONO,
                   fontSize: 13,
@@ -365,6 +404,7 @@ export function WikiEditor({ page, suggestedUpdateOf, initialValues, treeNodes, 
                   outline: "none",
                   lineHeight: 1.7,
                   minHeight: 420,
+                  opacity: isSubmitting ? 0.7 : 1,
                 }}
               />
             )}
@@ -395,7 +435,7 @@ export function WikiEditor({ page, suggestedUpdateOf, initialValues, treeNodes, 
       {type === "resource" && !suggestedUpdateOf && (
         <>
           {page?.id ? (
-            <WikiResourceAttachmentsEditor pageId={page.id} />
+            <WikiResourceAttachmentsEditor pageId={page.id} disabled={isSubmitting} />
           ) : (
             <p style={{ ...MONO, fontSize: 12, color: "var(--ds-text-muted)", marginBottom: 20, lineHeight: 1.5 }}>
               Save a draft with <strong>Save draft</strong> below. After the first save, you’ll be taken to the editor
@@ -416,8 +456,9 @@ export function WikiEditor({ page, suggestedUpdateOf, initialValues, treeNodes, 
       {/* Actions */}
       <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
         <button
+          type="button"
           onClick={() => handleSubmit("draft")}
-          disabled={isPending || !title.trim() || !slug.trim()}
+          disabled={isSubmitting || isPending || !title.trim() || !slug.trim()}
           style={{
             ...MONO,
             fontSize: 12,
@@ -426,8 +467,8 @@ export function WikiEditor({ page, suggestedUpdateOf, initialValues, treeNodes, 
             border: "1px solid var(--ds-border)",
             background: "transparent",
             color: "var(--ds-text-secondary)",
-            cursor: "pointer",
-            opacity: !title.trim() ? 0.4 : 1,
+            cursor: isSubmitting ? "wait" : "pointer",
+            opacity: !title.trim() || isSubmitting ? 0.6 : 1,
           }}
         >
           Save draft
@@ -435,6 +476,7 @@ export function WikiEditor({ page, suggestedUpdateOf, initialValues, treeNodes, 
 
         {!confirmSubmit ? (
           <button
+            type="button"
             onClick={() => {
               if (!bodyValid) {
                 setSubmitError(`Body must be at least ${MIN_WORDS} words.`);
@@ -443,7 +485,7 @@ export function WikiEditor({ page, suggestedUpdateOf, initialValues, treeNodes, 
               setSubmitError(null);
               setConfirmSubmit(true);
             }}
-            disabled={isPending || !title.trim() || !slug.trim()}
+            disabled={isSubmitting || isPending || !title.trim() || !slug.trim()}
             style={{
               ...MONO,
               fontSize: 12,
@@ -452,8 +494,8 @@ export function WikiEditor({ page, suggestedUpdateOf, initialValues, treeNodes, 
               border: "1px solid var(--ds-accent)",
               background: "transparent",
               color: "var(--ds-accent)",
-              cursor: "pointer",
-              opacity: !title.trim() ? 0.4 : 1,
+              cursor: isSubmitting ? "wait" : "pointer",
+              opacity: !title.trim() || isSubmitting ? 0.6 : 1,
             }}
           >
             Submit for review →
@@ -464,11 +506,12 @@ export function WikiEditor({ page, suggestedUpdateOf, initialValues, treeNodes, 
               This will send for admin review. Continue?
             </span>
             <button
+              type="button"
               onClick={() => {
                 setConfirmSubmit(false);
                 handleSubmit("review");
               }}
-              disabled={isPending}
+              disabled={isSubmitting || isPending}
               style={{
                 ...MONO,
                 fontSize: 12,
@@ -477,14 +520,21 @@ export function WikiEditor({ page, suggestedUpdateOf, initialValues, treeNodes, 
                 border: "none",
                 background: "var(--ds-accent)",
                 color: "#000",
-                cursor: "pointer",
+                cursor: isSubmitting ? "wait" : "pointer",
                 fontWeight: 700,
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 8,
+                opacity: isSubmitting ? 0.85 : 1,
               }}
             >
+              {isSubmitting ? <SpinnerIcon /> : null}
               Confirm
             </button>
             <button
+              type="button"
               onClick={() => setConfirmSubmit(false)}
+              disabled={isSubmitting}
               style={{
                 ...MONO,
                 fontSize: 12,
@@ -493,7 +543,8 @@ export function WikiEditor({ page, suggestedUpdateOf, initialValues, treeNodes, 
                 border: "1px solid var(--ds-border)",
                 background: "transparent",
                 color: "var(--ds-text-muted)",
-                cursor: "pointer",
+                cursor: isSubmitting ? "not-allowed" : "pointer",
+                opacity: isSubmitting ? 0.5 : 1,
               }}
             >
               Cancel

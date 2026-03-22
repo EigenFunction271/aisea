@@ -2,6 +2,8 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { Spinner } from "@/components/ui/spinner";
+import { toast } from "sonner";
 
 const MONO: React.CSSProperties = {
   fontFamily: "var(--font-dm-mono), monospace",
@@ -54,12 +56,17 @@ export function WikiSuperAdminDeleteButton({
       const json = (await res.json()) as { error?: string; childCount?: number };
       if (!res.ok) {
         if (res.status === 409 && json.childCount) {
-          setErr(`Has ${json.childCount} child page(s). Use delete again and confirm to remove the whole branch.`);
+          const msg = `Has ${json.childCount} child page(s). Confirm again to delete the whole branch.`;
+          setErr(msg);
+          toast.error("Delete blocked", { description: msg });
         } else {
-          setErr(json.error ?? "Delete failed");
+          const msg = json.error ?? "Delete failed";
+          setErr(msg);
+          toast.error("Delete failed", { description: msg });
         }
         return;
       }
+      toast.success(hasChildren ? "Branch deleted" : "Page deleted", { description: "Redirecting…" });
       const dest = redirectTo ?? `/${locale}/dashboard/wiki`;
       router.push(dest);
       router.refresh();
@@ -84,8 +91,12 @@ export function WikiSuperAdminDeleteButton({
           color: "var(--ds-error, #f87171)",
           cursor: busy ? "wait" : "pointer",
           opacity: busy ? 0.6 : 1,
+          display: "inline-flex",
+          alignItems: "center",
+          gap: 6,
         }}
       >
+        {busy ? <Spinner className="size-3 shrink-0 text-[var(--ds-error,#f87171)]" aria-hidden /> : null}
         {busy ? "Deleting…" : "Delete"}
       </button>
       {err && (

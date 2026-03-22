@@ -1,6 +1,13 @@
+import { Spinner } from "@/components/ui/spinner";
+
 export default function WikiLoading() {
   return (
-    <div className="mx-auto max-w-4xl px-6 py-8 animate-pulse space-y-6">
+    <div className="mx-auto max-w-4xl px-6 py-8 space-y-6">
+      <div className="flex items-center gap-3" style={{ color: "var(--ds-text-muted)" }}>
+        <Spinner className="size-5 shrink-0 text-[var(--ds-accent)]" aria-hidden />
+        <span className="text-sm font-mono tracking-wide">Loading wiki…</span>
+      </div>
+      <div className="animate-pulse space-y-6">
       <div className="h-7 w-32 rounded" style={{ backgroundColor: "var(--ds-bg-raised)" }} />
       <div className="h-4 w-72 rounded" style={{ backgroundColor: "var(--ds-bg-raised)" }} />
 
@@ -19,6 +26,7 @@ export default function WikiLoading() {
             </div>
           </div>
         ))}
+      </div>
       </div>
     </div>
   );
