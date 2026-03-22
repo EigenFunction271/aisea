@@ -2,6 +2,8 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
+import { createClient } from "@/lib/supabase/client";
+import { uploadWikiAttachmentClient } from "@/lib/wiki/upload-wiki-attachment-client";
 import { WikiInlineSpinner } from "./wiki-inline-spinner";
 import { Spinner } from "@/components/ui/spinner";
 
@@ -76,13 +78,9 @@ export function WikiResourceAttachmentsEditor({
     setUploading(true);
     try {
       const files = Array.from(list);
+      const supabase = createClient();
       for (const file of files) {
-        const fd = new FormData();
-        fd.set("page_id", pageId);
-        fd.set("file", file);
-        const res = await fetch("/api/wiki/attachments", { method: "POST", body: fd });
-        const json = (await res.json()) as { error?: string };
-        if (!res.ok) throw new Error(json.error ?? "Upload failed");
+        await uploadWikiAttachmentClient(supabase, pageId, file);
       }
       toast.success(
         files.length === 1 ? `Uploaded “${files[0].name}”` : `Uploaded ${files.length} files`
@@ -178,7 +176,7 @@ export function WikiResourceAttachmentsEditor({
           disabled={uploading || disabled}
           onChange={onFileChange}
           style={{ display: "none" }}
-          accept=".pdf,.zip,.png,.jpg,.jpeg,.webp,.gif,.txt,.md,.markdown,application/pdf,application/zip,image/*,text/plain,text/markdown"
+          accept=".pdf,.zip,.png,.jpg,.jpeg,.webp,.gif,.txt,.md,.markdown"
         />
       </label>
 
