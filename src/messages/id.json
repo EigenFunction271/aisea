@@ -32,7 +32,9 @@
     "switchToSignUp": "Belum punya akun? Daftar",
     "switchToLogin": "Sudah punya akun? Masuk",
     "checkEmail": "Periksa email Anda untuk tautan konfirmasi.",
-    "error": "Terjadi kesalahan. Coba lagi."
+    "error": "Terjadi kesalahan. Coba lagi.",
+    "continueWithGoogle": "Lanjutkan dengan Google",
+    "orContinueWithEmail": "Atau lanjutkan dengan email"
   },
   "hero": {
     "title": "AISEA",

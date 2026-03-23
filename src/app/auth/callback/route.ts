@@ -2,13 +2,14 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 
 /**
- * Handles the redirect from Supabase after email confirmation (or other auth redirects).
- * Exchanges the `code` in the URL for a session and redirects to the default locale home.
+ * Handles the redirect from Supabase after OAuth (e.g. Google), magic links, or email confirmation.
+ * Exchanges the `code` in the URL for a session and redirects to `next` (same-origin only).
  *
  * Configure in Supabase Dashboard:
  * Authentication → URL Configuration → Redirect URLs:
  *   - http://localhost:3000/auth/callback (dev)
  *   - https://yourdomain.com/auth/callback (prod)
+ * Authentication → Providers → Google: enable and add Web client ID/secret from Google Cloud Console.
  */
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);

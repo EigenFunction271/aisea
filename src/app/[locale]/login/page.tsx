@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/routing";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -13,10 +13,12 @@ import { Navbar1 } from "@/components/ui/navbar";
 
 export default function LoginPage() {
   const t = useTranslations("auth");
+  const locale = useLocale();
   const router = useRouter();
   const searchParams = useSearchParams();
   const nextParam = searchParams.get("next");
-  const next = nextParam?.startsWith("/") ? nextParam : "/dashboard";
+  const next =
+    nextParam?.startsWith("/") && !nextParam.startsWith("//") ? nextParam : `/${locale}/dashboard`;
   const [mode, setMode] = useState<"login" | "signup">("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -25,6 +27,28 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
 
   const supabase = createClient();
+
+  async function handleGoogle() {
+    setError(null);
+    setMessage(null);
+    setLoading(true);
+    try {
+      const origin = window.location.origin;
+      const redirectTo = `${origin}/auth/callback?next=${encodeURIComponent(next)}`;
+      const { error: oauthError } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: { redirectTo },
+      });
+      if (oauthError) {
+        setError(oauthError.message);
+        setLoading(false);
+      }
+      // On success the browser redirects to Google, then back to /auth/callback.
+    } catch {
+      setError(t("error"));
+      setLoading(false);
+    }
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -72,6 +96,21 @@ export default function LoginPage() {
           <h1 className="font-[family-name:var(--font-perfectly-nineties)] text-3xl text-center text-white">
             {mode === "login" ? t("loginTitle") : t("signUpTitle")}
           </h1>
+
+          <div className="space-y-3">
+            <Button
+              type="button"
+              variant="outline"
+              disabled={loading}
+              onClick={handleGoogle}
+              className="w-full rounded-full font-[family-name:var(--font-geist-mono)] border-white/25 bg-white/5 text-white hover:bg-white/10 hover:text-white"
+            >
+              {loading ? "…" : t("continueWithGoogle")}
+            </Button>
+            <p className="text-center text-xs text-white/50 font-[family-name:var(--font-geist-mono)]">
+              {t("orContinueWithEmail")}
+            </p>
+          </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">

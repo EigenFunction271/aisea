@@ -32,7 +32,9 @@
     "switchToSignUp": "Chưa có tài khoản? Đăng ký",
     "switchToLogin": "Đã có tài khoản? Đăng nhập",
     "checkEmail": "Kiểm tra email để lấy liên kết xác nhận.",
-    "error": "Đã xảy ra lỗi. Thử lại."
+    "error": "Đã xảy ra lỗi. Thử lại.",
+    "continueWithGoogle": "Tiếp tục với Google",
+    "orContinueWithEmail": "Hoặc tiếp tục bằng email"
   },
   "hero": {
     "title": "AISEA",

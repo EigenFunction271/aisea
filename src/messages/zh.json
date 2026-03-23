@@ -32,7 +32,9 @@
     "switchToSignUp": "没有账户？注册",
     "switchToLogin": "已有账户？登录",
     "checkEmail": "请查收邮件中的确认链接。",
-    "error": "出错了，请重试。"
+    "error": "出错了，请重试。",
+    "continueWithGoogle": "使用 Google 继续",
+    "orContinueWithEmail": "或使用邮箱继续"
   },
   "hero": {
     "title": "AISEA",
