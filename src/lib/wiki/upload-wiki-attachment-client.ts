@@ -1,6 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import {
   WIKI_ATTACHMENT_MAX_BYTES,
+  WIKI_ATTACHMENT_MAX_MB,
   friendlyWikiStorageError,
   normalizeDeclaredMime,
   resolveWikiAttachmentMime,
@@ -38,7 +39,7 @@ export async function uploadWikiAttachmentClient(
     throw new Error("Empty file");
   }
   if (file.size > WIKI_ATTACHMENT_MAX_BYTES) {
-    throw new Error("File too large (max 10 MB)");
+    throw new Error(`File too large (max ${WIKI_ATTACHMENT_MAX_MB} MB)`);
   }
 
   const mime = resolveWikiAttachmentMime(file);

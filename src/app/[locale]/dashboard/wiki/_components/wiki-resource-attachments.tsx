@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { createClient } from "@/lib/supabase/client";
+import { WIKI_ATTACHMENT_MAX_MB } from "@/lib/wiki/attachment-rules";
 import { uploadWikiAttachmentClient } from "@/lib/wiki/upload-wiki-attachment-client";
 import { WikiInlineSpinner } from "./wiki-inline-spinner";
 import { Spinner } from "@/components/ui/spinner";
@@ -150,7 +151,7 @@ export function WikiResourceAttachmentsEditor({
         Attached files
       </p>
       <p style={{ ...MONO, fontSize: 12, color: "var(--ds-text-muted)", marginBottom: 12, lineHeight: 1.5 }}>
-        PDF, images, zip, or text (max 10 MB each). Files are listed on the live page for readers to download.
+        PDF, images, zip, or text (max {WIKI_ATTACHMENT_MAX_MB} MB each). Files are listed on the live page for readers to download.
       </p>
 
       <label

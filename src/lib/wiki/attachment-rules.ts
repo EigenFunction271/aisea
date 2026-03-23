@@ -1,6 +1,8 @@
 /** Shared validation for wiki resource attachments (client + server). */
 
-export const WIKI_ATTACHMENT_MAX_BYTES = 10 * 1024 * 1024;
+/** Keep at or below Supabase Storage per-object limit (project/bucket settings; often 50 MB). */
+export const WIKI_ATTACHMENT_MAX_MB = 25;
+export const WIKI_ATTACHMENT_MAX_BYTES = WIKI_ATTACHMENT_MAX_MB * 1024 * 1024;
 
 const ALLOWED_MIME = new Set([
   "application/pdf",
