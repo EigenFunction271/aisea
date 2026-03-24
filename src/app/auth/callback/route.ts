@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { routing } from "@/i18n/routing";
+import { dedupeLeadingLocalePath } from "@/lib/i18n/dedupe-locale-path";
 
 /**
  * Handles the redirect from Supabase after OAuth (e.g. Google), magic links, or email confirmation.
@@ -15,9 +17,13 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const code = searchParams.get("code");
   // Prevent open redirect: only allow same-origin paths (reject absolute URLs and protocol-relative URLs like //evil.com)
-  const rawNext = searchParams.get("next") ?? "/dashboard";
-  const next =
-    rawNext.startsWith("/") && !rawNext.startsWith("//") ? rawNext : "/dashboard";
+  const rawNext =
+    searchParams.get("next") ?? `/${routing.defaultLocale}/dashboard`;
+  const safe =
+    rawNext.startsWith("/") && !rawNext.startsWith("//")
+      ? rawNext
+      : `/${routing.defaultLocale}/dashboard`;
+  const next = dedupeLeadingLocalePath(safe);
 
   if (!code) {
     return NextResponse.redirect(new URL("/login", request.url));

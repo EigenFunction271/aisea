@@ -37,21 +37,11 @@ function initials(name: string): string {
 }
 
 function memberSince(iso: string): string {
-  return new Date(iso).toLocaleDateString("en-GB", { month: "short", year: "numeric" });
+  return new Date(iso).toLocaleDateString("en-GB", {
+    month: "short",
+    year: "numeric",
+  });
 }
-
-const SKILL_TAXONOMY = [
-  "llm-engineering",
-  "agentic-systems",
-  "rag",
-  "fine-tuning",
-  "deployment-infra",
-  "product",
-  "data-engineering",
-  "frontend",
-  "hardware-edge",
-  "research",
-];
 
 export default async function BuilderProfilePage({
   params,
@@ -84,6 +74,10 @@ export default async function BuilderProfilePage({
     (builder.builder_auth as unknown as { user_id: string } | null)?.user_id ?? null;
   const isOwner = Boolean(viewer && builderUserId && viewer.id === builderUserId);
 
+  const builderSkillSlugs: string[] = Array.isArray(builder.skills)
+    ? (builder.skills as string[])
+    : [];
+
   // Parallel: enrollment count, submission list, skills, wiki page count
   const [enrollRes, submitRes, skillsRes, wikiCountRes, wikiPagesRes] = await Promise.all([
     builderUserId
@@ -101,7 +95,9 @@ export default async function BuilderProfilePage({
           .order("submitted_at", { ascending: false })
           .limit(50)
       : Promise.resolve({ data: [] }),
-    admin.from("skills").select("slug, label").in("slug", SKILL_TAXONOMY),
+    builderSkillSlugs.length > 0
+      ? admin.from("skills").select("slug, label").in("slug", builderSkillSlugs)
+      : Promise.resolve({ data: [] }),
     builderUserId
       ? admin
           .from("wiki_pages")
@@ -140,7 +136,6 @@ export default async function BuilderProfilePage({
   }));
 
   const allSkills: Array<{ slug: string; label: string }> = skillsRes.data ?? [];
-  const builderSkillSlugs: string[] = Array.isArray(builder.skills) ? (builder.skills as string[]) : [];
   const displaySkills = allSkills.filter((s) => builderSkillSlugs.includes(s.slug));
 
   const color = cityColor(builder.city ?? "");

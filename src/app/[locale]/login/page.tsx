@@ -10,6 +10,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Link } from "@/i18n/routing";
 import { Navbar1 } from "@/components/ui/navbar";
+import {
+  dedupeLeadingLocalePath,
+  stripLeadingLocalePath,
+} from "@/lib/i18n/dedupe-locale-path";
 
 export default function LoginPage() {
   const t = useTranslations("auth");
@@ -17,8 +21,12 @@ export default function LoginPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const nextParam = searchParams.get("next");
-  const next =
-    nextParam?.startsWith("/") && !nextParam.startsWith("//") ? nextParam : `/${locale}/dashboard`;
+  const next = dedupeLeadingLocalePath(
+    nextParam?.startsWith("/") && !nextParam.startsWith("//")
+      ? nextParam
+      : `/${locale}/dashboard`
+  );
+  const nextForRouter = stripLeadingLocalePath(next);
   const [mode, setMode] = useState<"login" | "signup">("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -67,7 +75,7 @@ export default function LoginPage() {
           setLoading(false);
           return;
         }
-        router.replace(next);
+        router.replace(nextForRouter);
         return;
       }
 
