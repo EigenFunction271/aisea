@@ -3,6 +3,7 @@ import { Link } from "@/i18n/routing";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { DetailActions } from "./detail-actions";
+import { MarkdownRenderer } from "../../wiki/_components/markdown-renderer";
 
 async function getProfileCompleteState(userId: string): Promise<boolean> {
   const admin = createAdminClient();
@@ -341,12 +342,11 @@ export default async function ChallengeDetailPage({
                 fontSize: 14,
                 color: "var(--ds-text-secondary)",
                 lineHeight: 1.75,
-                whiteSpace: "pre-wrap",
                 filter: isLocked ? "blur(4px)" : "none",
                 userSelect: isLocked ? "none" : "auto",
               }}
             >
-              {challenge.description}
+              <MarkdownRenderer body={challenge.description ?? ""} />
             </div>
           </section>
 
@@ -362,10 +362,9 @@ export default async function ChallengeDetailPage({
                         fontSize: 14,
                         color: "var(--ds-text-secondary)",
                         lineHeight: 1.75,
-                        whiteSpace: "pre-wrap",
                       }}
                     >
-                      {challenge.eligibility}
+                      <MarkdownRenderer body={challenge.eligibility} />
                     </div>
                   </section>
                 </>
@@ -381,10 +380,9 @@ export default async function ChallengeDetailPage({
                         fontSize: 14,
                         color: "var(--ds-text-secondary)",
                         lineHeight: 1.75,
-                        whiteSpace: "pre-wrap",
                       }}
                     >
-                      {challenge.judging_rubric}
+                      <MarkdownRenderer body={challenge.judging_rubric} />
                     </div>
                   </section>
                 </>

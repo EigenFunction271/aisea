@@ -7,6 +7,7 @@ import { createChallenge, setChallengeWinners, transitionChallenge, updateChalle
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { MarkdownRenderer as MarkdownRendererClient } from "../../wiki/_components/markdown-renderer-client";
 
 type ChallengeRecord = {
   id: string;
@@ -504,7 +505,9 @@ export function ChallengeForm({
           />
           <h2 className="mt-4 text-xl font-semibold text-white">{title || "Untitled challenge"}</h2>
           <p className="mt-2 text-sm text-white/70">{subtitle || "Subtitle preview"}</p>
-          <p className="mt-4 whitespace-pre-wrap text-sm text-white/80">{description || "Description preview"}</p>
+          <div className="mt-4 text-sm text-white/80">
+            <MarkdownRendererClient body={description || "Description preview"} />
+          </div>
         </div>
       ) : (
         <div className="space-y-4">
