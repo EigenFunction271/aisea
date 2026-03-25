@@ -23,12 +23,6 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
 import { StickyFeatureSection } from "@/components/ui/sticky-scroll-cards-section";
 
 export const metadata = {
@@ -761,26 +755,25 @@ export default function WorkWithUsPage() {
             {t('faq.title')}
           </h2>
           
-          <Accordion type="single" collapsible className="w-full space-y-4">
-            {(t.raw('faq.items') as Array<{ question: string; answer: string[] }>).map((item, index) => (
-              <AccordionItem
+          <div className="w-full space-y-4">
+            {faqItems.map((item, index) => (
+              <details
                 key={index}
-                value={`item-${index}`}
-                className="border-white/10 bg-white/5 rounded-lg px-6 py-2"
+                className="group border border-white/10 bg-white/5 rounded-lg px-6 py-2"
               >
-                <AccordionTrigger className="font-[family-name:var(--font-geist-mono)] text-lg md:text-xl font-semibold text-white hover:no-underline py-4">
+                <summary className="cursor-pointer list-none py-4 font-[family-name:var(--font-geist-mono)] text-lg md:text-xl font-semibold text-white hover:no-underline">
                   {item.question}
-                </AccordionTrigger>
-                <AccordionContent className="font-[family-name:var(--font-geist-mono)] text-white/90 text-base md:text-lg leading-relaxed pt-2 pb-4">
+                </summary>
+                <div className="font-[family-name:var(--font-geist-mono)] text-white/90 text-base md:text-lg leading-relaxed pt-2 pb-4">
                   <div className="space-y-4">
                     {item.answer.map((paragraph, pIndex) => (
                       <p key={pIndex}>{paragraph}</p>
                     ))}
                   </div>
-                </AccordionContent>
-              </AccordionItem>
+                </div>
+              </details>
             ))}
-          </Accordion>
+          </div>
         </div>
       </section>
     </div>

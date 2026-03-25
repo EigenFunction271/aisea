@@ -94,28 +94,35 @@ export default function Home() {
   const organizationData = {
     '@context': 'https://schema.org',
     '@type': 'Organization',
-    name: 'AISEA',
-    url: 'https://aisea.builders',
-    logo: 'https://aisea.builders/web-app-manifest-512x512.png',
-    description: "Southeast Asia's largest grassroots AI builder movement",
+    name: 'AI.SEA',
+    alternateName: 'AISEA',
+    url: 'https://www.aisea.builders',
+    logo: 'https://www.aisea.builders/web-app-manifest-512x512.png',
+    description:
+      "Southeast Asia's largest grassroots AI builder network, connecting 10,000+ builders across Malaysia, Indonesia, Vietnam, Philippines, Thailand, and Singapore.",
+    foundingLocation: {
+      '@type': 'Place',
+      name: 'Kuala Lumpur, Malaysia',
+    },
+    areaServed: [
+      'Malaysia',
+      'Indonesia',
+      'Vietnam',
+      'Philippines',
+      'Thailand',
+      'Singapore',
+    ],
     sameAs: [
-      'https://discord.gg/HJPwPW5zvT',
-      'https://www.instagram.com/aisea.builders/',
       'https://www.linkedin.com/company/ai-sea-week/',
       'https://x.com/AI__SEA',
+      'https://www.instagram.com/aisea.builders/',
       'https://www.youtube.com/@AISEABUILDERS',
+      'https://discord.gg/HJPwPW5zvT',
     ],
-    areaServed: {
-      '@type': 'GeoCircle',
-      geoMidpoint: {
-        '@type': 'GeoCoordinates',
-        latitude: 3.1390,
-        longitude: 101.6869,
-      },
-      geoRadius: {
-        '@type': 'Distance',
-        name: 'Southeast Asia',
-      },
+    numberOfEmployees: {
+      '@type': 'QuantitativeValue',
+      value: 10000,
+      description: 'Active community members',
     },
   };
   
