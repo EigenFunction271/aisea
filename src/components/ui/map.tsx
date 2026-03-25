@@ -12,6 +12,7 @@ interface MapProps {
   }>;
   lineColor?: string;
   showLabels?: boolean;
+  showLines?: boolean;
   labelClassName?: string;
   animationDuration?: number;
   loop?: boolean;
@@ -40,6 +41,7 @@ export function WorldMap({
   dots = [], 
   lineColor = "#0ea5e9",
   showLabels = true,
+  showLines = true,
   labelClassName = "text-sm",
   animationDuration = 2,
   loop = true
@@ -268,7 +270,7 @@ export function WorldMap({
           
         </defs>
 
-        {projectedPoints.map((proj, i) => {
+        {showLines && projectedPoints.map((proj, i) => {
           const pathD = createCurvedPath(proj.start, proj.end);
           
           // Simplified animation timing
@@ -302,12 +304,9 @@ export function WorldMap({
                 }}
                 style={{ 
                   willChange: 'pathLength',
-                  // Optimize rendering performance
                   shapeRendering: 'optimizeSpeed',
                 }}
               />
-              
-              {/* Simplified: Remove animated circle for better performance */}
             </g>
           );
         })}

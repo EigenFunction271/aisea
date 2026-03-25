@@ -473,9 +473,58 @@ export default function LocaleHomeClient() {
                       label: undefined,
                     }, // Colombo
                   },
+                  {
+                    start: {
+                      lat: 3.1390,
+                      lng: 101.6869,
+                      label: undefined,
+                    },
+                    end: {
+                      lat: 5.4141,
+                      lng: 100.3288,
+                      label: undefined,
+                    }, // Penang
+                  },
+                  {
+                    start: {
+                      lat: -6.2088,
+                      lng: 106.8456,
+                      label: undefined,
+                    },
+                    end: {
+                      lat: -31.9505,
+                      lng: 115.8605,
+                      label: undefined,
+                    }, // Perth
+                  },
+                  {
+                    start: {
+                      lat: -31.9505,
+                      lng: 115.8605,
+                      label: undefined,
+                    },
+                    end: {
+                      lat: -33.8688,
+                      lng: 151.2093,
+                      label: undefined,
+                    }, // Sydney
+                  },
+                  {
+                    start: {
+                      lat: 3.1390,
+                      lng: 101.6869,
+                      label: undefined,
+                    },
+                    end: {
+                      lat: 34.0837,
+                      lng: 74.7973,
+                      label: undefined,
+                    }, // Srinagar, Kashmir
+                  },
                 ]}
                 lineColor="#0ea5e9"
                 showLabels={false}
+                showLines={false}
                 loop={true}
                 animationDuration={2}
               />
@@ -485,6 +534,7 @@ export default function LocaleHomeClient() {
             <CityScrollingBar
               cities={[
                 { name: "Kuala Lumpur", flag: "/assets/flags/malaysia.png" },
+                { name: "Penang", flag: "/assets/flags/malaysia.png" },
                 { name: "Jakarta", flag: "/assets/flags/indonesia.png" },
                 { name: "Tangerang", flag: "/assets/flags/indonesia.png" },
                 { name: "Bali", flag: "/assets/flags/indonesia.png" },
@@ -493,7 +543,10 @@ export default function LocaleHomeClient() {
                 { name: "Ha Noi", flag: "/assets/flags/vietnam.png" },
                 { name: "Tokyo", flag: "/assets/flags/japan.png" },
                 { name: "Brisbane", flag: "/assets/flags/australia.png" },
+                { name: "Perth", flag: "/assets/flags/australia.png" },
+                { name: "Sydney", flag: "/assets/flags/australia.png" },
                 { name: "Mumbai", flag: "/assets/flags/india.png" },
+                { name: "Kashmir", flag: "/assets/flags/india.png" },
                 { name: "Colombo", flag: "/assets/flags/sri_lanka.png" },
               ]}
               scrollSpeed={0.5}
