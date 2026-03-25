@@ -1,29 +1,22 @@
 "use client";
 
-import { useRef, useMemo } from 'react';
-import { Canvas, useFrame, extend } from '@react-three/fiber';
-import { shaderMaterial } from '@react-three/drei';
-import * as THREE from 'three';
-import { useGSAP } from '@gsap/react';
-import gsap from 'gsap';
-import { useTranslations } from 'next-intl';
+import { useRef, useMemo } from "react";
+import { Canvas, useFrame, extend } from "@react-three/fiber";
+import { shaderMaterial } from "@react-three/drei";
+import * as THREE from "three";
+import { useGSAP } from "@gsap/react";
+import gsap from "gsap";
+import { useTranslations } from "next-intl";
+import { useLocale } from "next-intl";
+import Image from "next/image";
+import { Mail } from "lucide-react";
 
 import { BlurFade } from "@/components/ui/blur-fade";
 import { Button } from "@/components/ui/button";
 import { Navbar1 } from "@/components/ui/navbar";
 import { HeroScrollIndicator } from "@/components/ui/hero-scroll-indicator";
-import { Mail } from "lucide-react";
-import Image from "next/image";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { LogoScrollingBar } from "@/components/LogoScrollingBar";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "@/components/ui/carousel";
-import { StickyFeatureSection } from "@/components/ui/sticky-scroll-cards-section";
+import { seededCaseStudies } from "@/lib/seo/seeded-case-studies";
 
 // ===================== SHADER =====================
 const vertexShader = `
@@ -116,7 +109,7 @@ const fragmentShader = `
     * buf[2]
     + mat4(vec4(-6.545563, -15.790176, -6.0438633, -5.415399), vec4(-43.591583, 28.551912, -16.00161, 18.84728), vec4(4.212382, 8.394307, 3.0958717, 8.657522), vec4(-5.0237565, -4.450633, -4.4768, -5.5010443))
     * buf[3]
-    + mat4(vec4(1.6985557, -67.05806, 6.897715, 1.9004834), vec4(1.8680354, 2.3915145, 2.5231109, 4.081538), vec4(11.158006, 1.7294737, 2.0738268, 7.386411), vec4(-4.256034, -306.24686, 8.258898, -17.132736))
+    + mat4(vec4(1.6985557, -67.05806, 6.897715, 1.9004834), vec4(1.8680354, 2.3915145, 2.5231109, 4.081538), vec4(11.158006, 1.7294727, 2.0738268, 7.386411), vec4(-4.256034, -306.24686, 8.258898, -17.132736))
     * buf[4]
     + mat4(vec4(1.6889864, -4.5852966, 3.8534803, -6.3482175), vec4(1.3543309, -1.2640043, 9.932754, 2.9079645), vec4(-5.2770967, 0.07150358, -0.13962056, 3.3269649), vec4(28.34703, -4.918278, 6.1044083, 4.085355))
     * buf[5]
@@ -162,40 +155,27 @@ const fragmentShader = `
     return vec4(buf[0].x , buf[0].y , buf[0].z, 1.0);
   }
   
-  // Mostly black with peach, lavender, and orange accents
-  vec3 black = vec3(0.0, 0.0, 0.0); // #000000
-  vec3 subtlePeach = vec3(0.15, 0.08, 0.06); // Very dark peach
-  vec3 peach = vec3(1.0, 0.85, 0.8); // Lighter peach for highlights
-  vec3 lavender = vec3(0.87, 0.63, 0.87); // #DDA0DD for highlights
-  vec3 subtleOrange = vec3(1.0, 0.65, 0.3); // #FFA64D for subtle orange accents
+  vec3 black = vec3(0.0, 0.0, 0.0);
+  vec3 subtlePeach = vec3(0.15, 0.08, 0.06);
+  vec3 peach = vec3(1.0, 0.85, 0.8);
+  vec3 lavender = vec3(0.87, 0.63, 0.87);
+  vec3 subtleOrange = vec3(1.0, 0.65, 0.3);
   
   void main() {
     vec2 uv = vUv * 2.0 - 1.0; uv.y *= -1.0;
     vec4 cppn = cppn_fn(uv, 0.1 * sin(0.3 * iTime), 0.1 * sin(0.69 * iTime), 0.1 * sin(0.44 * iTime));
     
-    // Use the neural network output to create subtle variations
     float intensity = (cppn.r + cppn.g + cppn.b) / 3.0;
-    
-    // Start with mostly black, add subtle peach based on neural network pattern
     vec3 baseColor = mix(black, subtlePeach, intensity * 0.4);
-    
-    // Add peach highlights where the neural network is more intense
     float peachIntensity = smoothstep(0.3, 0.7, intensity);
-    vec3 peachAccent = peach * peachIntensity * 0.6; // 60% opacity
-    
-    // Add lavender highlights using different channel for variation (increased presence)
+    vec3 peachAccent = peach * peachIntensity * 0.6;
     float lavenderIntensity = smoothstep(0.15, 0.65, cppn.g);
-    vec3 lavenderAccent = lavender * lavenderIntensity * 0.85; // Increased to 85% opacity
-    
-    // Add orange accents using blue channel for variation
+    vec3 lavenderAccent = lavender * lavenderIntensity * 0.85;
     float orangeIntensity = smoothstep(0.2, 0.7, cppn.b);
-    vec3 orangeAccent = subtleOrange * orangeIntensity * 0.65; // Increased to 65% opacity
+    vec3 orangeAccent = subtleOrange * orangeIntensity * 0.65;
     
     vec3 finalColor = baseColor + peachAccent + lavenderAccent + orangeAccent;
-    
-    // Keep it mostly black but allow more brightness for accents
     finalColor = clamp(finalColor, vec3(0.0), vec3(0.6));
-    
     gl_FragColor = vec4(finalColor, 1.0);
   }
 `;
@@ -210,20 +190,14 @@ extend({ CPPNShaderMaterial });
 
 function ShaderPlane() {
   const meshRef = useRef<THREE.Mesh>(null!);
-  const materialRef = useRef<any>(null!);
+  const materialRef = useRef<any>(null!); // eslint-disable-line @typescript-eslint/no-explicit-any
   const lastFrameTime = useRef(0);
-  const frameSkip = useRef(0);
 
   useFrame((state) => {
     if (!materialRef.current) return;
-    
-    // Throttle updates to ~60fps max to reduce CPU usage
     const now = state.clock.elapsedTime;
-    if (now - lastFrameTime.current < 0.016) {
-      return;
-    }
+    if (now - lastFrameTime.current < 0.016) return;
     lastFrameTime.current = now;
-    
     materialRef.current.iTime = now;
     const { width, height } = state.size;
     materialRef.current.iResolution.set(width, height);
@@ -239,37 +213,43 @@ function ShaderPlane() {
 
 function ShaderBackground() {
   const canvasRef = useRef<HTMLDivElement | null>(null);
-  
-  const camera = useMemo(() => ({ position: [0, 0, 1] as [number, number, number], fov: 75, near: 0.1, far: 1000 }), []);
-  
+  const camera = useMemo(
+    () =>
+      ({
+        position: [0, 0, 1] as [number, number, number],
+        fov: 75,
+        near: 0.1,
+        far: 1000,
+      }),
+    []
+  );
+
   useGSAP(
     () => {
       if (!canvasRef.current) return;
-      
-      gsap.set(canvasRef.current, {
-        filter: 'blur(20px)',
-        scale: 1.1,
-        autoAlpha: 0.7
-      });
-      
+      gsap.set(canvasRef.current, { filter: "blur(20px)", scale: 1.1, autoAlpha: 0.7 });
       gsap.to(canvasRef.current, {
-        filter: 'blur(0px)',
+        filter: "blur(0px)",
         scale: 1,
         autoAlpha: 1,
         duration: 1.5,
-        ease: 'power3.out',
-        delay: 0.3
+        ease: "power3.out",
+        delay: 0.3,
       });
     },
     { scope: canvasRef }
   );
-  
+
   return (
-    <div ref={canvasRef} className="bg-black absolute inset-0 -z-10 w-full h-full pointer-events-none" aria-hidden>
+    <div
+      ref={canvasRef}
+      className="bg-black absolute inset-0 -z-10 w-full h-full pointer-events-none"
+      aria-hidden
+    >
       <Canvas
         camera={camera}
-        gl={{ 
-          antialias: true, 
+        gl={{
+          antialias: true,
           alpha: false,
           powerPreference: "high-performance",
           stencil: false,
@@ -277,7 +257,7 @@ function ShaderBackground() {
         }}
         dpr={[1, 2]}
         performance={{ min: 0.5 }}
-        style={{ width: '100%', height: '100%', pointerEvents: 'none' }}
+        style={{ width: "100%", height: "100%", pointerEvents: "none" }}
       >
         <ShaderPlane />
       </Canvas>
@@ -286,16 +266,24 @@ function ShaderBackground() {
   );
 }
 
-declare module '@react-three/fiber' {
+declare module "@react-three/fiber" {
   interface ThreeElements {
-    cPPNShaderMaterial: any;
+    cPPNShaderMaterial: any; // eslint-disable-line @typescript-eslint/no-explicit-any
   }
 }
 
-export default function WorkWithUsPage() {
-  const t = useTranslations('workWithUs');
+// ===================== MAIN COMPONENT =====================
 
-  const faqItems = t.raw('faq.items') as Array<{ question: string; answer: string[] }>;
+export default function WorkWithUsClient() {
+  const t = useTranslations("workWithUs");
+  const locale = useLocale();
+  const localePrefix = locale === "en" ? "" : `/${locale}`;
+
+  const faqItems = t.raw("faq.items") as Array<{
+    question: string;
+    answer: string[];
+  }>;
+
   const faqJsonLd = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
@@ -308,395 +296,97 @@ export default function WorkWithUsPage() {
       },
     })),
   };
-  
+
   return (
     <div className="w-full min-h-screen">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
       />
-      {/* Navbar */}
+
       <Navbar1 />
-      
-      {/* Hero Section */}
+
+      {/* Hero */}
       <section className="fixed inset-0 w-screen h-screen bg-black z-10 pointer-events-none">
         <ShaderBackground />
         <div className="absolute inset-0 flex flex-col items-center justify-center text-center space-y-4 px-4 pointer-events-auto z-10">
           <BlurFade delay={0} duration={0.8} yOffset={20}>
             <h1 className="font-[family-name:var(--font-perfectly-nineties)] text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-tight text-white">
-              {t('hero.title').split(' across ').map((part, index, array) => (
-                <span key={index}>
-                  {part}
-                  {index < array.length - 1 && <><br />across </>}
-                </span>
-              ))}
+              {t("hero.title")
+                .split(" across ")
+                .map((part, index, array) => (
+                  <span key={index}>
+                    {part}
+                    {index < array.length - 1 && (
+                      <>
+                        <br />
+                        across{" "}
+                      </>
+                    )}
+                  </span>
+                ))}
             </h1>
           </BlurFade>
 
           <BlurFade delay={0.3}>
             <p className="font-[family-name:var(--font-geist-mono)] text-white/80 text-sm sm:text-base md:text-lg leading-relaxed max-w-2xl mx-auto">
-              {t('hero.subheading')}
+              {t("hero.subheading")}
             </p>
           </BlurFade>
 
-          <HeroScrollIndicator label={t('hero.scrollToExplore')} />
+          <HeroScrollIndicator label={t("hero.scrollToExplore")} />
         </div>
       </section>
 
-      {/* Spacer to allow scrolling past hero */}
+      {/* Spacer */}
       <div className="relative z-0 h-screen pointer-events-none" />
 
-      {/* Traditional GTM Section */}
-      <section id="traditional-gtm" className="relative z-20 bg-black text-white py-16 md:py-24 scroll-mt-24">
-        <div className="max-w-6xl mx-auto px-4">
-          <div className="flex flex-col lg:flex-row items-center justify-center gap-8 lg:gap-12">
-            <div className="flex-1 w-full lg:w-auto order-2 lg:order-1">
-              <div className="relative w-full aspect-[4/3] lg:max-w-md rounded-lg overflow-hidden">
-                <Image
-                  src="/assets/images_slides/5.JPG"
-                  alt="Traditional GTM challenges"
-                  fill
-                  className="object-cover"
-                  priority
-                />
-              </div>
-            </div>
-            <div className="flex-1 space-y-6 text-left order-1 lg:order-2">
-              <h2 className="font-[family-name:var(--font-perfectly-nineties)] text-4xl sm:text-5xl md:text-6xl font-bold text-white leading-tight">
-                {t('traditionalGTM.title')}
-              </h2>
-              <div className="space-y-4 font-[family-name:var(--font-geist-mono)] text-white/90 text-base sm:text-lg md:text-xl leading-relaxed">
-                <p>{t('traditionalGTM.point1')}</p>
-                <p>{t('traditionalGTM.point2')}</p>
-                <p>{t('traditionalGTM.point3')}</p>
-                <p className="pt-4 border-t border-white/20">
-                  {t('traditionalGTM.conclusion')}
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* AI.SEA helps Section */}
-      <section id="aisea-helps" className="relative z-20 bg-black text-white py-16 md:py-24 scroll-mt-24">
-        <div className="max-w-6xl mx-auto px-4">
-          <div className="flex flex-col lg:flex-row items-center justify-center gap-8 lg:gap-12">
-            <div className="flex-1 space-y-4 text-left">
-              <p className="font-[family-name:var(--font-geist-mono)] text-white/90 text-base sm:text-lg md:text-xl leading-relaxed">
-                {t('aiseaHelps.text1')}
-              </p>
-              <p className="font-[family-name:var(--font-geist-mono)] text-white/90 text-base sm:text-lg md:text-xl leading-relaxed">
-                {t('aiseaHelps.text2')}
-              </p>
-            </div>
-            <div className="flex-1 w-full lg:w-auto">
-              <div className="relative w-full aspect-[4/3] lg:max-w-md rounded-lg overflow-hidden">
-                <Image
-                  src="/assets/images_slides/4.png"
-                  alt="AI.SEA builders"
-                  fill
-                  className="object-cover"
-                  priority
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* What AI.SEA gives you Section */}
-      <section id="what-you-get" className="relative z-20 bg-black text-white py-16 md:py-24 scroll-mt-24">
-        <div className="max-w-7xl mx-auto px-4">
-          <h2 className="font-[family-name:var(--font-perfectly-nineties)] text-4xl sm:text-5xl md:text-6xl font-bold text-white text-center mb-12 md:mb-16">
-            {t('whatAISEA.title')}
-          </h2>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 mb-12">
-            <Card className="bg-white/5 border-white/10 text-white">
-              <CardHeader>
-                <CardTitle className="font-[family-name:var(--font-geist-mono)] text-xl md:text-2xl font-semibold text-white">
-                  {t('whatAISEA.card1.title')}
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="font-[family-name:var(--font-geist-mono)] text-white/90 text-base md:text-lg leading-relaxed">
-                  {t('whatAISEA.card1.description')}
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-white/5 border-white/10 text-white">
-              <CardHeader>
-                <CardTitle className="font-[family-name:var(--font-geist-mono)] text-xl md:text-2xl font-semibold text-white">
-                  {t('whatAISEA.card2.title')}
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="font-[family-name:var(--font-geist-mono)] text-white/90 text-base md:text-lg leading-relaxed">
-                  {t('whatAISEA.card2.description')}
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-white/5 border-white/10 text-white">
-              <CardHeader>
-                <CardTitle className="font-[family-name:var(--font-geist-mono)] text-xl md:text-2xl font-semibold text-white">
-                  {t('whatAISEA.card3.title')}
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="font-[family-name:var(--font-geist-mono)] text-white/90 text-base md:text-lg leading-relaxed">
-                  {t('whatAISEA.card3.description')}
-                </p>
-              </CardContent>
-            </Card>
-          </div>
-
-          <p className="font-[family-name:var(--font-geist-mono)] text-white/90 text-center text-lg md:text-xl leading-relaxed max-w-3xl mx-auto">
-            {t('whatAISEA.footer')}
+      {/* The honest pitch */}
+      <section className="relative z-20 bg-black text-white py-16 md:py-24">
+        <div className="max-w-4xl mx-auto px-4 space-y-6">
+          <p className="font-[family-name:var(--font-geist-mono)] text-white/90 text-base md:text-xl leading-relaxed">
+            Most ways to reach technical talent in Southeast Asia are slow, expensive, or
+            low-signal. Paid ads reach passive audiences. Cold outbound rarely hits real
+            builders. DevRel programs take months to show signal and are hard to measure.
+          </p>
+          <p className="font-[family-name:var(--font-geist-mono)] text-white/90 text-base md:text-xl leading-relaxed">
+            AI.SEA gives you something different: direct access to 10,000+ builders who
+            are already shipping — through formats designed around real usage, not exposure.
+          </p>
+          <p className="font-[family-name:var(--font-geist-mono)] text-white/70 text-base md:text-lg leading-relaxed border-l-2 border-white/20 pl-4">
+            We don&apos;t promise adoption. We promise something more useful: real evaluation
+            under real constraints, fast enough to inform your roadmap.
           </p>
         </div>
       </section>
 
-      {/* Ways to work with us Section */}
-      <section id="ways-to-work" className="relative z-20 bg-black text-white scroll-mt-24">
-        <div className="max-w-7xl mx-auto px-4">
-          <h2 className="font-[family-name:var(--font-perfectly-nineties)] text-4xl sm:text-5xl md:text-6xl font-bold text-white text-center mb-12 md:mb-16 pt-16 md:pt-24">
-            {t('waysToWork.title')}
-          </h2>
-          
-          <StickyFeatureSection
-            features={[
-              {
-                title: t('waysToWork.bounties.title'),
-                description: `${t('waysToWork.bounties.description')} ${t('waysToWork.bounties.bestFor')}`,
-                imageUrl: '/assets/images_general/wwu1.jpeg',
-                bgColor: 'bg-black border border-white/10',
-                textColor: 'text-white/90'
-              },
-              {
-                title: t('waysToWork.challenges.title'),
-                description: `${t('waysToWork.challenges.description')} ${t('waysToWork.challenges.bestFor')}`,
-                imageUrl: '/assets/images_general/wwu2.png',
-                bgColor: 'bg-black border border-white/10',
-                textColor: 'text-white/90'
-              },
-              {
-                title: t('waysToWork.pilots.title'),
-                description: `${t('waysToWork.pilots.description')} ${t('waysToWork.pilots.bestFor')}`,
-                imageUrl: '/assets/images_general/wwu3.jpeg',
-                bgColor: 'bg-black border border-white/10',
-                textColor: 'text-white/90'
-              },
-              {
-                title: t('waysToWork.infrastructure.title'),
-                description: `${t('waysToWork.infrastructure.description')} ${t('waysToWork.infrastructure.bestFor')}`,
-                imageUrl: '/assets/images_general/wwu4.png',
-                bgColor: 'bg-black border border-white/10',
-                textColor: 'text-white/90'
-              },
-            ]}
-            stickyTop="120px"
-            backgroundColor="bg-black"
-            showHeader={false}
-          />
-        </div>
-      </section>
-
-      {/* Who we've worked with Section */}
-      <div className="relative z-20 bg-black">
-        <LogoScrollingBar scrollSpeed={1.0} direction="right" showTitle={true} />
-      </div>
-
-      {/* Case Studies Section */}
-      <section id="case-studies" className="relative z-20 bg-black text-white py-16 md:py-24 scroll-mt-24">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="text-center mb-10 md:mb-12">
-            <h2 className="font-[family-name:var(--font-perfectly-nineties)] text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-4">
-              {t('caseStudies.title')}
-            </h2>
-            <p className="font-[family-name:var(--font-geist-mono)] text-white/70 text-sm uppercase tracking-wide">
-              {t('navigation.caseStudiesHint')}
-            </p>
-          </div>
-          
-          <Carousel
-            opts={{
-              align: "start",
-              loop: true,
-            }}
-            className="w-full max-w-5xl mx-auto"
-          >
-            <CarouselContent>
-              <CarouselItem>
-                <Card className="bg-white/5 border-white/10 text-white overflow-hidden">
-                  <div className="p-6 md:p-8 space-y-4">
-                    <div className="flex items-start gap-4 md:gap-6">
-                      <div className="relative w-24 h-24 md:w-32 md:h-32 flex-shrink-0 rounded-lg overflow-hidden">
-                        <Image
-                          src="/assets/images_slides/bfg.avif"
-                          alt="Lovable Hackathon"
-                          fill
-                          className="object-cover"
-                          priority
-                        />
-                      </div>
-                      <CardHeader className="p-0 flex-1">
-                        <CardTitle className="font-[family-name:var(--font-geist-mono)] text-2xl md:text-3xl font-semibold text-white">
-                          {t('caseStudies.lovable.title')}
-                        </CardTitle>
-                      </CardHeader>
-                    </div>
-                    <CardContent className="p-0 space-y-4">
-                        <p className="font-[family-name:var(--font-geist-mono)] text-white/90 text-base md:text-lg leading-relaxed">
-                          {t('caseStudies.lovable.paragraph1')}
-                        </p>
-                        <p className="font-[family-name:var(--font-geist-mono)] text-white/90 text-base md:text-lg leading-relaxed">
-                          {t('caseStudies.lovable.paragraph2')}
-                        </p>
-                        <p className="font-[family-name:var(--font-geist-mono)] text-white/90 text-base md:text-lg leading-relaxed">
-                          {t('caseStudies.lovable.paragraph3')}
-                        </p>
-                        <div className="pt-4 border-t border-white/20">
-                          <p className="font-[family-name:var(--font-geist-mono)] text-white font-semibold text-base md:text-lg mb-2">
-                            {t('caseStudies.resultLabel')}
-                          </p>
-                          <p className="font-[family-name:var(--font-geist-mono)] text-white/90 text-base md:text-lg leading-relaxed">
-                            {t('caseStudies.lovable.result')}
-                          </p>
-                        </div>
-                      </CardContent>
-                  </div>
-                </Card>
-              </CarouselItem>
-              
-              <CarouselItem>
-                <Card className="bg-white/5 border-white/10 text-white overflow-hidden">
-                  <div className="p-6 md:p-8 space-y-4">
-                    <div className="flex items-start gap-4 md:gap-6">
-                      <div className="relative w-24 h-24 md:w-32 md:h-32 flex-shrink-0 rounded-lg overflow-hidden">
-                        <Image
-                          src="/assets/images_slides/cam.avif"
-                          alt="Cursor and Anthropic Hackathon"
-                          fill
-                          className="object-cover"
-                          priority
-                        />
-                      </div>
-                      <CardHeader className="p-0 flex-1">
-                        <CardTitle className="font-[family-name:var(--font-geist-mono)] text-2xl md:text-3xl font-semibold text-white">
-                          {t('caseStudies.cursorAnthropic.title')}
-                        </CardTitle>
-                      </CardHeader>
-                    </div>
-                    <CardContent className="p-0 space-y-4">
-                        <p className="font-[family-name:var(--font-geist-mono)] text-white/90 text-base md:text-lg leading-relaxed">
-                          {t('caseStudies.cursorAnthropic.paragraph1')}
-                        </p>
-                        <p className="font-[family-name:var(--font-geist-mono)] text-white/90 text-base md:text-lg leading-relaxed">
-                          {t('caseStudies.cursorAnthropic.paragraph2')}
-                        </p>
-                        <p className="font-[family-name:var(--font-geist-mono)] text-white/90 text-base md:text-lg leading-relaxed">
-                          {t('caseStudies.cursorAnthropic.paragraph3')}
-                        </p>
-                        <p className="font-[family-name:var(--font-geist-mono)] text-white/90 text-base md:text-lg leading-relaxed">
-                          {t('caseStudies.cursorAnthropic.paragraph4')}
-                        </p>
-                        <div className="pt-4 border-t border-white/20">
-                          <p className="font-[family-name:var(--font-geist-mono)] text-white font-semibold text-base md:text-lg mb-2">
-                            {t('caseStudies.resultLabel')}
-                          </p>
-                          <p className="font-[family-name:var(--font-geist-mono)] text-white/90 text-base md:text-lg leading-relaxed">
-                            {t('caseStudies.cursorAnthropic.result')}
-                          </p>
-                        </div>
-                      </CardContent>
-                  </div>
-                </Card>
-              </CarouselItem>
-              
-              <CarouselItem>
-                <Card className="bg-white/5 border-white/10 text-white overflow-hidden">
-                  <div className="p-6 md:p-8 space-y-4">
-                    <div className="flex items-start gap-4 md:gap-6">
-                      <div className="relative w-24 h-24 md:w-32 md:h-32 flex-shrink-0 rounded-lg overflow-hidden">
-                        <Image
-                          src="/assets/images_slides/sas.png"
-                          alt="ElevenLabs Hackathon"
-                          fill
-                          className="object-cover"
-                          priority
-                        />
-                      </div>
-                      <CardHeader className="p-0 flex-1">
-                        <CardTitle className="font-[family-name:var(--font-geist-mono)] text-2xl md:text-3xl font-semibold text-white">
-                          {t('caseStudies.elevenlabs.title')}
-                        </CardTitle>
-                      </CardHeader>
-                    </div>
-                    <CardContent className="p-0 space-y-4">
-                        <p className="font-[family-name:var(--font-geist-mono)] text-white/90 text-base md:text-lg leading-relaxed">
-                          {t('caseStudies.elevenlabs.paragraph1')}
-                        </p>
-                        <p className="font-[family-name:var(--font-geist-mono)] text-white/90 text-base md:text-lg leading-relaxed">
-                          {t('caseStudies.elevenlabs.paragraph2')}
-                        </p>
-                        <p className="font-[family-name:var(--font-geist-mono)] text-white/90 text-base md:text-lg leading-relaxed">
-                          {t('caseStudies.elevenlabs.paragraph3')}
-                        </p>
-                        <div className="pt-4 border-t border-white/20">
-                          <p className="font-[family-name:var(--font-geist-mono)] text-white font-semibold text-base md:text-lg mb-2">
-                            {t('caseStudies.resultLabel')}
-                          </p>
-                          <p className="font-[family-name:var(--font-geist-mono)] text-white/90 text-base md:text-lg leading-relaxed">
-                            {t('caseStudies.elevenlabs.result')}
-                          </p>
-                        </div>
-                      </CardContent>
-                  </div>
-                </Card>
-              </CarouselItem>
-            </CarouselContent>
-            <CarouselPrevious className="text-white border-white/20 hover:bg-white/10 hover:border-white/40" />
-            <CarouselNext className="text-white border-white/20 hover:bg-white/10 hover:border-white/40" />
-          </Carousel>
-        </div>
-      </section>
-
-      {/* Get access to Section */}
-      <section id="access" className="relative z-20 bg-black text-white py-16 md:py-24 scroll-mt-24">
+      {/* Stats */}
+      <section className="relative z-20 bg-black text-white py-8 md:py-12">
         <div className="max-w-6xl mx-auto px-4">
-          <h2 className="font-[family-name:var(--font-perfectly-nineties)] text-4xl sm:text-5xl md:text-6xl font-bold text-white text-center mb-12 md:mb-16">
-            {t('getAccess.title')}
-          </h2>
-          
           <div className="bg-white/5 border border-white/10 rounded-2xl p-8 md:p-12">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
               <div className="text-center">
                 <div className="font-[family-name:var(--font-perfectly-nineties)] text-5xl sm:text-6xl md:text-7xl font-bold text-white mb-4">
-                  {t('getAccess.stat1.number')}
+                  {t("getAccess.stat1.number")}
                 </div>
                 <div className="font-[family-name:var(--font-geist-mono)] text-white/90 text-lg md:text-xl">
-                  {t('getAccess.stat1.label')}
+                  {t("getAccess.stat1.label")}
                 </div>
               </div>
-
               <div className="text-center">
                 <div className="font-[family-name:var(--font-perfectly-nineties)] text-5xl sm:text-6xl md:text-7xl font-bold text-white mb-4">
-                  {t('getAccess.stat2.number')}
+                  {t("getAccess.stat2.number")}
                 </div>
                 <div className="font-[family-name:var(--font-geist-mono)] text-white/90 text-lg md:text-xl">
-                  {t('getAccess.stat2.label')}
+                  {t("getAccess.stat2.label")}
                 </div>
               </div>
-
               <div className="text-center">
                 <div className="font-[family-name:var(--font-perfectly-nineties)] text-5xl sm:text-6xl md:text-7xl font-bold text-white mb-4">
-                  {t('getAccess.stat3.number')}
+                  {t("getAccess.stat3.number")}
                 </div>
                 <div className="font-[family-name:var(--font-geist-mono)] text-white/90 text-lg md:text-xl">
-                  {t('getAccess.stat3.label')}
+                  {t("getAccess.stat3.label")}
                 </div>
               </div>
             </div>
@@ -704,18 +394,404 @@ export default function WorkWithUsPage() {
         </div>
       </section>
 
-      {/* Get in touch Section */}
-      <section id="get-in-touch" className="relative z-20 bg-black text-white py-16 md:py-24 scroll-mt-24">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="mb-8">
-            <h2 className="font-[family-name:var(--font-geist-mono)] text-2xl md:text-3xl font-semibold text-white text-center mb-4">
-              {t('getInTouch.title')}
+      {/* Logo bar */}
+      <div className="relative z-20 bg-black">
+        <LogoScrollingBar scrollSpeed={1.0} direction="right" showTitle={true} />
+      </div>
+
+      {/* ===== PERSONA SECTIONS ===== */}
+
+      {/* Persona 1: AI tooling companies */}
+      <section
+        id="ai-tooling"
+        className="relative z-20 bg-black text-white py-16 md:py-24 scroll-mt-24"
+      >
+        <div className="max-w-6xl mx-auto px-4">
+          <div className="mb-2 font-[family-name:var(--font-geist-mono)] text-white/40 text-xs uppercase tracking-widest">
+            For AI tooling companies
+          </div>
+          <h2 className="font-[family-name:var(--font-perfectly-nineties)] text-4xl sm:text-5xl md:text-6xl font-bold text-white leading-tight mb-6">
+            GTM & product validation in Southeast Asia
+          </h2>
+          <p className="font-[family-name:var(--font-geist-mono)] text-white/90 text-base md:text-lg leading-relaxed max-w-3xl mb-8">
+            You have a product that works. You need to know if it works here — with the
+            right users, under real conditions. AI.SEA designs and runs builder-facing
+            programs so you can find out quickly, without burning headcount or budget on
+            low-signal distribution.
+          </p>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
+            <div className="border border-white/10 bg-white/5 rounded-lg p-6 space-y-3">
+              <h3 className="font-[family-name:var(--font-geist-mono)] font-semibold text-white text-lg">
+                What we deliver
+              </h3>
+              <ul className="space-y-2">
+                {[
+                  "Real usage in live builds — not passive exposure",
+                  "Technical feedback from the builders actually using your tool",
+                  "Early adopters across Malaysia, Indonesia, Philippines, Vietnam, Thailand",
+                  "Engagement formats that match your stage: bounties, sprints, pilots, infrastructure programs",
+                ].map((item) => (
+                  <li
+                    key={item}
+                    className="flex items-start gap-2 font-[family-name:var(--font-geist-mono)] text-white/80 text-sm md:text-base"
+                  >
+                    <span className="text-white/40 mt-0.5 flex-shrink-0">→</span>
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="border border-white/10 bg-white/5 rounded-lg p-6 space-y-3">
+              <h3 className="font-[family-name:var(--font-geist-mono)] font-semibold text-white text-lg">
+                Best for
+              </h3>
+              <ul className="space-y-2">
+                {[
+                  "Validating product-market fit in a new region",
+                  "Rapid developer feedback before roadmap lock-in",
+                  "Activating high-signal SEA users without a local DevRel hire",
+                  "Companies serious about SEA as a growth market, not an afterthought",
+                ].map((item) => (
+                  <li
+                    key={item}
+                    className="flex items-start gap-2 font-[family-name:var(--font-geist-mono)] text-white/80 text-sm md:text-base"
+                  >
+                    <span className="text-white/40 mt-0.5 flex-shrink-0">→</span>
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+
+          <div className="flex gap-4 flex-wrap">
+            <Button
+              asChild
+              size="lg"
+              className="font-[family-name:var(--font-geist-mono)] bg-white text-black hover:bg-white/90 font-medium rounded-full"
+            >
+              <a
+                href="https://airtable.com/appBgmnpu1bJljnxX/pagPGkKttUQAM4nGV/form"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Work with us
+              </a>
+            </Button>
+            <Button
+              asChild
+              variant="outline"
+              size="lg"
+              className="font-[family-name:var(--font-geist-mono)] border-white/20 text-white hover:bg-white/10 rounded-full"
+            >
+              <a href={`${localePrefix}/case-studies`}>See case studies →</a>
+            </Button>
+          </div>
+        </div>
+      </section>
+
+      {/* Persona 2: Corporates */}
+      <section
+        id="corporates"
+        className="relative z-20 bg-black text-white py-16 md:py-24 scroll-mt-24 border-t border-white/10"
+      >
+        <div className="max-w-6xl mx-auto px-4">
+          <div className="mb-2 font-[family-name:var(--font-geist-mono)] text-white/40 text-xs uppercase tracking-widest">
+            For corporates & enterprises
+          </div>
+          <h2 className="font-[family-name:var(--font-perfectly-nineties)] text-4xl sm:text-5xl md:text-6xl font-bold text-white leading-tight mb-6">
+            Builder residency & embedded collaboration
+          </h2>
+          <p className="font-[family-name:var(--font-geist-mono)] text-white/90 text-base md:text-lg leading-relaxed max-w-3xl mb-8">
+            You have a real problem that your internal teams haven&apos;t cracked yet. You
+            want to know if the right builder can crack it — and how long it actually takes.
+            AI.SEA embeds experienced AI builders into your context so you can find out
+            without committing to a full hire or a slow consulting engagement.
+          </p>
+
+          {/* Carousell spotlight */}
+          <div className="border border-white/20 bg-white/5 rounded-xl p-6 md:p-8 mb-8">
+            <div className="flex flex-col md:flex-row gap-6 items-start">
+              <div className="flex-1 space-y-3">
+                <div className="font-[family-name:var(--font-geist-mono)] text-white/50 text-xs uppercase tracking-widest">
+                  Featured engagement
+                </div>
+                <h3 className="font-[family-name:var(--font-geist-mono)] font-semibold text-white text-xl md:text-2xl">
+                  Carousell × AI.SEA Residency
+                </h3>
+                <p className="font-[family-name:var(--font-geist-mono)] text-white/80 text-sm md:text-base leading-relaxed">
+                  A time-bound embedded residency where selected AI.SEA builders worked
+                  directly inside Carousell&apos;s product and engineering context on
+                  defined AI problem statements. Builders had access to real data, real
+                  constraints, and engineering counterparts.
+                </p>
+                <p className="font-[family-name:var(--font-geist-mono)] text-white/70 text-sm leading-relaxed">
+                  Format: 4–6 weeks. Small builder pod. Clear problem framing. Technical
+                  handover at end of program.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
+            <div className="border border-white/10 bg-white/5 rounded-lg p-6 space-y-3">
+              <h3 className="font-[family-name:var(--font-geist-mono)] font-semibold text-white text-lg">
+                What you get
+              </h3>
+              <ul className="space-y-2">
+                {[
+                  "Experienced AI builders working on your specific problem",
+                  "A structured sprint with defined milestones and a technical handover",
+                  "Signal on what's feasible before you commit roadmap or headcount",
+                  "Ability to convert strong builders into extended engagements or hires",
+                ].map((item) => (
+                  <li
+                    key={item}
+                    className="flex items-start gap-2 font-[family-name:var(--font-geist-mono)] text-white/80 text-sm md:text-base"
+                  >
+                    <span className="text-white/40 mt-0.5 flex-shrink-0">→</span>
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="border border-white/10 bg-white/5 rounded-lg p-6 space-y-3">
+              <h3 className="font-[family-name:var(--font-geist-mono)] font-semibold text-white text-lg">
+                What this is not
+              </h3>
+              <ul className="space-y-2">
+                {[
+                  "Not a hackathon with 300 strangers",
+                  "Not a consultancy engagement billed by the hour",
+                  "Not a sourcing service for generalist freelancers",
+                  "Not for exploring vague problems — you need a real brief",
+                ].map((item) => (
+                  <li
+                    key={item}
+                    className="flex items-start gap-2 font-[family-name:var(--font-geist-mono)] text-white/60 text-sm md:text-base line-through decoration-white/30"
+                  >
+                    <span className="text-white/30 mt-0.5 flex-shrink-0 no-underline">×</span>
+                    <span className="no-underline line-through">{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+
+          <Button
+            asChild
+            size="lg"
+            className="font-[family-name:var(--font-geist-mono)] bg-white text-black hover:bg-white/90 font-medium rounded-full"
+          >
+            <a
+              href="https://airtable.com/appBgmnpu1bJljnxX/pagPGkKttUQAM4nGV/form"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Work with us
+            </a>
+          </Button>
+        </div>
+      </section>
+
+      {/* Persona 3: Government & institutional */}
+      <section
+        id="government"
+        className="relative z-20 bg-black text-white py-16 md:py-24 scroll-mt-24 border-t border-white/10"
+      >
+        <div className="max-w-6xl mx-auto px-4">
+          <div className="mb-2 font-[family-name:var(--font-geist-mono)] text-white/40 text-xs uppercase tracking-widest">
+            For government & institutional bodies
+          </div>
+          <h2 className="font-[family-name:var(--font-perfectly-nineties)] text-4xl sm:text-5xl md:text-6xl font-bold text-white leading-tight mb-6">
+            Builder programs at national scale
+          </h2>
+          <p className="font-[family-name:var(--font-geist-mono)] text-white/90 text-base md:text-lg leading-relaxed max-w-3xl mb-4">
+            National bodies and ecosystem funds working to accelerate AI capability in
+            Southeast Asia face a common problem: the talent exists, but the activation
+            infrastructure doesn&apos;t. AI.SEA provides that infrastructure — an active,
+            multi-country builder network that can be engaged for structured programs.
+          </p>
+          <p className="font-[family-name:var(--font-geist-mono)] text-white/60 text-sm md:text-base leading-relaxed max-w-3xl mb-8">
+            We work with national digital agencies, sovereign funds, and ecosystem
+            partners across the region to design programs that surface high-signal
+            builders, create measurable output, and build lasting local capability.
+          </p>
+
+          <div className="border border-white/10 bg-white/5 rounded-lg p-6 mb-10 space-y-3">
+            <h3 className="font-[family-name:var(--font-geist-mono)] font-semibold text-white text-lg">
+              What we can deliver
+            </h3>
+            <ul className="grid grid-cols-1 md:grid-cols-2 gap-2">
+              {[
+                "Nationally coordinated builder sprints and challenges",
+                "Talent pipelines with demonstrated output, not just credentials",
+                "Cross-border programs spanning multiple SEA markets",
+                "Public-facing visibility for government AI initiatives",
+                "Local community partnerships for program distribution",
+                "Technical output with clear milestones and evaluation criteria",
+              ].map((item) => (
+                <li
+                  key={item}
+                  className="flex items-start gap-2 font-[family-name:var(--font-geist-mono)] text-white/80 text-sm md:text-base"
+                >
+                  <span className="text-white/40 mt-0.5 flex-shrink-0">→</span>
+                  {item}
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <Button
+            asChild
+            size="lg"
+            className="font-[family-name:var(--font-geist-mono)] bg-white text-black hover:bg-white/90 font-medium rounded-full"
+          >
+            <a
+              href="https://airtable.com/appBgmnpu1bJljnxX/pagPGkKttUQAM4nGV/form"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Work with us
+            </a>
+          </Button>
+        </div>
+      </section>
+
+      {/* ===== CASE STUDIES ===== */}
+      <section
+        id="case-studies"
+        className="relative z-20 bg-black text-white py-16 md:py-24 scroll-mt-24 border-t border-white/10"
+      >
+        <div className="max-w-6xl mx-auto px-4">
+          <div className="mb-12">
+            <h2 className="font-[family-name:var(--font-perfectly-nineties)] text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-3">
+              Case Studies
             </h2>
-            <p className="font-[family-name:var(--font-geist-mono)] text-white/90 text-base md:text-lg leading-relaxed text-center max-w-2xl mx-auto mb-8">
-              {t('getInTouch.description')}
+            <p className="font-[family-name:var(--font-geist-mono)] text-white/60 text-sm">
+              Real engagements. Real numbers.
             </p>
           </div>
-          
+
+          <div className="flex flex-col gap-6 mb-10">
+            {seededCaseStudies.map((cs) => (
+              <a
+                key={cs.slug}
+                href={`${localePrefix}/case-studies/${cs.slug}`}
+                className="group flex flex-col md:flex-row border border-white/10 bg-white/5 rounded-lg overflow-hidden hover:border-white/20 transition-colors"
+              >
+                <div className="relative w-full md:w-44 h-36 md:h-auto flex-shrink-0">
+                  <Image
+                    src={cs.imageUrl}
+                    alt={cs.partner}
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+                <div className="p-5 flex flex-col justify-center gap-2 flex-1">
+                  <div className="font-[family-name:var(--font-geist-mono)] text-white/40 text-xs uppercase tracking-widest">
+                    {cs.partner}
+                  </div>
+                  <h3 className="font-[family-name:var(--font-geist-mono)] text-white font-semibold text-base md:text-lg leading-snug group-hover:text-white/90 transition-colors">
+                    {cs.headline}
+                  </h3>
+                  <div className="flex items-baseline gap-2">
+                    <span className="font-[family-name:var(--font-perfectly-nineties)] text-2xl font-bold text-white">
+                      {cs.stat}
+                    </span>
+                    <span className="font-[family-name:var(--font-geist-mono)] text-white/50 text-xs">
+                      {cs.statLabel}
+                    </span>
+                  </div>
+                  <span className="font-[family-name:var(--font-geist-mono)] text-white/40 text-xs group-hover:text-white/60 transition-colors">
+                    Read full case study →
+                  </span>
+                </div>
+              </a>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ===== HOW TO TELL IF WE'RE THE RIGHT FIT ===== */}
+      <section
+        id="right-fit"
+        className="relative z-20 bg-black text-white py-16 md:py-24 scroll-mt-24 border-t border-white/10"
+      >
+        <div className="max-w-6xl mx-auto px-4">
+          <h2 className="font-[family-name:var(--font-perfectly-nineties)] text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-4">
+            How to tell if we&apos;re the right fit
+          </h2>
+          <p className="font-[family-name:var(--font-geist-mono)] text-white/70 text-base md:text-lg leading-relaxed max-w-2xl mb-10">
+            We work best with organisations that have a specific question, a real product
+            or problem, and the appetite to act on what they find out.
+          </p>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="border border-white/10 bg-white/5 rounded-lg p-6 space-y-4">
+              <h3 className="font-[family-name:var(--font-geist-mono)] font-semibold text-white text-lg">
+                We&apos;re a good fit if you&apos;re
+              </h3>
+              <ul className="space-y-3">
+                {[
+                  "Trying to validate a product in a new region before committing GTM spend",
+                  "Looking for a fast, high-signal answer — not a slow research process",
+                  "Willing to engage builders as genuine collaborators, not free labour",
+                  "Prepared to define success clearly: what does a good outcome look like?",
+                  "Open to what builders tell you, even when it contradicts your assumptions",
+                ].map((item) => (
+                  <li
+                    key={item}
+                    className="flex items-start gap-2 font-[family-name:var(--font-geist-mono)] text-white/80 text-sm md:text-base"
+                  >
+                    <span className="text-green-400/70 mt-0.5 flex-shrink-0">✓</span>
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="border border-white/10 bg-white/5 rounded-lg p-6 space-y-4">
+              <h3 className="font-[family-name:var(--font-geist-mono)] font-semibold text-white text-lg">
+                We&apos;re probably not a fit if you&apos;re
+              </h3>
+              <ul className="space-y-3">
+                {[
+                  "Looking for logo exposure or passive brand sponsorship",
+                  "Wanting impressions and newsletter placements, not actual usage",
+                  "Not sure what problem you&apos;re trying to solve with builders",
+                  "Expecting a traditional agency relationship with unlimited revisions",
+                  "Treating this as an experiment with no intention to act on outcomes",
+                ].map((item) => (
+                  <li
+                    key={item}
+                    className="flex items-start gap-2 font-[family-name:var(--font-geist-mono)] text-white/60 text-sm md:text-base"
+                  >
+                    <span className="text-red-400/60 mt-0.5 flex-shrink-0">✕</span>
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ===== GET IN TOUCH ===== */}
+      <section
+        id="get-in-touch"
+        className="relative z-20 bg-black text-white py-16 md:py-24 scroll-mt-24 border-t border-white/10"
+      >
+        <div className="max-w-4xl mx-auto px-4 text-center">
+          <h2 className="font-[family-name:var(--font-perfectly-nineties)] text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-4">
+            {t("getInTouch.title")}
+          </h2>
+          <p className="font-[family-name:var(--font-geist-mono)] text-white/90 text-base md:text-lg leading-relaxed max-w-2xl mx-auto mb-8">
+            {t("getInTouch.description")}
+          </p>
           <div className="flex justify-center items-center gap-4">
             <Button
               asChild
@@ -727,14 +803,14 @@ export default function WorkWithUsPage() {
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                {t('caseStudies.button')}
+                {t("caseStudies.button")}
               </a>
             </Button>
             <a
-              href={t('getInTouch.emailLink')}
+              href={t("getInTouch.emailLink")}
               className="inline-flex items-center justify-center text-white/70 hover:text-white transition-colors duration-200"
-              aria-label={t('getInTouch.emailLabel')}
-              title={t('getInTouch.emailLabel')}
+              aria-label={t("getInTouch.emailLabel")}
+              title={t("getInTouch.emailLabel")}
             >
               <Mail className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8" />
             </a>
@@ -742,13 +818,16 @@ export default function WorkWithUsPage() {
         </div>
       </section>
 
-      {/* FAQ Section */}
-      <section id="faq" className="relative z-20 bg-black text-white py-16 md:py-24 scroll-mt-24">
+      {/* ===== FAQ ===== */}
+      <section
+        id="faq"
+        className="relative z-20 bg-black text-white py-16 md:py-24 scroll-mt-24 border-t border-white/10"
+      >
         <div className="max-w-4xl mx-auto px-4">
           <h2 className="font-[family-name:var(--font-perfectly-nineties)] text-4xl sm:text-5xl md:text-6xl font-bold text-white text-center mb-12 md:mb-16">
-            {t('faq.title')}
+            {t("faq.title")}
           </h2>
-          
+
           <div className="w-full space-y-4">
             {faqItems.map((item, index) => (
               <details

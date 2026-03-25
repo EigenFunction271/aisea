@@ -1,12 +1,14 @@
 import { MetadataRoute } from 'next';
 import { routing } from '@/i18n/routing';
 import { seededCities } from '@/lib/seo/seeded-cities';
+import { seededCaseStudies } from '@/lib/seo/seeded-case-studies';
 
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://aisea.builders';
 
 // All pages across all locales
-const pages = ['', 'events', 'manifesto', 'work-with-us', 'residency', 'cities'];
+const pages = ['', 'events', 'manifesto', 'work-with-us', 'residency', 'cities', 'case-studies'];
 const cityDetailPaths = seededCities.map((c) => `cities/${c.slug}`);
+const caseStudyDetailPaths = seededCaseStudies.map((cs) => `case-studies/${cs.slug}`);
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const sitemapEntries: MetadataRoute.Sitemap = [];
@@ -49,6 +51,23 @@ export default function sitemap(): MetadataRoute.Sitemap {
         lastModified: new Date(),
         changeFrequency: 'monthly' as const,
         priority: 0.6,
+        alternates: {
+          languages: Object.fromEntries(
+            routing.locales.map((loc) => [loc, urlForLocale(loc, path)]),
+          ),
+        },
+      });
+    });
+
+    caseStudyDetailPaths.forEach((detailPath) => {
+      const path = `/${detailPath}`;
+      const url = urlForLocale(locale, path);
+
+      sitemapEntries.push({
+        url,
+        lastModified: new Date(),
+        changeFrequency: 'monthly' as const,
+        priority: 0.7,
         alternates: {
           languages: Object.fromEntries(
             routing.locales.map((loc) => [loc, urlForLocale(loc, path)]),
