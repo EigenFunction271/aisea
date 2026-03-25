@@ -19,12 +19,6 @@ import {
 import dynamic from 'next/dynamic';
 import Image from "next/image";
 
-export const metadata = {
-  title: "AI.SEA Residency — 3-Month Builder Program in Southeast Asia",
-  description:
-    "The AI.SEA Residency is a 3-month selective program for exceptional builders in Southeast Asia. No pitches, no demo days — just serious builders doing serious work.",
-};
-
 // Lazy load shader background to reduce initial bundle size
 const ShaderBackground = dynamic(
   () => import('@/components/ShaderBackground').then(mod => ({ default: mod.ShaderBackground })),

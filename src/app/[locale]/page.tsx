@@ -17,12 +17,6 @@ import { HeroScrollIndicator } from "@/components/ui/hero-scroll-indicator";
 import dynamic from 'next/dynamic';
 import { Link } from '@/i18n/routing';
 
-export const metadata = {
-  title: "AI.SEA — Southeast Asia's Largest AI Builder Community",
-  description:
-    "AI.SEA is Southeast Asia's largest grassroots AI builder network — 10,000+ builders across KL, Jakarta, Manila, HCMC, Bangkok and beyond. Join us.",
-};
-
 const WorldMap = dynamic(
   () => import('@/components/ui/map').then(mod => ({ default: mod.WorldMap })),
   {
