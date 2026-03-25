@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 import { seededCities } from "@/lib/seo/seeded-cities";
+import { getHrefLangAlternates } from "@/lib/seo/hreflang";
 import { routing } from "@/i18n/routing";
 
 export function generateStaticParams() {
@@ -26,6 +27,10 @@ export async function generateMetadata({
   return {
     title: `${found.name} — AI.SEA Builder Community`,
     description: found.summary,
+    alternates: getHrefLangAlternates({
+      locale,
+      path: `/cities/${city}`,
+    }),
   };
 }
 

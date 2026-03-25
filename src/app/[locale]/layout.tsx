@@ -66,17 +66,9 @@ export async function generateMetadata({
   const siteName = 'AISEA';
   const title = "AISEA | Southeast Asia's Largest AI Builder Movement";
   const description = localeDescriptions[locale] || localeDescriptions.en;
-  
-  // Generate hreflang alternates
-  const languages: Record<string, string> = {};
-  routing.locales.forEach((loc) => {
-    languages[loc] = loc === 'en' ? baseUrl : `${baseUrl}/${loc}`;
-  });
-  
-  const alternates = {
-    canonical: locale === 'en' ? baseUrl : `${baseUrl}/${locale}`,
-    languages,
-  };
+
+  // Hreflang/canonical should be path-specific (e.g. `/cities/kuala-lumpur`),
+  // so we set them per-route in each public page's `generateMetadata`.
   
   return {
     metadataBase: new URL(baseUrl),
@@ -103,7 +95,6 @@ export async function generateMetadata({
     authors: [{ name: "AISEA" }],
     creator: "AISEA",
     publisher: "AISEA",
-    alternates,
     openGraph: {
       type: 'website',
       locale: locale === 'en' ? 'en_US' : locale === 'id' ? 'id_ID' : locale === 'zh' ? 'zh_CN' : 'vi_VN',
