@@ -329,16 +329,6 @@ export function DashboardContent({
                 Create profile
               </Link>
             </Button>
-            <Button
-              asChild
-              variant="outline"
-              style={{ border: "1px solid var(--ds-border)", color: "var(--ds-text-secondary)", background: "transparent" }}
-              className="rounded"
-            >
-              <Link href="/dashboard/claim-profile" locale={locale as "en" | "id" | "zh" | "vi"}>
-                Claim existing profile
-              </Link>
-            </Button>
           </div>
         </div>
       )}
