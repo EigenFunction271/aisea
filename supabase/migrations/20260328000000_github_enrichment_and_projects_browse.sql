@@ -48,9 +48,18 @@ COMMENT ON COLUMN public.projects.readme_summary     IS 'LLM-generated one-sente
 
 -- Unique constraint required for upsert idempotency in enrich-github function
 -- ON CONFLICT (builder_id, github_url) DO UPDATE ...
-ALTER TABLE public.projects
-  ADD CONSTRAINT projects_builder_github_url_key
-    UNIQUE (builder_id, github_url);
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint
+    WHERE conname = 'projects_builder_github_url_key'
+      AND conrelid = 'public.projects'::regclass
+  ) THEN
+    ALTER TABLE public.projects
+      ADD CONSTRAINT projects_builder_github_url_key
+        UNIQUE (builder_id, github_url);
+  END IF;
+END $$;
 
 -- ──────────────────────────────────────────────────────────────────────────────
 -- 3. projects — browse page additions
