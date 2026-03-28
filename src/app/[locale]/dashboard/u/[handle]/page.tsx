@@ -3,6 +3,8 @@ import { Link } from "@/i18n/routing";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { ProfileTabs } from "./profile-tabs";
+import { GitHubEnrichmentCard } from "./github-enrichment-card";
+import { GitHubTags } from "./github-tags";
 
 const MONO: React.CSSProperties = {
   fontFamily: "var(--font-dm-mono), monospace",
@@ -63,7 +65,7 @@ export default async function BuilderProfilePage({
   const { data: builder } = await admin
     .from("builders")
     .select(
-      "id, username, name, city, bio, skills, github_handle, linkedin_url, twitter_url, instagram_url, personal_url, created_at, is_wiki_contributor, builder_auth(user_id)"
+      "id, username, name, city, bio, skills, github_handle, linkedin_url, twitter_url, instagram_url, personal_url, created_at, is_wiki_contributor, github_enriched_at, github_activity_status, github_primary_languages, github_ai_libs, github_focus_areas, builder_auth(user_id)"
     )
     .eq("username", handle)
     .maybeSingle();
@@ -137,6 +139,19 @@ export default async function BuilderProfilePage({
 
   const allSkills: Array<{ slug: string; label: string }> = skillsRes.data ?? [];
   const displaySkills = allSkills.filter((s) => builderSkillSlugs.includes(s.slug));
+
+  // GitHub enrichment fields — safe defaults if migration hasn't run yet
+  const githubEnrichedAt = (builder as Record<string, unknown>).github_enriched_at as string | null ?? null;
+  const githubActivityStatus = (builder as Record<string, unknown>).github_activity_status as string | null ?? null;
+  const githubPrimaryLanguages: string[] = Array.isArray((builder as Record<string, unknown>).github_primary_languages)
+    ? ((builder as Record<string, unknown>).github_primary_languages as string[])
+    : [];
+  const githubAiLibs: string[] = Array.isArray((builder as Record<string, unknown>).github_ai_libs)
+    ? ((builder as Record<string, unknown>).github_ai_libs as string[])
+    : [];
+  const githubFocusAreas: string[] = Array.isArray((builder as Record<string, unknown>).github_focus_areas)
+    ? ((builder as Record<string, unknown>).github_focus_areas as string[])
+    : [];
 
   const color = cityColor(builder.city ?? "");
 
@@ -328,7 +343,7 @@ export default async function BuilderProfilePage({
 
       {/* Skills */}
       {displaySkills.length > 0 && (
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 28 }}>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 16 }}>
           {displaySkills.map((skill) => (
             <span
               key={skill.slug}
@@ -348,6 +363,23 @@ export default async function BuilderProfilePage({
             </span>
           ))}
         </div>
+      )}
+
+      {/* GitHub enrichment tags — visible to everyone if enriched */}
+      <GitHubTags
+        activityStatus={githubActivityStatus}
+        primaryLanguages={githubPrimaryLanguages}
+        aiLibs={githubAiLibs}
+        focusAreas={githubFocusAreas}
+      />
+
+      {/* GitHub enrichment card — owner only */}
+      {isOwner && (
+        <GitHubEnrichmentCard
+          builderId={builder.id}
+          githubHandle={builder.github_handle ?? null}
+          initialEnrichedAt={githubEnrichedAt}
+        />
       )}
 
       {/* Tabs */}
