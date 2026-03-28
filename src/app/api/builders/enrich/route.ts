@@ -27,7 +27,16 @@ export async function POST(req: NextRequest) {
   }
 
   // Verify ownership — calling user must own the builder_id
-  const admin = createAdminClient();
+  let admin: ReturnType<typeof createAdminClient>;
+  try {
+    admin = createAdminClient();
+  } catch {
+    return NextResponse.json(
+      { error: "Server misconfiguration — admin client could not be initialised" },
+      { status: 500 }
+    );
+  }
+
   const { data: link } = await admin
     .from("builder_auth")
     .select("builder_id")
@@ -42,9 +51,11 @@ export async function POST(req: NextRequest) {
   // Fire-and-forget to Edge Function — do not await the response.
   // The Edge Function uses waitUntil internally and completes asynchronously.
   const edgeFnUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/enrich-github`;
-  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  // Accept both names; SUPABASE_SERVICE_ROLE_KEY is canonical, SUPABASE_SECRET_KEY is legacy.
+  const serviceKey =
+    process.env.SUPABASE_SERVICE_ROLE_KEY ?? process.env.SUPABASE_SECRET_KEY;
 
-  if (!edgeFnUrl || !serviceKey) {
+  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !serviceKey) {
     return NextResponse.json(
       { error: "Server misconfiguration — enrichment endpoint not configured" },
       { status: 500 }

@@ -29,7 +29,12 @@ export async function GET(req: NextRequest) {
   }
 
   // Verify ownership
-  const admin = createAdminClient();
+  let admin: ReturnType<typeof createAdminClient>;
+  try {
+    admin = createAdminClient();
+  } catch {
+    return NextResponse.json({ error: "Server misconfiguration" }, { status: 500 });
+  }
   const { data: link } = await admin
     .from("builder_auth")
     .select("builder_id")
