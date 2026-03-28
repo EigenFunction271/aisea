@@ -1,6 +1,12 @@
 import { z } from "zod";
 
-export const challengeStatusSchema = z.enum(["draft", "published", "closed", "archived"]);
+export const challengeStatusSchema = z.enum([
+  "draft",
+  "published",
+  "closed",
+  "archived",
+  "pending_review",
+]);
 export const challengeEnrollmentStateSchema = z.enum([
   "not_enrolled",
   "enrolled",

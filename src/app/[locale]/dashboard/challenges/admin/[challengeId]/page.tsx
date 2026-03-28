@@ -30,15 +30,21 @@ export default async function EditChallengePage({
     redirect(`/${locale}/dashboard/challenges`);
   }
 
-  let challengeQuery = admin
+  const { data: challenge } = await admin
     .from("challenges")
     .select(
       "id, title, subtitle, description, hero_image_url, host_name, org_name, start_at, end_at, timezone, reward_text, external_link, status, tags, attachments, eligibility, judging_rubric, difficulty, winners, created_by"
     )
-    .eq("id", challengeId);
-  if (role === "admin") challengeQuery = challengeQuery.eq("created_by", user.id);
-  const { data: challenge } = await challengeQuery.maybeSingle();
+    .eq("id", challengeId)
+    .maybeSingle();
   if (!challenge) notFound();
+  if (
+    role === "admin" &&
+    challenge.created_by !== user.id &&
+    challenge.status !== "pending_review"
+  ) {
+    notFound();
+  }
 
   const allowedStatuses = new Set([
     "draft",
@@ -104,6 +110,12 @@ export default async function EditChallengePage({
       <p className="mt-2 text-sm text-white/70">
         Update challenge metadata, status transitions, winners, and review participant submissions.
       </p>
+      {challenge.status === "pending_review" ? (
+        <p className="mt-4 rounded-lg border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-100">
+          This challenge is a <strong>community proposal</strong>. Use <strong>Publish</strong> to make it
+          visible to everyone, or <strong>Unpublish</strong> to return it to draft (rejected).
+        </p>
+      ) : null}
 
         <ChallengeForm
           mode="edit"

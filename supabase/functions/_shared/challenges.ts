@@ -5,7 +5,7 @@ export type AppRole = "member" | "admin" | "super_admin";
 export interface ChallengeRecord {
   id: string;
   created_by: string;
-  status: "draft" | "published" | "closed" | "archived";
+  status: "draft" | "published" | "closed" | "archived" | "pending_review";
   start_at: string;
   end_at: string;
 }

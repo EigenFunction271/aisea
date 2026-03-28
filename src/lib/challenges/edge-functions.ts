@@ -37,10 +37,10 @@ const createChallengePayloadSchema = z
     eligibility: z.string().max(10000),
     judging_rubric: z.string().max(10000),
     difficulty: z.enum(["starter", "builder", "hardcore"]).nullable().optional(),
-    status: z.enum(["draft", "published"]).default("draft"),
+    status: z.enum(["draft", "published", "pending_review"]).default("draft"),
   })
   .superRefine((p, ctx) => {
-    if (p.status !== "published") return;
+    if (p.status === "draft") return;
     for (const field of PUBLISH_REQUIRED_TEXT) {
       if (!p[field].trim()) {
         ctx.addIssue({

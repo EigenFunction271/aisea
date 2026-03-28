@@ -6,6 +6,7 @@ import {
   canManageChallenge,
   getChallengeById,
   getUserRole,
+  isProfileComplete,
   jsonResponse,
 } from "../_shared/challenges.ts";
 
@@ -38,10 +39,11 @@ const actionSchema = z.discriminatedUnion("action", [
         eligibility: z.string().max(10000),
         judging_rubric: z.string().max(10000),
         difficulty: z.enum(["starter", "builder", "hardcore"]).nullable().optional(),
-        status: z.enum(["draft", "published"]).default("draft"),
+        status: z.enum(["draft", "published", "pending_review"]).default("draft"),
       })
       .superRefine((p, ctx) => {
-        if (p.status !== "published") return;
+        if (p.status === "draft") return;
+        // published OR pending_review: same completeness rules
         const requiredText = [
           "title", "subtitle", "description", "host_name",
           "org_name", "reward_text", "eligibility", "judging_rubric",
@@ -146,9 +148,7 @@ Deno.serve(async (req) => {
   }
 
   const role = await getUserRole(userId);
-  if (role !== "admin" && role !== "super_admin") {
-    return jsonResponse({ error: "Forbidden" }, 403, corsHeaders);
-  }
+  const isStaff = role === "admin" || role === "super_admin";
 
   let parsed: z.infer<typeof actionSchema>;
   try {
@@ -174,9 +174,31 @@ Deno.serve(async (req) => {
     );
   }
 
+  if (!isStaff && parsed.action !== "create" && parsed.action !== "update") {
+    return jsonResponse({ error: "Forbidden" }, 403, corsHeaders);
+  }
+
   const admin = createAdminClient();
 
   if (parsed.action === "create") {
+    if (!isStaff) {
+      const complete = await isProfileComplete(userId);
+      if (!complete) {
+        return jsonResponse(
+          { error: "Complete your dashboard profile before proposing a challenge" },
+          403,
+          corsHeaders
+        );
+      }
+      if (parsed.payload.status !== "pending_review") {
+        return jsonResponse(
+          { error: "Community proposals must be submitted with status pending_review" },
+          400,
+          corsHeaders
+        );
+      }
+    }
+
     const now = new Date().toISOString();
 
     // Server-side fallback dates for drafts when the client omits them.
@@ -222,13 +244,28 @@ Deno.serve(async (req) => {
 
   const challenge = await getChallengeById(parsed.challenge_id);
   if (!challenge) return jsonResponse({ error: "Challenge not found" }, 404, corsHeaders);
-  if (!canManageChallenge(userId, role, challenge.created_by)) {
-    return jsonResponse({ error: "Forbidden" }, 403, corsHeaders);
-  }
+
+  const staffCanModeratePending =
+    isStaff && challenge.status === "pending_review";
 
   if (parsed.action === "update") {
     if (challenge.status === "archived") {
       return jsonResponse({ error: "Archived challenges are read-only" }, 409, corsHeaders);
+    }
+
+    if (!isStaff) {
+      if (challenge.created_by !== userId || challenge.status !== "pending_review") {
+        return jsonResponse({ error: "Forbidden" }, 403, corsHeaders);
+      }
+      if (!(await isProfileComplete(userId))) {
+        return jsonResponse(
+          { error: "Complete your profile to edit this proposal" },
+          403,
+          corsHeaders
+        );
+      }
+    } else if (!staffCanModeratePending && !canManageChallenge(userId, role, challenge.created_by)) {
+      return jsonResponse({ error: "Forbidden" }, 403, corsHeaders);
     }
 
     if (parsed.payload.start_at || parsed.payload.end_at) {
@@ -252,6 +289,13 @@ Deno.serve(async (req) => {
   }
 
   if (parsed.action === "publish") {
+    if (challenge.status === "pending_review") {
+      if (!isStaff) {
+        return jsonResponse({ error: "Forbidden" }, 403, corsHeaders);
+      }
+    } else if (!canManageChallenge(userId, role, challenge.created_by)) {
+      return jsonResponse({ error: "Forbidden" }, 403, corsHeaders);
+    }
     const { data, error } = await admin
       .from("challenges")
       .update({ status: "published", published_at: new Date().toISOString() })
@@ -263,6 +307,13 @@ Deno.serve(async (req) => {
   }
 
   if (parsed.action === "unpublish") {
+    if (challenge.status === "pending_review") {
+      if (!isStaff) {
+        return jsonResponse({ error: "Forbidden" }, 403, corsHeaders);
+      }
+    } else if (!canManageChallenge(userId, role, challenge.created_by)) {
+      return jsonResponse({ error: "Forbidden" }, 403, corsHeaders);
+    }
     const { data, error } = await admin
       .from("challenges")
       .update({ status: "draft" })
@@ -274,6 +325,9 @@ Deno.serve(async (req) => {
   }
 
   if (parsed.action === "close") {
+    if (!staffCanModeratePending && !canManageChallenge(userId, role, challenge.created_by)) {
+      return jsonResponse({ error: "Forbidden" }, 403, corsHeaders);
+    }
     const now = new Date().toISOString();
     const { data, error } = await admin
       .from("challenges")
@@ -286,6 +340,9 @@ Deno.serve(async (req) => {
   }
 
   if (parsed.action === "archive") {
+    if (!staffCanModeratePending && !canManageChallenge(userId, role, challenge.created_by)) {
+      return jsonResponse({ error: "Forbidden" }, 403, corsHeaders);
+    }
     const now = new Date().toISOString();
     const { data, error } = await admin
       .from("challenges")
@@ -298,6 +355,9 @@ Deno.serve(async (req) => {
   }
 
   if (parsed.action === "set_winners") {
+    if (!canManageChallenge(userId, role, challenge.created_by)) {
+      return jsonResponse({ error: "Forbidden" }, 403, corsHeaders);
+    }
     if (challenge.status !== "closed") {
       return jsonResponse(
         { error: "Winners can only be selected after challenge closes" },

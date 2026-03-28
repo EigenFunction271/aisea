@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { Link } from "@/i18n/routing";
 import { ChallengesList } from "./challenges-list";
 import type { ChallengeCard } from "./types";
 
@@ -122,6 +123,17 @@ export default async function DashboardChallengesPage({
       <p className="mt-2 text-sm" style={{ color: "var(--ds-text-secondary)" }}>
         Join active challenges, submit your build, and track judging outcomes.
       </p>
+      {isAuthenticated && isProfileComplete && role === "member" ? (
+        <p className="mt-3 text-sm" style={{ color: "var(--ds-text-muted)" }}>
+          <Link
+            href="/dashboard/challenges/propose"
+            className="font-medium text-[var(--ds-accent)] underline-offset-4 hover:underline"
+          >
+            Propose a challenge
+          </Link>{" "}
+          — submissions are reviewed before going live.
+        </p>
+      ) : null}
       <ChallengesList
         active={active}
         archived={archived}

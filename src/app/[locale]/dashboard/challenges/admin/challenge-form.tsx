@@ -22,7 +22,7 @@ type ChallengeRecord = {
   timezone: string;
   reward_text: string;
   external_link: string | null;
-  status: "draft" | "published" | "closed" | "archived";
+  status: "draft" | "published" | "closed" | "archived" | "pending_review";
   tags: string[];
   attachments: Array<{ label: string; url: string }>;
   eligibility: string;
@@ -92,9 +92,12 @@ function diffChallengePayload(
 export function ChallengeForm({
   mode,
   initial,
+  variant = "admin",
 }: {
   mode: "create" | "edit";
   initial?: ChallengeRecord;
+  /** Community proposals: submit as pending_review; only staff can publish. */
+  variant?: "admin" | "proposal";
 }) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -365,6 +368,8 @@ export function ChallengeForm({
     }
   }
 
+  const isProposal = variant === "proposal";
+
   function runAction(action: "save" | "publish" | "unpublish" | "close" | "archive" | "winners") {
     setError(null);
     setSuccess(null);
@@ -375,7 +380,10 @@ export function ChallengeForm({
     // Status transitions (unpublish, close, archive) touch no content fields.
     if (action === "publish") {
       const validationError = validatePublish();
-      if (validationError) { setError(validationError); return; }
+      if (validationError) {
+        setError(validationError);
+        return;
+      }
     } else if (action === "save") {
       parsedForSave = parseAttachments();
       const attachmentError = validateAttachments(parsedForSave);
@@ -387,6 +395,15 @@ export function ChallengeForm({
         const supabase = createClient();
         const isDraft = action !== "publish";
         if (mode === "create") {
+          if (isProposal) {
+            const created = await createChallenge(supabase, {
+              ...buildPayload({ attachmentRows: parsedForSave }),
+              status: "pending_review",
+            });
+            setSuccess("Submitted for review. An admin will publish it when approved.");
+            router.push("/dashboard/challenges");
+            return;
+          }
           const created = await createChallenge(supabase, {
             ...buildPayload({ attachmentRows: parsedForSave }),
             status: isDraft ? "draft" : "published",
@@ -442,24 +459,46 @@ export function ChallengeForm({
     <div className="mt-6 space-y-4">
       {/* Action bar */}
       <div className="flex flex-wrap items-center gap-2">
-        <Button
-          type="button"
-          className="rounded-full"
-          disabled={isPending}
-          onClick={() => runAction("save")}
-        >
-          {mode === "create" ? "Create Draft" : "Save"}
-        </Button>
-        <Button
-          type="button"
-          variant="outline"
-          className="rounded-full border-white/20 text-white hover:bg-white/10"
-          disabled={isPending}
-          onClick={() => runAction("publish")}
-        >
-          Publish
-        </Button>
-        {mode === "edit" ? (
+        {isProposal && mode === "create" ? (
+          <Button
+            type="button"
+            className="rounded-full"
+            disabled={isPending}
+            onClick={() => runAction("publish")}
+          >
+            Submit for review
+          </Button>
+        ) : isProposal && mode === "edit" ? (
+          <Button
+            type="button"
+            className="rounded-full"
+            disabled={isPending}
+            onClick={() => runAction("save")}
+          >
+            Save changes
+          </Button>
+        ) : (
+          <>
+            <Button
+              type="button"
+              className="rounded-full"
+              disabled={isPending}
+              onClick={() => runAction("save")}
+            >
+              {mode === "create" ? "Create Draft" : "Save"}
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              className="rounded-full border-white/20 text-white hover:bg-white/10"
+              disabled={isPending}
+              onClick={() => runAction("publish")}
+            >
+              Publish
+            </Button>
+          </>
+        )}
+        {mode === "edit" && !isProposal ? (
           <>
             <Button type="button" variant="outline" className="rounded-full border-white/20 text-white hover:bg-white/10" disabled={isPending} onClick={() => runAction("unpublish")}>
               Unpublish
@@ -482,7 +521,7 @@ export function ChallengeForm({
           {preview ? "Edit" : "Preview"}
         </Button>
         <Button asChild type="button" variant="ghost" className="rounded-full text-white/70 hover:bg-white/10 hover:text-white">
-          <Link href="/dashboard/challenges/admin">Back</Link>
+          <Link href={isProposal ? "/dashboard/challenges" : "/dashboard/challenges/admin"}>Back</Link>
         </Button>
       </div>
 
@@ -640,8 +679,8 @@ export function ChallengeForm({
             </div>
           </div>
 
-          {/* Winners panel — edit mode only */}
-          {mode === "edit" ? (
+          {/* Winners panel — admin edit only */}
+          {mode === "edit" && !isProposal ? (
             <div className="rounded-xl border border-white/10 bg-white/5 p-4">
               <p className="mb-3 text-sm font-medium text-white">Winners</p>
               <div className="space-y-2">

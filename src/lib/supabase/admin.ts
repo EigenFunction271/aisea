@@ -7,10 +7,13 @@ import { createClient } from "@supabase/supabase-js";
  */
 export function createAdminClient() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const secretKey = process.env.SUPABASE_SECRET_KEY;
+  // Accept both names; SUPABASE_SERVICE_ROLE_KEY is the canonical name going forward.
+  // SUPABASE_SECRET_KEY is kept as a fallback to avoid breaking existing deployments.
+  const secretKey =
+    process.env.SUPABASE_SERVICE_ROLE_KEY ?? process.env.SUPABASE_SECRET_KEY;
   if (!url || !secretKey) {
     throw new Error(
-      "Missing NEXT_PUBLIC_SUPABASE_URL or SUPABASE_SECRET_KEY"
+      "Missing NEXT_PUBLIC_SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY"
     );
   }
   return createClient(url, secretKey, {

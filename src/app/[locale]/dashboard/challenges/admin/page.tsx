@@ -29,7 +29,9 @@ export default async function AdminChallengesPage({
     .select("id, title, subtitle, hero_image_url, status, end_at, created_by, updated_at")
     .order("updated_at", { ascending: false });
 
-  if (role === "admin") query = query.eq("created_by", user.id);
+  if (role === "admin") {
+    query = query.or(`created_by.eq.${user.id},status.eq.pending_review`);
+  }
   const { data: challenges } = await query;
 
   return (
@@ -64,7 +66,9 @@ export default async function AdminChallengesPage({
                 <p className="font-medium text-white">{challenge.title}</p>
                 <p className="text-xs text-white/60">{challenge.subtitle}</p>
                 <p className="text-xs text-white/60">
-                  Status: {challenge.status} · Ends {new Date(challenge.end_at).toLocaleDateString()}
+                  Status: {challenge.status}
+                  {challenge.status === "pending_review" ? " · awaiting publish" : ""} · Ends{" "}
+                  {new Date(challenge.end_at).toLocaleDateString()}
                 </p>
                 </div>
               </div>
