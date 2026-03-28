@@ -53,6 +53,12 @@
 | `personal_url` | `text` | YES | |
 | `github_contributions` | `integer` | YES | Filled by cron; null until first sync |
 | `github_last_active` | `date` | YES | Filled by cron |
+| `github_enriched_at` | `timestamptz` | YES | Null until first `enrich-github` run |
+| `github_activity_status` | `text` | YES | `active` / `occasional` / `dormant` — derived from most recent repo push |
+| `github_primary_languages` | `text[]` | NO | Default `'{}'`; top 3 languages by repo count |
+| `github_ai_libs` | `text[]` | NO | Default `'{}'`; AI libs detected across all repos |
+| `github_focus_areas` | `text[]` | NO | Default `'{}'`; LLM-classified focus areas |
+| `github_readme_score` | `integer` | YES | 0–100; highest README score across repos — **internal only** |
 | `created_at` | `timestamptz` | NO | Default `now()` |
 | `updated_at` | `timestamptz` | NO | Default `now()` |
 
@@ -72,13 +78,24 @@
 | `builder_id` | `uuid` | NO | FK → `builders.id` ON DELETE CASCADE |
 | `name` | `text` | NO | |
 | `description` | `text` | YES | Max 280 chars enforced in app/bot |
+| `tagline` | `text` | YES | Short display headline ≤120 chars; falls back to `readme_summary` on browse page |
+| `cover_image_url` | `text` | YES | Hero image / screenshot for card thumbnail |
 | `tech_stack` | `text[]` | NO | Default `'{}'`; **slugs** from `tech_stack_options` |
+| `focus_areas` | `text[]` | NO | Default `'{}'`; what the project does — filterable on browse page |
 | `stage` | `text` | NO | Check: `stage IN ('idea','in_progress','shipped')` |
-| `github_url` | `text` | YES | |
+| `is_public` | `boolean` | NO | Default `true`; `false` hides from public browse page |
+| `featured` | `boolean` | NO | Default `false`; admin flag — pinned on browse page |
+| `github_url` | `text` | YES | Unique per builder for enrichment upserts |
 | `demo_url` | `text` | YES | |
+| `github_stars` | `integer` | YES | Populated by `enrich-github` Edge Function |
+| `github_last_commit` | `date` | YES | Date of most recent commit, from GitHub API |
+| `detected_ai_libs` | `text[]` | NO | Default `'{}'`; AI libs detected in this repo |
+| `readme_summary` | `text` | YES | LLM-generated 1-sentence README summary (Gemini Flash 2.5) |
 | `created_at` | `timestamptz` | NO | Default `now()` |
+| `updated_at` | `timestamptz` | NO | Default `now()`; auto-updated by trigger |
 
-- **Indexes:** `builder_id`, `stage` (for filters on project listing).
+- **Unique constraint:** `(builder_id, github_url)` — supports idempotent upserts from `enrich-github`.
+- **Indexes:** `builder_id`, `stage`, `is_public`, `featured`, `updated_at DESC`, `github_stars DESC`, GIN on `focus_areas`, GIN on `detected_ai_libs`.
 
 ---
 
