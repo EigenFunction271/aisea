@@ -104,7 +104,7 @@ BEGIN
 END;
 $$;
 
-CREATE TRIGGER projects_updated_at
+CREATE OR REPLACE TRIGGER projects_updated_at
   BEFORE UPDATE ON public.projects
   FOR EACH ROW
   EXECUTE FUNCTION public.set_projects_updated_at();
