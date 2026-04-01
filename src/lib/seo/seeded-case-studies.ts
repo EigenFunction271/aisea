@@ -17,16 +17,16 @@ export const seededCaseStudies: SeededCaseStudy[] = [
   {
     slug: "cursor-anthropic",
     partner: "Cursor × Anthropic",
-    headline: "~700 senior builders onboarded in Southeast Asia in one day",
+    headline: "~500 senior builders onboarded in Southeast Asia in one day",
     stat: "2,000",
     statLabel: "signups",
     summary:
-      "AI.SEA ran one of Malaysia's largest AI hackathons with Cursor and Anthropic. 2,000 signups, ~1,000 in-person, ~70% senior developers and technical founders — all using both tools to build and ship working projects under time pressure.",
+      "AI.SEA ran one of Malaysia's largest AI hackathons with Cursor and Anthropic. 2,000 signups, ~700 in-person, ~70% senior developers and technical founders — all using both tools to build and ship working projects under time pressure.",
     outcome:
       "Public demonstration of how Cursor and Anthropic accelerated development speed, improved iteration quality, and enabled teams to ship more ambitious products within tight timelines.",
     paragraphs: [
       "AI.SEA partnered with Cursor, Anthropic, and ecosystem partners to run one of Malaysia's largest AI hackathons.",
-      "The event drew over 2,000 signups, with approximately 1,000 builders attending in person within a single day. Around 70% of participants were senior developers, founders, or technical leads — closely matching the ideal user profile for both Cursor and Anthropic.",
+      "The event drew over 1,000 signups, with approximately 700 builders attending in person within a single day. Around 70% of participants were senior developers, founders, or technical leads — closely matching the ideal user profile for both Cursor and Anthropic.",
       "Participants actively used Cursor and Anthropic tools throughout the hackathon to build and ship working projects under time pressure. This created immediate hands-on onboarding, not passive exposure.",
       "The top 15 teams received recognition from local VCs and ecosystem partners including AWS.",
     ],
