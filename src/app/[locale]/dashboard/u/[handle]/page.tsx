@@ -5,6 +5,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { ProfileTabs } from "./profile-tabs";
 import { GitHubEnrichmentCard } from "./github-enrichment-card";
 import { GitHubTags } from "./github-tags";
+import { GitHubCalendarCard } from "./github-calendar";
 
 const MONO: React.CSSProperties = {
   fontFamily: "var(--font-dm-mono), monospace",
@@ -372,6 +373,11 @@ export default async function BuilderProfilePage({
         aiLibs={githubAiLibs}
         focusAreas={githubFocusAreas}
       />
+
+      {/* GitHub contribution calendar — visible to everyone if handle is set */}
+      {builder.github_handle && (
+        <GitHubCalendarCard githubHandle={builder.github_handle} />
+      )}
 
       {/* GitHub enrichment card — owner only */}
       {isOwner && (
