@@ -34,6 +34,7 @@
     "checkEmail": "Kiểm tra email để lấy liên kết xác nhận.",
     "error": "Đã xảy ra lỗi. Thử lại.",
     "continueWithGoogle": "Tiếp tục với Google",
+    "continueWithGitHub": "Tiếp tục với GitHub",
     "orContinueWithEmail": "Hoặc tiếp tục bằng email"
   },
   "hero": {

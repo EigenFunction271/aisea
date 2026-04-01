@@ -103,7 +103,7 @@ Full documentation is in [`.env.example`](./.env.example). Summary:
 | `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | ✅ | Supabase anon key (safe for browser) |
 | `SUPABASE_SERVICE_ROLE_KEY` | ✅ | Supabase service role key — server only, never expose to client |
 | `NEXT_PUBLIC_BASE_URL` | ✅ | Absolute site URL, no trailing slash — used for sitemap and canonical links |
-| `GITHUB_PAT` | — | Listed here for docs; set as a Supabase secret (see below) |
+| `GITHUB_PAT` | Recommended | Put in **`.env.local`** for the Next.js server (contribution heatmap via GitHub GraphQL). Also set as a **Supabase secret** for `enrich-github`. Classic PAT: `read:user` + `public_repo` covers both. |
 | `GEMINI_API_KEY` | — | Listed here for docs; set as a Supabase secret (see below) |
 
 ### Supabase Edge Function secrets
@@ -146,18 +146,28 @@ supabase secrets list
 
 > ⚠️ The `service_role` key bypasses Row Level Security. Never put it in a `NEXT_PUBLIC_*` variable or expose it to the browser.
 
+### GitHub OAuth (Supabase Auth)
+
+Enables **Continue with GitHub** on the login page and **Link GitHub account** on Edit profile. When a user’s session includes a GitHub OAuth token, their profile heatmap is loaded with GitHub’s GraphQL `viewer` query so totals match github.com (including private contributions if the user shows them on their GitHub profile).
+
+1. Supabase Dashboard → **Authentication** → **Providers** → **GitHub** → enable
+2. Create a [GitHub OAuth App](https://github.com/settings/developers): set **Authorization callback URL** to the value shown in Supabase (usually `https://<project-ref>.supabase.co/auth/v1/callback`)
+
 ### GitHub Personal Access Token
 
-Used by the `enrich-github` Edge Function to fetch public repo data.
+Used by:
+
+- The **`enrich-github`** Edge Function (public repo listing and file fetches)
+- The **Next.js server** (builder profile contribution calendar via GitHub GraphQL `user(login:…)` when no per-user OAuth data is available yet)
 
 1. Go to [github.com/settings/tokens](https://github.com/settings/tokens)
 2. Choose **"Generate new token (classic)"** or **"Fine-grained token"**
-   - Classic: tick **`public_repo`** scope only
-   - Fine-grained: **Contents → Read-only** + **Metadata → Read-only** for public repos
+   - Classic: tick **`read:user`** and **`public_repo`** (covers GraphQL contributions + repo enrichment)
+   - Fine-grained: grant read access to user profile metadata and repo contents as needed for your org
 3. Copy the token — GitHub only shows it once
-4. Set it as a Supabase secret: `supabase secrets set GITHUB_PAT=github_pat_...`
+4. Add to **`.env.local`** as `GITHUB_PAT=…` for local Next.js, and set a Supabase secret for Edge Functions: `supabase secrets set GITHUB_PAT=github_pat_...`
 
-Without a token the enrichment function still works but is rate-limited to 60 GitHub API requests per hour — enough for testing, not production.
+Without a token, enrichment and the public heatmap fallback are rate-limited to 60 GitHub API requests per hour — enough for testing, not production.
 
 ### Google Gemini API key
 

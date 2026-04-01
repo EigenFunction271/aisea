@@ -34,6 +34,7 @@
     "checkEmail": "Check your email for the confirmation link.",
     "error": "Something went wrong. Try again.",
     "continueWithGoogle": "Continue with Google",
+    "continueWithGitHub": "Continue with GitHub",
     "orContinueWithEmail": "Or continue with email"
   },
   "hero": {

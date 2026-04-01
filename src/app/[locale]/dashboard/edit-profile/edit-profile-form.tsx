@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Link } from "@/i18n/routing";
+import { LinkGitHubAccount } from "./link-github-account";
 
 type Skill = { slug: string; label: string; sort_order: number | null };
 type Builder = {
@@ -26,9 +27,13 @@ type Builder = {
 export function EditProfileForm({
   builder,
   skills,
+  locale,
+  hasGithubLinked,
 }: {
   builder: Builder;
   skills: Skill[];
+  locale: string;
+  hasGithubLinked: boolean;
 }) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -154,6 +159,7 @@ export function EditProfileForm({
           onChange={(e) => setGithubHandle(e.target.value)}
           className="mt-1 bg-white/5 border-white/20 text-white"
         />
+        {!hasGithubLinked ? <LinkGitHubAccount locale={locale} /> : null}
       </div>
       <div className="rounded-lg border border-white/10 p-4">
         <p className="mb-3 text-sm font-medium text-white/80">Social links</p>

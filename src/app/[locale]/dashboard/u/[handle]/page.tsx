@@ -6,6 +6,7 @@ import { ProfileTabs } from "./profile-tabs";
 import { GitHubEnrichmentCard } from "./github-enrichment-card";
 import { GitHubTags } from "./github-tags";
 import { GitHubCalendarCard } from "./github-calendar";
+import { loadBuilderContributionCalendar } from "@/lib/github/load-builder-contribution-calendar";
 
 const MONO: React.CSSProperties = {
   fontFamily: "var(--font-dm-mono), monospace",
@@ -66,7 +67,7 @@ export default async function BuilderProfilePage({
   const { data: builder } = await admin
     .from("builders")
     .select(
-      "id, username, name, city, bio, skills, github_handle, linkedin_url, twitter_url, instagram_url, personal_url, created_at, is_wiki_contributor, github_enriched_at, github_activity_status, github_primary_languages, github_ai_libs, github_focus_areas, builder_auth(user_id)"
+      "id, username, name, city, bio, skills, github_handle, linkedin_url, twitter_url, instagram_url, personal_url, created_at, is_wiki_contributor, github_enriched_at, github_activity_status, github_primary_languages, github_ai_libs, github_focus_areas, github_contribution_calendar, github_contribution_calendar_updated_at, github_contribution_calendar_oauth, builder_auth(user_id)"
     )
     .eq("username", handle)
     .maybeSingle();
@@ -76,6 +77,25 @@ export default async function BuilderProfilePage({
   const builderUserId =
     (builder.builder_auth as unknown as { user_id: string } | null)?.user_id ?? null;
   const isOwner = Boolean(viewer && builderUserId && viewer.id === builderUserId);
+
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+  const sessionProviderToken = session?.provider_token ?? null;
+  const hasGithubIdentity =
+    viewer.identities?.some((i) => i.provider === "github") ?? false;
+
+  const bRow = builder as Record<string, unknown>;
+  const contributionLoad = await loadBuilderContributionCalendar({
+    admin,
+    builderId: builder.id,
+    githubHandle: builder.github_handle,
+    cachedJson: bRow.github_contribution_calendar,
+    cachedUpdatedAt: (bRow.github_contribution_calendar_updated_at as string | null) ?? null,
+    calendarOauth: Boolean(bRow.github_contribution_calendar_oauth),
+    isOwner,
+    sessionProviderToken,
+  });
 
   const builderSkillSlugs: string[] = Array.isArray(builder.skills)
     ? (builder.skills as string[])
@@ -342,10 +362,34 @@ export default async function BuilderProfilePage({
         ))}
       </div>
 
-      {/* GitHub contribution heatmap — prominent placement when handle is set */}
-      {builder.github_handle && (
-        <GitHubCalendarCard githubHandle={builder.github_handle} />
-      )}
+      {/* GitHub contribution heatmap — GitHub GraphQL (PAT + optional OAuth viewer) */}
+      {builder.github_handle ? (
+        contributionLoad && contributionLoad.activities.length > 0 ? (
+          <GitHubCalendarCard
+            activities={contributionLoad.activities}
+            showLinkGithubHint={isOwner && !hasGithubIdentity}
+          />
+        ) : (
+          <div
+            style={{
+              ...MONO,
+              fontSize: 12,
+              color: "var(--ds-text-muted)",
+              border: "1px solid var(--ds-border)",
+              borderRadius: 8,
+              background: "var(--ds-bg-surface)",
+              padding: "14px 18px",
+              marginBottom: 16,
+              lineHeight: 1.5,
+            }}
+          >
+            Contribution graph could not be loaded. Set{" "}
+            <code style={{ color: "var(--ds-accent)" }}>GITHUB_PAT</code> on the server (scope{" "}
+            <code style={{ color: "var(--ds-accent)" }}>read:user</code>), sign in with GitHub, or link
+            GitHub on Edit profile—then open this page again.
+          </div>
+        )
+      ) : null}
 
       {/* Skills */}
       {displaySkills.length > 0 && (

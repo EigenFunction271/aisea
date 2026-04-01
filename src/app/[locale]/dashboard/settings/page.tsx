@@ -63,6 +63,10 @@ export default async function SettingsPage({
           skills: (builder.skills ?? []) as string[],
         }}
         skills={skills ?? []}
+        locale={locale}
+        hasGithubLinked={
+          user.identities?.some((i) => i.provider === "github") ?? false
+        }
       />
     </div>
   );

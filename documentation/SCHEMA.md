@@ -59,6 +59,9 @@
 | `github_ai_libs` | `text[]` | NO | Default `'{}'`; AI libs detected across all repos |
 | `github_focus_areas` | `text[]` | NO | Default `'{}'`; LLM-classified focus areas |
 | `github_readme_score` | `integer` | YES | 0–100; highest README score across repos — **internal only** |
+| `github_contribution_calendar` | `jsonb` | YES | Cached `{date,count,level}[]` from GitHub GraphQL (activity heatmap) |
+| `github_contribution_calendar_updated_at` | `timestamptz` | YES | Last time the calendar JSON was refreshed |
+| `github_contribution_calendar_oauth` | `boolean` | NO | Default `false`; `true` if last write used the owner’s GitHub OAuth token (PAT refresh must not overwrite) |
 | `created_at` | `timestamptz` | NO | Default `now()` |
 | `updated_at` | `timestamptz` | NO | Default `now()` |
 

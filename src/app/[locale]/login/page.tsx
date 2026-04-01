@@ -36,7 +36,7 @@ export default function LoginPage() {
 
   const supabase = createClient();
 
-  async function handleGoogle() {
+  async function oauthRedirect(provider: "google" | "github") {
     setError(null);
     setMessage(null);
     setLoading(true);
@@ -44,14 +44,14 @@ export default function LoginPage() {
       const origin = window.location.origin;
       const redirectTo = `${origin}/auth/callback?next=${encodeURIComponent(next)}`;
       const { error: oauthError } = await supabase.auth.signInWithOAuth({
-        provider: "google",
+        provider,
         options: { redirectTo },
       });
       if (oauthError) {
         setError(oauthError.message);
         setLoading(false);
       }
-      // On success the browser redirects to Google, then back to /auth/callback.
+      // On success the browser redirects to the provider, then back to /auth/callback.
     } catch {
       setError(t("error"));
       setLoading(false);
@@ -110,10 +110,19 @@ export default function LoginPage() {
               type="button"
               variant="outline"
               disabled={loading}
-              onClick={handleGoogle}
+              onClick={() => oauthRedirect("google")}
               className="w-full rounded-full font-[family-name:var(--font-geist-mono)] border-white/25 bg-white/5 text-white hover:bg-white/10 hover:text-white"
             >
               {loading ? "…" : t("continueWithGoogle")}
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              disabled={loading}
+              onClick={() => oauthRedirect("github")}
+              className="w-full rounded-full font-[family-name:var(--font-geist-mono)] border-white/25 bg-white/5 text-white hover:bg-white/10 hover:text-white"
+            >
+              {loading ? "…" : t("continueWithGitHub")}
             </Button>
             <p className="text-center text-xs text-white/50 font-[family-name:var(--font-geist-mono)]">
               {t("orContinueWithEmail")}

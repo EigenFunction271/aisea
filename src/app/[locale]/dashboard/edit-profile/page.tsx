@@ -57,6 +57,10 @@ export default async function EditProfilePage({
           skills: (builder.skills ?? []) as string[],
         }}
         skills={skills ?? []}
+        locale={locale}
+        hasGithubLinked={
+          user.identities?.some((i) => i.provider === "github") ?? false
+        }
       />
     </div>
   );
