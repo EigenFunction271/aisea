@@ -1,6 +1,6 @@
 "use client";
 
-import GitHubCalendar from "react-github-calendar";
+import { GitHubCalendar } from "react-github-calendar";
 
 const MONO: React.CSSProperties = {
   fontFamily: "var(--font-dm-mono), monospace",
@@ -49,9 +49,9 @@ export function GitHubCalendarCard({ githubHandle }: { githubHandle: string }) {
         blockSize={10}
         blockMargin={3}
         fontSize={11}
-        hideColorLegend={false}
-        hideMonthLabels={false}
-        hideTotalCount={false}
+        showColorLegend
+        showMonthLabels
+        showTotalCount
         style={{ fontFamily: "var(--font-dm-mono), monospace" }}
         errorMessage="Could not load contribution data."
       />

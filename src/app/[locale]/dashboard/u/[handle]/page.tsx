@@ -342,6 +342,11 @@ export default async function BuilderProfilePage({
         ))}
       </div>
 
+      {/* GitHub contribution heatmap — prominent placement when handle is set */}
+      {builder.github_handle && (
+        <GitHubCalendarCard githubHandle={builder.github_handle} />
+      )}
+
       {/* Skills */}
       {displaySkills.length > 0 && (
         <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 16 }}>
@@ -373,11 +378,6 @@ export default async function BuilderProfilePage({
         aiLibs={githubAiLibs}
         focusAreas={githubFocusAreas}
       />
-
-      {/* GitHub contribution calendar — visible to everyone if handle is set */}
-      {builder.github_handle && (
-        <GitHubCalendarCard githubHandle={builder.github_handle} />
-      )}
 
       {/* GitHub enrichment card — owner only */}
       {isOwner && (
