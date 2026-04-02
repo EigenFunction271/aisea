@@ -8,6 +8,10 @@ import { GitHubTags } from "./github-tags";
 import { GitHubCalendarCard } from "./github-calendar";
 import { loadBuilderContributionCalendar } from "@/lib/github/load-builder-contribution-calendar";
 
+/** Core profile row — calendar columns are loaded separately so a missing migration cannot 500 the page. */
+const BUILDER_PROFILE_SELECT =
+  "id, username, name, city, bio, skills, github_handle, linkedin_url, twitter_url, instagram_url, personal_url, created_at, is_wiki_contributor, github_enriched_at, github_activity_status, github_primary_languages, github_ai_libs, github_focus_areas, builder_auth(user_id)";
+
 const MONO: React.CSSProperties = {
   fontFamily: "var(--font-dm-mono), monospace",
 };
@@ -63,12 +67,10 @@ export default async function BuilderProfilePage({
     redirect(`/${locale}/login?next=/${locale}/dashboard/u/${encodeURIComponent(handle)}`);
   }
 
-  // Single join — builder row + auth user_id in one round-trip.
+  // Builder row (calendar JSON lives in separate optional query below).
   const { data: builder } = await admin
     .from("builders")
-    .select(
-      "id, username, name, city, bio, skills, github_handle, linkedin_url, twitter_url, instagram_url, personal_url, created_at, is_wiki_contributor, github_enriched_at, github_activity_status, github_primary_languages, github_ai_libs, github_focus_areas, github_contribution_calendar, github_contribution_calendar_updated_at, github_contribution_calendar_oauth, builder_auth(user_id)"
-    )
+    .select(BUILDER_PROFILE_SELECT)
     .eq("username", handle)
     .maybeSingle();
 
@@ -78,24 +80,54 @@ export default async function BuilderProfilePage({
     (builder.builder_auth as unknown as { user_id: string } | null)?.user_id ?? null;
   const isOwner = Boolean(viewer && builderUserId && viewer.id === builderUserId);
 
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
-  const sessionProviderToken = session?.provider_token ?? null;
+  let sessionProviderToken: string | null = null;
+  try {
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+    sessionProviderToken = session?.provider_token ?? null;
+  } catch {
+    sessionProviderToken = null;
+  }
   const hasGithubIdentity =
     viewer.identities?.some((i) => i.provider === "github") ?? false;
 
-  const bRow = builder as Record<string, unknown>;
-  const contributionLoad = await loadBuilderContributionCalendar({
-    admin,
-    builderId: builder.id,
-    githubHandle: builder.github_handle,
-    cachedJson: bRow.github_contribution_calendar,
-    cachedUpdatedAt: (bRow.github_contribution_calendar_updated_at as string | null) ?? null,
-    calendarOauth: Boolean(bRow.github_contribution_calendar_oauth),
-    isOwner,
-    sessionProviderToken,
-  });
+  let contributionCalendarJson: unknown = null;
+  let contributionCalendarUpdatedAt: string | null = null;
+  let contributionCalendarOauth = false;
+  try {
+    const { data: calSlice, error: calErr } = await admin
+      .from("builders")
+      .select(
+        "github_contribution_calendar, github_contribution_calendar_updated_at, github_contribution_calendar_oauth"
+      )
+      .eq("id", builder.id)
+      .maybeSingle();
+    if (!calErr && calSlice) {
+      contributionCalendarJson = calSlice.github_contribution_calendar;
+      contributionCalendarUpdatedAt =
+        (calSlice.github_contribution_calendar_updated_at as string | null) ?? null;
+      contributionCalendarOauth = Boolean(calSlice.github_contribution_calendar_oauth);
+    }
+  } catch {
+    // Network / schema: skip heatmap cache, page still renders.
+  }
+
+  let contributionLoad: Awaited<ReturnType<typeof loadBuilderContributionCalendar>> = null;
+  try {
+    contributionLoad = await loadBuilderContributionCalendar({
+      admin,
+      builderId: builder.id,
+      githubHandle: builder.github_handle,
+      cachedJson: contributionCalendarJson,
+      cachedUpdatedAt: contributionCalendarUpdatedAt,
+      calendarOauth: contributionCalendarOauth,
+      isOwner,
+      sessionProviderToken,
+    });
+  } catch {
+    contributionLoad = null;
+  }
 
   const builderSkillSlugs: string[] = Array.isArray(builder.skills)
     ? (builder.skills as string[])

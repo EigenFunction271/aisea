@@ -44,6 +44,26 @@ export async function loadBuilderContributionCalendar(opts: {
   isOwner: boolean;
   sessionProviderToken: string | null | undefined;
 }): Promise<BuilderContributionLoadResult | null> {
+  try {
+    return await loadBuilderContributionCalendarInner(opts);
+  } catch (err) {
+    if (process.env.NODE_ENV === "development") {
+      console.error("[github-calendar] load failed:", err);
+    }
+    return null;
+  }
+}
+
+async function loadBuilderContributionCalendarInner(opts: {
+  admin: SupabaseClient;
+  builderId: string;
+  githubHandle: string | null;
+  cachedJson: unknown;
+  cachedUpdatedAt: string | null;
+  calendarOauth: boolean;
+  isOwner: boolean;
+  sessionProviderToken: string | null | undefined;
+}): Promise<BuilderContributionLoadResult | null> {
   const {
     admin,
     builderId,
@@ -65,15 +85,24 @@ export async function loadBuilderContributionCalendar(opts: {
     totalContributions: number,
     fromOauth: boolean
   ) {
-    await admin
-      .from("builders")
-      .update({
-        github_contribution_calendar: activities,
-        github_contribution_calendar_updated_at: new Date().toISOString(),
-        github_contribution_calendar_oauth: fromOauth,
-        github_contributions: totalContributions,
-      })
-      .eq("id", builderId);
+    try {
+      const { error } = await admin
+        .from("builders")
+        .update({
+          github_contribution_calendar: activities,
+          github_contribution_calendar_updated_at: new Date().toISOString(),
+          github_contribution_calendar_oauth: fromOauth,
+          github_contributions: totalContributions,
+        })
+        .eq("id", builderId);
+      if (error && process.env.NODE_ENV === "development") {
+        console.error("[github-calendar] persist failed:", error.message);
+      }
+    } catch (err) {
+      if (process.env.NODE_ENV === "development") {
+        console.error("[github-calendar] persist threw:", err);
+      }
+    }
   }
 
   // 1) Owner: refresh from GitHub OAuth viewer token (private-inclusive if enabled on GitHub)

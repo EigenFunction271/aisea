@@ -130,7 +130,12 @@ async function githubGraphql<T>(body: object, token: string): Promise<T> {
     },
     body: JSON.stringify(body),
   });
-  const json: unknown = await res.json();
+  let json: unknown;
+  try {
+    json = await res.json();
+  } catch {
+    throw new Error(`GitHub GraphQL: response was not JSON (${res.status})`);
+  }
   if (!res.ok) {
     const msg =
       typeof json === "object" && json && "message" in json
