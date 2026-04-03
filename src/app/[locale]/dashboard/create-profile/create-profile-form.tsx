@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "@/i18n/routing";
 import { createClient } from "@/lib/supabase/client";
 import { createBuilderProfile } from "@/lib/builders/edge-functions";
+import { githubLoginFromUser } from "@/lib/builders/github-identity";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -30,6 +31,21 @@ export function CreateProfileForm({ skills }: { skills: Skill[] }) {
     (a, b) => (a.sort_order ?? 99) - (b.sort_order ?? 99)
   );
 
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      const login = githubLoginFromUser(user);
+      if (!cancelled && login) {
+        setGithubHandle((prev) => (prev.trim() ? prev : login));
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   const toggleSkill = (slug: string) => {
     setSelectedSkills((prev) =>
       prev.includes(slug) ? prev.filter((s) => s !== slug) : [...prev, slug]
@@ -42,7 +58,7 @@ export function CreateProfileForm({ skills }: { skills: Skill[] }) {
     setLoading(true);
     const supabase = createClient();
     try {
-      await createBuilderProfile(supabase, {
+      const { builder } = await createBuilderProfile(supabase, {
         username: username.trim(),
         name: name.trim(),
         city: city.trim(),
@@ -54,6 +70,13 @@ export function CreateProfileForm({ skills }: { skills: Skill[] }) {
         twitter_url: twitterUrl.trim() || undefined,
         personal_url: personalUrl.trim() || undefined,
       });
+      if (githubHandle.trim()) {
+        void fetch("/api/builders/enrich", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ builder_id: builder.id }),
+        }).catch(() => {});
+      }
       router.replace("/dashboard");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong");

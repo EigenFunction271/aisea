@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { fireEnrichGithubEdgeFunction } from "@/lib/builders/enrich-github-edge";
 
 const bodySchema = z.object({
   builder_id: z.string().uuid(),
@@ -49,8 +50,6 @@ export async function POST(req: NextRequest) {
   }
 
   // Fire-and-forget to Edge Function — do not await the response.
-  // The Edge Function uses waitUntil internally and completes asynchronously.
-  const edgeFnUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/enrich-github`;
   // Accept both names; SUPABASE_SERVICE_ROLE_KEY is canonical, SUPABASE_SECRET_KEY is legacy.
   const serviceKey =
     process.env.SUPABASE_SERVICE_ROLE_KEY ?? process.env.SUPABASE_SECRET_KEY;
@@ -71,17 +70,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Session expired" }, { status: 401 });
   }
 
-  void fetch(edgeFnUrl, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${session.access_token}`,
-      apikey: serviceKey,
-    },
-    body: JSON.stringify({ builder_id: parsed.builder_id }),
-  }).catch((err) => {
-    console.error("[/api/builders/enrich] fire-and-forget failed:", err);
-  });
+  fireEnrichGithubEdgeFunction(session.access_token, parsed.builder_id);
 
   return NextResponse.json({ ok: true });
 }

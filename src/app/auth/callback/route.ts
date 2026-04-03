@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { routing } from "@/i18n/routing";
 import { dedupeLeadingLocalePath } from "@/lib/i18n/dedupe-locale-path";
+import { triggerGithubEnrichAfterAuth } from "@/lib/builders/trigger-github-enrich-after-auth";
 
 /**
  * Handles the redirect from Supabase after OAuth (e.g. Google), magic links, or email confirmation.
@@ -11,7 +12,10 @@ import { dedupeLeadingLocalePath } from "@/lib/i18n/dedupe-locale-path";
  * Authentication → URL Configuration → Redirect URLs:
  *   - http://localhost:3000/auth/callback (dev)
  *   - https://yourdomain.com/auth/callback (prod)
- * Authentication → Providers → Google: enable and add Web client ID/secret from Google Cloud Console.
+ * Authentication → Providers → Google / GitHub: enable and add OAuth client ID/secret.
+ *
+ * After a successful exchange, users with a GitHub identity and a builder profile may have
+ * `github_handle` backfilled and `enrich-github` queued (throttled — see triggerGithubEnrichAfterAuth).
  */
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -36,6 +40,24 @@ export async function GET(request: Request) {
     return NextResponse.redirect(
       new URL(`/login?error=${encodeURIComponent(error.message)}`, request.url)
     );
+  }
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+
+  if (user && session?.access_token) {
+    try {
+      await triggerGithubEnrichAfterAuth({
+        user,
+        accessToken: session.access_token,
+      });
+    } catch (err) {
+      console.error("[auth/callback] triggerGithubEnrichAfterAuth:", err);
+    }
   }
 
   return NextResponse.redirect(new URL(next, request.url));
