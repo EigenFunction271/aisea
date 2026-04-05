@@ -3,7 +3,8 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { fireEnrichGithubEdgeFunction } from "./enrich-github-edge";
 import { githubLoginFromUser } from "./github-identity";
 
-const MIN_INTERVAL_MS = 12 * 60 * 60 * 1000;
+/** Auto-enrich after GitHub OAuth at most this often (manual button still anytime). */
+const MIN_INTERVAL_MS = 48 * 60 * 60 * 1000;
 
 /**
  * After a successful OAuth callback: if the user has a GitHub identity and a builder profile,

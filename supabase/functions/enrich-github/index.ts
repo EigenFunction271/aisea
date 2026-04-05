@@ -28,6 +28,13 @@ const FOCUS_AREAS = [
   "LLM-infra", "data-pipelines", "evals", "tools-integrations",
 ] as const;
 
+/** Limit parallel repo work (GitHub raw + Gemini burst). */
+const REPO_ENRICH_CONCURRENCY = 5;
+/** Max README scoring Gemini calls per enrichment run (cost / rate limit). */
+const MAX_README_GEMINI_CALLS = 8;
+/** Parallel Supabase project row updates after bulk insert. */
+const PROJECT_UPDATE_CONCURRENCY = 6;
+
 // ── Types ─────────────────────────────────────────────────────────────────
 
 type GitHubRepo = {
@@ -71,6 +78,20 @@ function activityStatus(
 
 function detectLibs(depContent: string): string[] {
   return ALL_AI_LIBS.filter((lib) => depContent.includes(lib));
+}
+
+async function mapInBatches<T, R>(
+  items: T[],
+  batchSize: number,
+  fn: (item: T) => Promise<R>
+): Promise<R[]> {
+  const out: R[] = [];
+  for (let i = 0; i < items.length; i += batchSize) {
+    const batch = items.slice(i, i + batchSize);
+    const part = await Promise.all(batch.map(fn));
+    out.push(...part);
+  }
+  return out;
 }
 
 async function safeFetch(
@@ -178,11 +199,15 @@ Return only a valid JSON array with no explanation.`;
 
 // ── Per-repo enrichment ───────────────────────────────────────────────────
 
+/** Shared budget for README Gemini calls (decrement synchronously before await). */
+type ReadmeGeminiBudget = { left: number };
+
 async function enrichRepo(
   repo: GitHubRepo,
   githubHandle: string,
   ghHeaders: Record<string, string>,
-  geminiKey: string
+  geminiKey: string,
+  readmeBudget: ReadmeGeminiBudget
 ): Promise<RepoEnrichment> {
   const rawBase = `https://raw.githubusercontent.com/${encodeURIComponent(githubHandle)}/${encodeURIComponent(repo.name)}/HEAD`;
 
@@ -209,10 +234,17 @@ async function enrichRepo(
       (await safeFetch(`${rawBase}/readme.md`, ghHeaders));
 
     if (readme) {
-      const scored = await scoreReadme(readme, geminiKey);
-      if (scored) {
-        readmeScore = scored.score;
-        readmeSummary = scored.summary;
+      let allowed = false;
+      if (readmeBudget.left > 0) {
+        readmeBudget.left -= 1;
+        allowed = true;
+      }
+      if (allowed) {
+        const scored = await scoreReadme(readme, geminiKey);
+        if (scored) {
+          readmeScore = scored.score;
+          readmeSummary = scored.summary;
+        }
       }
     }
   }
@@ -279,21 +311,24 @@ async function runEnrichment(builderId: string): Promise<void> {
     return;
   }
 
-  // Process all repos — errors on individual repos are swallowed so one bad
-  // repo doesn't abort the entire job (github.md §6 non-functional requirements)
-  const results = await Promise.all(
-    repos.map((repo) =>
-      enrichRepo(repo, builder.github_handle!, ghHeaders, geminiKey).catch(
-        (err) => {
-          console.error(`[enrich-github] failed repo ${repo.name}:`, err);
-          return {
-            repo,
-            detectedLibs: [] as string[],
-            readmeScore: null,
-            readmeSummary: null,
-          } satisfies RepoEnrichment;
-        }
-      )
+  // Prefer higher-signal repos for the limited README/Gemini budget (stars proxy).
+  const sortedByStars = [...repos].sort(
+    (a, b) => (b.stargazers_count ?? 0) - (a.stargazers_count ?? 0)
+  );
+
+  // Process repos in bounded parallel batches; cap README Gemini calls globally.
+  const readmeBudget: ReadmeGeminiBudget = { left: MAX_README_GEMINI_CALLS };
+  const results = await mapInBatches(sortedByStars, REPO_ENRICH_CONCURRENCY, (repo) =>
+    enrichRepo(repo, builder.github_handle!, ghHeaders, geminiKey, readmeBudget).catch(
+      (err) => {
+        console.error(`[enrich-github] failed repo ${repo.name}:`, err);
+        return {
+          repo,
+          detectedLibs: [] as string[],
+          readmeScore: null,
+          readmeSummary: null,
+        } satisfies RepoEnrichment;
+      }
     )
   );
 
@@ -336,6 +371,25 @@ async function runEnrichment(builderId: string): Promise<void> {
   // manually-set fields (stage, tech_stack, focus_areas, tagline, etc.).
   // Insert with safe defaults for new GitHub-sourced rows.
 
+  const urls = results
+    .map((r) => r.repo.html_url)
+    .filter((u): u is string => Boolean(u));
+
+  const { data: existingRows } = urls.length
+    ? await admin
+        .from("projects")
+        .select("id, github_url")
+        .eq("builder_id", builderId)
+        .in("github_url", urls)
+    : { data: [] as { id: string; github_url: string }[] };
+
+  const urlToId = new Map(
+    (existingRows ?? []).map((row) => [row.github_url as string, row.id as string])
+  );
+
+  const inserts: Record<string, unknown>[] = [];
+  const updates: { id: string; fields: Record<string, unknown> }[] = [];
+
   for (const { repo, detectedLibs, readmeSummary } of results) {
     if (!repo.html_url) continue;
 
@@ -348,23 +402,11 @@ async function runEnrichment(builderId: string): Promise<void> {
       readme_summary: readmeSummary,
     };
 
-    // Check if row already exists
-    const { data: existing } = await admin
-      .from("projects")
-      .select("id")
-      .eq("builder_id", builderId)
-      .eq("github_url", repo.html_url)
-      .maybeSingle();
-
-    if (existing?.id) {
-      // Row exists — update only enrichment fields; preserve stage, tech_stack, etc.
-      await admin
-        .from("projects")
-        .update(enrichmentFields)
-        .eq("id", existing.id);
+    const existingId = urlToId.get(repo.html_url);
+    if (existingId) {
+      updates.push({ id: existingId, fields: enrichmentFields });
     } else {
-      // New row — insert with defaults for required fields
-      await admin.from("projects").insert({
+      inserts.push({
         builder_id: builderId,
         github_url: repo.html_url,
         stage: "in_progress",
@@ -374,6 +416,22 @@ async function runEnrichment(builderId: string): Promise<void> {
         ...enrichmentFields,
       });
     }
+  }
+
+  if (inserts.length > 0) {
+    const { error: insertErr } = await admin.from("projects").insert(inserts);
+    if (insertErr) {
+      console.error("[enrich-github] bulk project insert failed:", insertErr.message);
+    }
+  }
+
+  for (let i = 0; i < updates.length; i += PROJECT_UPDATE_CONCURRENCY) {
+    const chunk = updates.slice(i, i + PROJECT_UPDATE_CONCURRENCY);
+    await Promise.all(
+      chunk.map(({ id, fields }) =>
+        admin.from("projects").update(fields).eq("id", id)
+      )
+    );
   }
 
   // ── Update builder row ────────────────────────────────────────────────

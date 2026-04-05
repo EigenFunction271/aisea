@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { Link } from "@/i18n/routing";
 import { ChallengesList } from "./challenges-list";
 import type { ChallengeCard } from "./types";
@@ -7,8 +8,10 @@ import type { ChallengeCard } from "./types";
 // Challenge list changes only on admin action — no need to re-fetch every render.
 export const revalidate = 60;
 
-async function getProfileCompleteState(userId: string): Promise<boolean> {
-  const admin = createAdminClient();
+async function getProfileCompleteState(
+  admin: SupabaseClient,
+  userId: string
+): Promise<boolean> {
   const { data, error } = await admin.rpc("is_profile_complete_for_challenges", {
     target_user_id: userId,
   });
@@ -16,8 +19,10 @@ async function getProfileCompleteState(userId: string): Promise<boolean> {
   return data === true;
 }
 
-async function getUserRole(userId: string): Promise<"member" | "admin" | "super_admin"> {
-  const admin = createAdminClient();
+async function getUserRole(
+  admin: SupabaseClient,
+  userId: string
+): Promise<"member" | "admin" | "super_admin"> {
   const { data, error } = await admin.rpc("get_profile_role", {
     target_user_id: userId,
   });
@@ -52,8 +57,8 @@ export default async function DashboardChallengesPage({
 
   // ── Phase 1: profile checks + challenge list in parallel ──────────────────
   const [isProfileComplete, role, challengesRes] = await Promise.all([
-    user ? getProfileCompleteState(user.id) : Promise.resolve(false),
-    user ? getUserRole(user.id) : Promise.resolve<"member">("member"),
+    user ? getProfileCompleteState(admin, user.id) : Promise.resolve(false),
+    user ? getUserRole(admin, user.id) : Promise.resolve<"member">("member"),
     admin
       .from("challenges")
       .select("id, title, subtitle, hero_image_url, reward_text, host_name, org_name, tags, status, start_at, end_at, difficulty")

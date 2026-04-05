@@ -1,10 +1,10 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import {
   CachedActivitiesSchema,
-  fetchUserContributionCalendar,
   fetchViewerContributionCalendar,
   type ContributionActivity,
 } from "./contribution-calendar";
+import { getPatContributionCalendarCached } from "./pat-contribution-calendar-cache";
 
 const VIEWER_REFRESH_MS = 6 * 60 * 60 * 1000;
 const PAT_REFRESH_MS = 24 * 60 * 60 * 1000;
@@ -145,7 +145,7 @@ async function loadBuilderContributionCalendarInner(opts: {
 
   if (allowPat && pat) {
     try {
-      const u = await fetchUserContributionCalendar(login, pat);
+      const u = await getPatContributionCalendarCached(login);
       await persist(u.activities, u.totalContributions, false);
       return {
         activities: u.activities,

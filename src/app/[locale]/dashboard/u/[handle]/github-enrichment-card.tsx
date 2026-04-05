@@ -6,6 +6,11 @@ const MONO: React.CSSProperties = {
   fontFamily: "var(--font-dm-mono), monospace",
 };
 
+const POLL_INITIAL_MS = 3500;
+const POLL_MAX_MS = 14000;
+const POLL_BACKOFF_FACTOR = 1.35;
+const MAX_POLLS = 36;
+
 function relativeTime(iso: string): string {
   const diff = Date.now() - new Date(iso).getTime();
   const mins = Math.floor(diff / 60_000);
@@ -31,8 +36,10 @@ export function GitHubEnrichmentCard({
   const [enrichedAt, setEnrichedAt] = useState<string | null>(initialEnrichedAt);
   const [isRunning, setIsRunning] = useState(false);
   const [toast, setToast] = useState<Toast | null>(null);
-  const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const pollTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lastKnownAt = useRef<string | null>(initialEnrichedAt);
+  const pollCountRef = useRef(0);
+  const delayRef = useRef(POLL_INITIAL_MS);
 
   const showToast = (kind: Toast["kind"], message: string) => {
     setToast({ kind, message });
@@ -40,20 +47,51 @@ export function GitHubEnrichmentCard({
   };
 
   const stopPolling = useCallback(() => {
-    if (pollRef.current) {
-      clearInterval(pollRef.current);
-      pollRef.current = null;
+    if (pollTimeoutRef.current) {
+      clearTimeout(pollTimeoutRef.current);
+      pollTimeoutRef.current = null;
     }
+    pollCountRef.current = 0;
+    delayRef.current = POLL_INITIAL_MS;
   }, []);
+
+  const scheduleNextPoll = useCallback(
+    (run: () => void) => {
+      const d = delayRef.current;
+      pollTimeoutRef.current = setTimeout(run, d);
+      delayRef.current = Math.min(
+        POLL_MAX_MS,
+        Math.round(d * POLL_BACKOFF_FACTOR)
+      );
+    },
+    []
+  );
 
   const startPolling = useCallback(() => {
     stopPolling();
-    pollRef.current = setInterval(async () => {
+    pollCountRef.current = 0;
+    delayRef.current = POLL_INITIAL_MS;
+
+    const tick = async () => {
+      pollTimeoutRef.current = null;
+      pollCountRef.current += 1;
+      if (pollCountRef.current > MAX_POLLS) {
+        stopPolling();
+        setIsRunning(false);
+        showToast(
+          "error",
+          "Enrichment is taking longer than expected — refresh the page in a minute or try again."
+        );
+        return;
+      }
       try {
         const res = await fetch(
           `/api/builders/enrich-status?builder_id=${encodeURIComponent(builderId)}`
         );
-        if (!res.ok) return;
+        if (!res.ok) {
+          scheduleNextPoll(tick);
+          return;
+        }
         const data: { github_enriched_at: string | null } = await res.json();
         const newAt = data.github_enriched_at;
         if (newAt && newAt !== lastKnownAt.current) {
@@ -62,16 +100,18 @@ export function GitHubEnrichmentCard({
           setIsRunning(false);
           stopPolling();
           showToast("success", "Profile enriched — tags updated.");
-          // Refresh the page to show new tags without a full reload
           window.location.reload();
+          return;
         }
       } catch {
-        // silent — next poll will retry
+        // next backoff poll
       }
-    }, 3000);
-  }, [builderId, stopPolling]);
+      scheduleNextPoll(tick);
+    };
 
-  // Clean up on unmount
+    scheduleNextPoll(tick);
+  }, [builderId, stopPolling, scheduleNextPoll]);
+
   useEffect(() => () => stopPolling(), [stopPolling]);
 
   async function handleEnrich() {
@@ -126,10 +166,10 @@ export function GitHubEnrichmentCard({
           {isRunning
             ? "Enriching your profile…"
             : enrichedAt
-            ? `Last enriched: ${relativeTime(enrichedAt)}`
-            : githubHandle
-            ? "GitHub profile not yet enriched."
-            : "Add a GitHub handle to enable enrichment."}
+              ? `Last enriched: ${relativeTime(enrichedAt)}`
+              : githubHandle
+                ? "GitHub profile not yet enriched."
+                : "Add a GitHub handle to enable enrichment."}
         </span>
       </div>
 
@@ -189,10 +229,8 @@ export function GitHubEnrichmentCard({
         </a>
       )}
 
-      {/* Inline spinner keyframe — injected once */}
       <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
 
-      {/* Toast */}
       {toast && (
         <div
           style={{
