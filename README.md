@@ -93,97 +93,140 @@ Runs the i18n path utility tests via Node's built-in test runner.
 
 ## Environment variables
 
-Full documentation is in [`.env.example`](./.env.example). Summary:
+Full field-by-field notes are in [`.env.example`](./.env.example). Summary:
 
-### Next.js app (`.env.local`)
+### Next.js app (`.env.local` and your host, e.g. Vercel)
 
 | Variable | Required | Description |
 |----------|----------|-------------|
 | `NEXT_PUBLIC_SUPABASE_URL` | ✅ | Supabase project URL — `https://<ref>.supabase.co` |
 | `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | ✅ | Supabase anon key (safe for browser) |
-| `SUPABASE_SERVICE_ROLE_KEY` | ✅ | Supabase service role key — server only, never expose to client |
-| `NEXT_PUBLIC_BASE_URL` | ✅ | Absolute site URL, no trailing slash — used for sitemap and canonical links |
-| `GITHUB_PAT` | Recommended | Put in **`.env.local`** for the Next.js server (contribution heatmap via GitHub GraphQL). Also set as a **Supabase secret** for `enrich-github`. Classic PAT: `read:user` + `public_repo` covers both. |
-| `GEMINI_API_KEY` | — | Listed here for docs; set as a Supabase secret (see below) |
+| `SUPABASE_SERVICE_ROLE_KEY` | ✅ | Service role key — **server only** (API routes, RSC); never `NEXT_PUBLIC_*` |
+| `NEXT_PUBLIC_BASE_URL` | ✅ | Absolute site URL, no trailing slash — sitemap and canonicals |
+| `GITHUB_PAT` | Strongly recommended | Same token as below: needed for **contribution heatmap** (`user(login)` GraphQL) when the viewer is not on a GitHub-linked session. Not read by Edge Functions from here. |
 
-### Supabase Edge Function secrets
+`GEMINI_API_KEY` is **not** required in `.env.local` unless you call Gemini from Next.js; enrichment uses the secret below.
 
-Edge Functions run on Supabase's Deno runtime and read secrets set via the CLI — **not** `.env.local`. `SUPABASE_URL`, `SUPABASE_ANON_KEY`, and `SUPABASE_SERVICE_ROLE_KEY` are auto-injected by Supabase.
+### Supabase Edge Function secrets (CLI only)
 
-Set additional secrets once with:
+These are **not** loaded from `.env.local`. Set them with `supabase secrets set` (see [Setup: GitHub PAT and Supabase secrets](#setup-github-pat-and-supabase-secrets)).
+
+Supabase **injects** `SUPABASE_URL`, `SUPABASE_ANON_KEY`, and `SUPABASE_SERVICE_ROLE_KEY` into every function — do not set those manually.
+
+| Secret | Required | Description |
+|--------|----------|-------------|
+| `ALLOWED_ORIGIN` | ✅ | Comma-separated CORS allowlist for browser calls to your functions |
+| `GITHUB_PAT` | Strongly recommended | Repo + API access for **`enrich-github`** (5,000 req/hr authenticated vs ~60/hr anonymous) |
+| `GEMINI_API_KEY` | ✅ for enrichment | Powers README scoring and focus-area classification in **`enrich-github`** |
+
+---
+
+## Setup: GitHub PAT and Supabase secrets
+
+Use this checklist so **Next.js** and **Edge Functions** both have what they need.
+
+### Why GitHub PAT appears twice
+
+| Where | Variable | Consumers |
+|-------|----------|-----------|
+| **`.env.local` + production host env** | `GITHUB_PAT` | Next.js server — builder profile **contribution calendar** (GitHub GraphQL) for the PAT-backed path |
+| **Supabase secrets** | `GITHUB_PAT` | **`enrich-github`** — list repos, fetch `raw.githubusercontent.com` dependency/README files |
+
+You can use the **same classic PAT** in both places. Edge Functions never read your laptop’s `.env.local`; Vercel never reads Supabase secrets.
+
+### Step 1 — Create the GitHub token
+
+1. Open **[GitHub → Settings → Developer settings → Personal access tokens](https://github.com/settings/tokens)**.
+2. **Classic token** (simplest for this app):
+   - **Generate new token (classic)**.
+   - Scopes: enable **`read:user`** (GraphQL contribution calendar + user API) and **`public_repo`** (public repository contents for enrichment).
+   - Generate and copy the token once (GitHub will not show it again).
+
+**Fine-grained alternative:** Create a token with read access to **account** profile/metadata where required, and **Contents: Read-only** on **public** repositories you expect to enrich — mirror the same capabilities as above for your org’s policy.
+
+Without any PAT, GitHub allows only **~60 unauthenticated API requests/hour**, which breaks down quickly for enrichment (many repos × several file fetches per repo).
+
+### Step 2 — Add secrets for Edge Functions (Supabase CLI)
+
+1. Install and log in: `supabase login`.
+2. Link your project (once per machine/repo):  
+   `supabase link --project-ref <your-project-ref>`  
+   (`project-ref` is the subdomain of `https://<project-ref>.supabase.co`.)
+3. Set **all** function secrets in one command (no spaces after commas in `ALLOWED_ORIGIN`):
 
 ```bash
 supabase secrets set \
   ALLOWED_ORIGIN=https://aisea.builders,http://localhost:3000 \
-  GITHUB_PAT=github_pat_... \
-  GEMINI_API_KEY=AIza...
+  GITHUB_PAT=ghp_your_github_token_here \
+  GEMINI_API_KEY=AIza_your_gemini_key_here
 ```
 
-Verify:
+- **`ALLOWED_ORIGIN`** — Every browser origin that may call your functions (production site, local dev). Must match `Origin`/`Referer` handling in `supabase/functions/_shared/cors.ts`. Include both prod and `http://localhost:3000` during development.
+- **`GITHUB_PAT`** — Same value as in Step 1.
+- **`GEMINI_API_KEY`** — From [Google AI Studio](https://aistudio.google.com/app/apikey) (or Google Cloud Credentials). Used only inside **`enrich-github`** today.
+
+4. Confirm names are present (values are hidden):
 
 ```bash
 supabase secrets list
 ```
 
-| Secret | Required | Description |
-|--------|----------|-------------|
-| `ALLOWED_ORIGIN` | ✅ | Comma-separated CORS origins — e.g. `https://aisea.builders,http://localhost:3000` |
-| `GITHUB_PAT` | Recommended | GitHub PAT for enrichment (60 req/hr without; 5,000/hr with) |
-| `GEMINI_API_KEY` | ✅ for enrichment | Google Gemini API key |
+5. **Redeploy** functions after changing secrets so new values are picked up:
+
+```bash
+supabase functions deploy enrich-github
+# or: supabase functions deploy
+```
+
+### Step 3 — Configure Next.js (local)
+
+In the project root:
+
+```bash
+cp .env.example .env.local
+```
+
+Set at least:
+
+- `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `NEXT_PUBLIC_BASE_URL`
+- **`GITHUB_PAT=`** — same token as in Supabase secrets (for the contribution heatmap on builder profiles).
+
+### Step 4 — Production host (e.g. Vercel)
+
+In the project **Environment Variables** UI, add the same **Next.js** variables as in `.env.local`, including **`GITHUB_PAT`** and **`SUPABASE_SERVICE_ROLE_KEY`**. Do **not** put the service role or PAT in any `NEXT_PUBLIC_*` key.
+
+Edge Function secrets remain **only** in Supabase (`supabase secrets set`); you do not paste `GEMINI_API_KEY` into Vercel unless a future Next.js feature needs it.
 
 ---
 
-## Where to get API keys
+## Where to get API keys (reference)
 
-### Supabase keys
+### Supabase keys (for `.env.local` / Vercel)
 
-1. Go to [supabase.com](https://supabase.com) → create a project (free tier is fine)
-2. Dashboard → your project → **Project Settings** → **API**
-3. Copy:
-   - **Project URL** → `NEXT_PUBLIC_SUPABASE_URL`
-   - **anon / public** key → `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`
-   - **service_role** key → `SUPABASE_SERVICE_ROLE_KEY`
+1. [supabase.com](https://supabase.com) → your project → **Project Settings** → **API**
+2. Copy **Project URL**, **anon public**, and **service_role** into the variables in the table above.
 
-> ⚠️ The `service_role` key bypasses Row Level Security. Never put it in a `NEXT_PUBLIC_*` variable or expose it to the browser.
+> ⚠️ The **service_role** key bypasses RLS. Never expose it to the browser.
 
-### GitHub OAuth (Supabase Auth)
+### GitHub OAuth (optional — social login)
 
-Enables **Continue with GitHub** on the login page and **Link GitHub account** on Edit profile. When a user’s session includes a GitHub OAuth token, their profile heatmap is loaded with GitHub’s GraphQL `viewer` query so totals match github.com (including private contributions if the user shows them on their GitHub profile).
+Enables **Continue with GitHub** and **Link GitHub account** so the app can use GitHub’s **`viewer`** GraphQL contribution data for logged-in users.
 
-1. Supabase Dashboard → **Authentication** → **Providers** → **GitHub** → enable
-2. Create a [GitHub OAuth App](https://github.com/settings/developers): set **Authorization callback URL** to the value shown in Supabase (usually `https://<project-ref>.supabase.co/auth/v1/callback`)
+1. Supabase Dashboard → **Authentication** → **Providers** → **GitHub** → enable  
+2. [GitHub OAuth App](https://github.com/settings/developers): **Authorization callback URL** = value shown in Supabase (typically `https://<project-ref>.supabase.co/auth/v1/callback`).
 
-### GitHub Personal Access Token
+### Google Gemini (for Supabase secret `GEMINI_API_KEY`)
 
-Used by:
+1. [aistudio.google.com/app/apikey](https://aistudio.google.com/app/apikey) (or Google Cloud → **APIs & Services** → **Credentials**) → create API key  
+2. `supabase secrets set GEMINI_API_KEY=...` (see [Setup](#setup-github-pat-and-supabase-secrets))
 
-- The **`enrich-github`** Edge Function (public repo listing and file fetches)
-- The **Next.js server** (builder profile contribution calendar via GitHub GraphQL `user(login:…)` when no per-user OAuth data is available yet)
-
-1. Go to [github.com/settings/tokens](https://github.com/settings/tokens)
-2. Choose **"Generate new token (classic)"** or **"Fine-grained token"**
-   - Classic: tick **`read:user`** and **`public_repo`** (covers GraphQL contributions + repo enrichment)
-   - Fine-grained: grant read access to user profile metadata and repo contents as needed for your org
-3. Copy the token — GitHub only shows it once
-4. Add to **`.env.local`** as `GITHUB_PAT=…` for local Next.js, and set a Supabase secret for Edge Functions: `supabase secrets set GITHUB_PAT=github_pat_...`
-
-Without a token, enrichment and the public heatmap fallback are rate-limited to 60 GitHub API requests per hour — enough for testing, not production.
-
-### Google Gemini API key
-
-Used by the `enrich-github` Edge Function for README scoring and focus area classification. Model: `gemini-2.5-flash` (low cost).
-
-1. Go to [aistudio.google.com/app/apikey](https://aistudio.google.com/app/apikey)
-   — or Google Cloud Console → **APIs & Services** → **Credentials**
-2. Click **"Create API key"** and select (or create) a Google Cloud project
-3. Copy the key
-4. Set it as a Supabase secret: `supabase secrets set GEMINI_API_KEY=AIza...`
-
-Free tier: Gemini Flash has a generous free quota for development. See [ai.google.dev/pricing](https://ai.google.dev/pricing) for production rates.
+Pricing: [ai.google.dev/pricing](https://ai.google.dev/pricing).
 
 ---
 
 ## Deploying Edge Functions
+
+Set [Supabase secrets](#setup-github-pat-and-supabase-secrets) (`ALLOWED_ORIGIN`, `GITHUB_PAT`, `GEMINI_API_KEY`) before or after deploy; **redeploy** after changing secrets.
 
 ```bash
 # Deploy a single function
